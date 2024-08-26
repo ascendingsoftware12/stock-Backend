@@ -6,6 +6,8 @@ class MStockOptimizationModel(db.Model):
     OPT_DATE = db.Column(db.Date, nullable=True)
     ITEM_ID = db.Column(db.Integer, nullable=True)
     MODELNO = db.Column(db.String(255, collation='latin1_swedish_ci'), nullable=True)
+    ITEM_CODE = db.Column(db.String(255), nullable=True)
+    ITEM_NAME = db.Column(db.String(255), nullable=True)
     BRAND = db.Column(db.String(255), nullable=True)
     FROM_STORE_CODE = db.Column(db.String(10, collation='latin1_swedish_ci'), nullable=True)
     FROM_STORE_NAME = db.Column(db.String(60, collation='latin1_swedish_ci'), nullable=True)
@@ -35,6 +37,7 @@ class MStockOptimizationModel(db.Model):
     EOL_FLAG = db.Column(db.String(1), nullable=True)
     SECTION = db.Column(db.String(255, collation='latin1_swedish_ci'), nullable=True)
     STATE = db.Column(db.String(255), nullable=True)
+    ALGO_TYPE = db.Column(db.String(255), nullable=True)
     DATA_REFRESH_TIME = db.Column(db.DateTime, nullable=True)
     id = db.Column(db.Integer)
     approved_qty = db.Column(db.Integer, nullable=True)
@@ -56,5 +59,5 @@ class MStockOptimizationModel(db.Model):
     p_projection_days = db.Column(db.Integer, nullable=True)
     p_actual_po_qty = db.Column(db.Integer, nullable=True)
     p_final_po_qty = db.Column(db.Integer, nullable=True)
-    p_final_po_flag = db.Column(db.String(30), nullable=True)
+    p_final_po_flag = db.Column(db.String(30), nullable=True,default=None)
 

@@ -12,7 +12,11 @@ class ExcessStockModel(db.Model):
     BRANCH_TYPE = db.Column(db.String(255), nullable=True)
     STORE_CATEGORY = db.Column(db.String(255), nullable=True)
     FRANCH_TYPE = db.Column(db.String(255), nullable=True)
+    ITEM_CODE = db.Column(db.String(255), nullable=True)
+    ITEM_NAME = db.Column(db.String(255), nullable=True)
     BRAND = db.Column(db.String(255), nullable=True)
+    ITEM_GROUP = db.Column(db.String(255), nullable=True)
+    ACTUAL_ITEM = db.Column(db.String(255), nullable=True)
     MODELNO = db.Column(db.String(255), nullable=True)
     SECTION = db.Column(db.String(255), nullable=True)
     ITEM_FLAG = db.Column(db.String(255), nullable=True)
@@ -38,6 +42,7 @@ class ExcessStockModel(db.Model):
     IT_DSI = db.Column(db.String(255), nullable=True)
     SALES_NO_OF_PIECES = db.Column(db.String(255), nullable=True)
     SALES_IT_NO_OF_PIECES = db.Column(db.String(255), nullable=True)
+    ALGO_TYPE = db.Column(db.String(255), nullable=True)
     DATA_REFRESH_TIME = db.Column(db.DateTime, nullable=True)
 
 
