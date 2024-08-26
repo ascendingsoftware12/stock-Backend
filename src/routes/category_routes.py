@@ -15,9 +15,13 @@ def get_brand_names():
 def get_store_names():
     return get_store_name_controller()
 
-@category_bp.route("/modelnames", methods=["GET"], strict_slashes=False)
+@category_bp.route("/itemnames", methods=["GET"], strict_slashes=False)
 def get_item_names():
     return get_item_name_controller()
+
+@category_bp.route("/modelnames", methods=["GET"], strict_slashes=False)
+def get_model_names():
+    return get_model_name_controller()
 
 @category_bp.route("/getmodelbrandstore", methods=["GET"], strict_slashes=False)
 def get_store_brand_model_name():

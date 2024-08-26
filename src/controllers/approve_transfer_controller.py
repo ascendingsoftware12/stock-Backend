@@ -13,6 +13,7 @@ def get_approve_transfer_controller():
         brand = request.args.get("brand")
         transfer_type = request.args.get("transferType")
         state = request.args.get("state")
+        item_name = request.args.get('itemname')
 
         query = MStockOptimizationModel.query.with_entities(
             MStockOptimizationModel.FROM_STORE_CODE,
@@ -29,6 +30,7 @@ def get_approve_transfer_controller():
             MStockOptimizationModel.TRANS_FLAG,
             MStockOptimizationModel.t_approved_flag,
             MStockOptimizationModel.SUPPLIED_QTY,
+            MStockOptimizationModel.ITEM_NAME
         ).filter(
                 MStockOptimizationModel.FROM_STORE_CODE.isnot(None)
         ).filter(
@@ -49,6 +51,8 @@ def get_approve_transfer_controller():
             query = query.filter(MStockOptimizationModel.BRAND == brand)
         if transfer_type:
             query = query.filter(MStockOptimizationModel.TRANS_FLAG == transfer_type)
+        if item_name:
+            query = query.filter(MStockOptimizationModel.ITEM_NAME == item_name)
         if state:
             states = state.split(",")
             query = query.filter(MStockOptimizationModel.STATE.in_(states))
@@ -64,6 +68,7 @@ def get_approve_transfer_controller():
                 "TO_STORE_NAME": row.TO_STORE_NAME,
                 "TO_STORE_CODE": row.TO_STORE_CODE,
                 "MODEL_NUMBER": row.MODELNO,
+                "ITEM_NAME":row.ITEM_NAME,
                 "BRAND": row.BRAND,
                 "REQUESTED_QUANTITY": row.REQUESTED_QTY,
                 "TRANSFER_QUANTITY": row.SUPPLIED_QTY,
@@ -134,6 +139,7 @@ def update_approve_transfer_controller():
             record.t_approved_flag = "TRUE"
             record.t_approved_by = "HO"
             record.t_approved_date = date.today()
+            
 
         db.session.commit()
         return jsonify({"success": 1, "message": "Approved Quantity updated"})

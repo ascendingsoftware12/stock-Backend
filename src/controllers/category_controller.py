@@ -37,6 +37,16 @@ def get_store_name_controller():
 
 def get_item_name_controller():
     try:
+        result = db.session.query(ExcessStockModel.ITEM_NAME.distinct()).all()
+        
+        result_list = [row[0] for row in result]
+        
+        return jsonify(result_list)
+    except Exception as e:
+        return jsonify({"success": 0, "error": str(e)}), 500
+    
+def get_model_name_controller():
+    try:
         result = db.session.query(ExcessStockModel.MODELNO.distinct()).all()
         
         result_list = [row[0] for row in result]
@@ -47,10 +57,10 @@ def get_item_name_controller():
 
 def get_store_brand_model_name_controller():
     try:
-        result = db.session.query(ExcessStockModel.STATE,ExcessStockModel.CITY,ExcessStockModel.STORE_NAME,ExcessStockModel.STORE_CATEGORY,ExcessStockModel.FRANCH_TYPE,ExcessStockModel.BRAND,ExcessStockModel.MODELNO,ExcessStockModel.STORE_CODE).all()
+        result = db.session.query(ExcessStockModel.STATE,ExcessStockModel.CITY,ExcessStockModel.STORE_NAME,ExcessStockModel.STORE_CATEGORY,ExcessStockModel.FRANCH_TYPE,ExcessStockModel.BRAND,ExcessStockModel.MODELNO,ExcessStockModel.STORE_CODE,ExcessStockModel.ITEM_NAME).all()
         res =[]
         for row in result:
-            res.append({"STATE":row[0],"CITY":row[1],"STORE":row[2],"STORECATEGORY":row[3],"STORECODE":row[7],"FRANCHTYPE":row[4],"BRAND":row[5],"MODELNUMBER":row[6]})
+            res.append({"STATE":row[0],"CITY":row[1],"STORE":row[2],"STORECATEGORY":row[3],"STORECODE":row[7],"FRANCHTYPE":row[4],"BRAND":row[5],"MODELNUMBER":row[6],"ITEMNAME":row[7]})
             
         # print(res)
         # state , city , store, store category, franch type, brand, model
@@ -72,10 +82,10 @@ def get_from_store_to_store_brand_model_controller():
     try:
         state = request.args.get("state")
         states = state.split(',')
-        result = db.session.query(MStockOptimizationModel.FROM_STORE_CODE,MStockOptimizationModel.TO_STORE_CODE,MStockOptimizationModel.BRAND,MStockOptimizationModel.MODELNO).filter(MStockOptimizationModel.STATE.in_(states)).all()
+        result = db.session.query(MStockOptimizationModel.FROM_STORE_CODE,MStockOptimizationModel.TO_STORE_CODE,MStockOptimizationModel.BRAND,MStockOptimizationModel.MODELNO,MStockOptimizationModel.ITEM_NAME).filter(MStockOptimizationModel.STATE.in_(states)).all()
         res=[]
         for row in result:
-            res.append({"FROM_STORE_CODE":row[0],"TO_STORE_CODE":row[1],"BRAND":row[2],"MODELNO":row[3]})
+            res.append({"FROM_STORE_CODE":row[0],"TO_STORE_CODE":row[1],"BRAND":row[2],"MODELNO":row[3],"ITEMNAME":row[4]})
             
         
         return jsonify(res)
