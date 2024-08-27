@@ -866,14 +866,14 @@ def get_overall_item_level_details_controller():
 def get_overall_stock_totals_by_flag(it_flag, age_condition):
     return (
         db.session.query(
-            ExcessStockModel.MODELNO,
+            ExcessStockModel.ITEM_NAME,
             func.sum(ExcessStockModel.TOTAL_STOCK).label("total_stock"),
         )
         .filter(
             ExcessStockModel.SECTION == "MOBILE"
         )
         .filter(ExcessStockModel.IT_FLAG == it_flag, age_condition)
-        .group_by(ExcessStockModel.MODELNO)
+        .group_by(ExcessStockModel.ITEM_NAME)
         .all()
     )
 
@@ -980,7 +980,8 @@ def overall_stock_analysis_search_controller():
     store_categrory = request.args.get('storecategory')
     franch_type = request.args.get('franchtype')
     query = db.session.query(ExcessStockModel)
-
+    item_name = request.args.get('itemname')
+    print(item_name)
     if sales_category and sales_category !='':
         query = query.filter(ExcessStockModel.IT_FLAG == sales_category)
     if stock_category == "NEW" and stock_category != '':
@@ -1008,6 +1009,8 @@ def overall_stock_analysis_search_controller():
         query = query.filter(ExcessStockModel.BRAND == brand)
     if model and model != '':
         query = query.filter(ExcessStockModel.MODELNO == model)
+    if item_name and item_name != '':
+        query = query.filter(ExcessStockModel.ITEM_NAME == item_name)
     if state and state != '':
         query = query.filter(ExcessStockModel.STATE==state)
     if city and city != '':
@@ -1021,14 +1024,14 @@ def overall_stock_analysis_search_controller():
 
 
     resp = get_section_controller().get_json()
-    print(resp)
+
     db_sections=resp
     db_sections=[s.lower() for s in db_sections]
-    print(db_sections)
+    
     if section != '' and section != None:
         if section.lower() in db_sections:
                 query = query.filter(func.lower(ExcessStockModel.SECTION) == func.lower(section))
-    print(section)
+
     results = query.all()
 
     results_dict = [
@@ -1446,6 +1449,7 @@ def shop_level_stock_analysis_search_controller():
     brand = request.args.get("brand")
     section=request.args.get("section")
     model = request.args.get("modelno")
+    item_name = request.args.get("itemname")
     state = request.args.get('state')
     city = request.args.get('city')
     store_categrory = request.args.get('storecategory')
@@ -1481,6 +1485,8 @@ def shop_level_stock_analysis_search_controller():
         query = query.filter(ExcessStockModel.BRAND == brand)
     if model and model != '':
         query = query.filter(ExcessStockModel.MODELNO == model)
+    if item_name and item_name != '':
+        query = query.filter(ExcessStockModel.ITEM_NAME == item_name)
     if state and state != '':
         query = query.filter(ExcessStockModel.STATE==state)
     if city and city != '':
