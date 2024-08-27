@@ -119,6 +119,8 @@ def get_headoffice_stock_summary_list_controller():
 def get_store_stock_summary_list_controller(store_code):
     try:
         model_number = request.args.get("modelnumber")
+        item_name=request.args.get("itemname")
+        brand=request.args.get("brand")
         eol_flag = request.args.get("eolflag")
 
         query = ( 
@@ -126,6 +128,8 @@ def get_store_stock_summary_list_controller(store_code):
                 MStockOptimizationModel,
                 MStockOptimizationModel.FROM_STORE_CODE,
                 MStockOptimizationModel.MODELNO,
+                MStockOptimizationModel.BRAND,
+                MStockOptimizationModel.ITEM_NAME,
                 MStockOptimizationModel.EOL_FLAG,
                 case(
                     (
@@ -169,6 +173,10 @@ def get_store_stock_summary_list_controller(store_code):
 
         if model_number:
             query = query.filter(MStockOptimizationModel.MODELNO == model_number)
+        if item_name:
+            query = query.filter(MStockOptimizationModel.ITEM_NAME == item_name)
+        if brand:
+            query = query.filter(MStockOptimizationModel.BRAND == brand)
         if eol_flag:
             query = query.filter(MStockOptimizationModel.EOL_FLAG == eol_flag)
 
@@ -180,6 +188,8 @@ def get_store_stock_summary_list_controller(store_code):
                 {
                     "FROM_STORE_CODE": result.FROM_STORE_CODE,
                     "MODELNO": result.MODELNO,
+                    "BRAND": result.BRAND,
+                    "ITEM_NAME": result.ITEM_NAME,
                     "EOL_FLAG": result.EOL_FLAG,
                     "excess_stock_qty": result.excess_stock_qty,
                     "dead_stock_qty": result.dead_stock_qty,

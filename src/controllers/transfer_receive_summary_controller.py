@@ -8,13 +8,14 @@ def get_tranfer_receive_summary_controller(store_code):
         to_store_code = request.args.get('tostorecode')
         model_number = request.args.get('modelnumber')
         brand = request.args.get('brand')
-        
+        item_name = request.args.get('itemname')
         query = MStockOptimizationModel.query.with_entities(
             MStockOptimizationModel.ID_NO,
             MStockOptimizationModel.FROM_STORE_CODE,
             MStockOptimizationModel.FROM_STORE_NAME,
             MStockOptimizationModel.MODELNO,
             MStockOptimizationModel.BRAND,
+            MStockOptimizationModel.ITEM_NAME,
             MStockOptimizationModel.SUPPLY_QTY,
             MStockOptimizationModel.approved_qty,
             MStockOptimizationModel.t_couriered_qty,
@@ -28,7 +29,8 @@ def get_tranfer_receive_summary_controller(store_code):
             query = query.filter(MStockOptimizationModel.MODELNO == model_number)
         if brand:
             query = query.filter(MStockOptimizationModel.BRAND == brand)
-
+        if item_name:
+            query = query.filter(MStockOptimizationModel.ITEM_NAME == item_name)
         tranfer_receive_summary_results= query.all()
 
         data = [
@@ -38,6 +40,7 @@ def get_tranfer_receive_summary_controller(store_code):
                 "FROM_STORE_NAME": result.FROM_STORE_NAME,
                 "MODELNO": result.MODELNO,
                 "BRAND": result.BRAND,
+                "ITEM_NAME": result.ITEM_NAME,
                 "SUPPLY_QTY": result.SUPPLY_QTY,
                 "approved_qty": result.approved_qty,
                 "t_couriered_qty": result.t_couriered_qty,
