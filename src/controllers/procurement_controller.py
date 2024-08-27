@@ -209,7 +209,8 @@ def get_approved_procurement_controller():
         "to_store_name":"",
         "model_number":"",
         "state": "",
-        "brand":"Total",
+        "brand":"",
+        "item_name":"Total",
         "projection_days":"",
         "po_number":'',
         "po_date":'',
@@ -468,7 +469,7 @@ def approved_export_attaced_excel_procurement__controller():
             df = df.drop(columns=['id'])
         
         desired_order = [
-            'to_store_code', 'to_store_name', 'model_number', 'state','brand', 
+            'to_store_code', 'to_store_name', 'model_number', 'state','brand', 'item_name',
             'projection_days', 'po_number', 'po_date', 'p_approved_flag', 
             'last_28_days_sold_qty', 'current_stock', 'demand_quantity', 
             'transfer_quantity', 'yet_to_procure_default', 'yet_to_procure_projected','actual_po_quantity', 
@@ -504,7 +505,7 @@ def not_approved_export_attaced_excel_procurement__controller():
             df = df.drop(columns=['id'])
         
         desired_order = [
-            'to_store_code', 'to_store_name', 'model_number', 'brand', 
+            'to_store_code', 'to_store_name', 'model_number', 'brand', 'item_name',
             'last_28_days_sold_qty', 'current_stock', 'demand_quantity', 
             'transfer_quantity', 'yet_to_procure_default', 'yet_to_procure_projected', 
             'projection_days', 'p_approved_flag'
