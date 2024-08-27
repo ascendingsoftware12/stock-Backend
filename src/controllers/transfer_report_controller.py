@@ -14,7 +14,7 @@ def get_transfer_report_controller():
         brand = request.args.get("brand")
         status = request.args.get("status")
         state = request.args.get("state")
-
+        item_name = request.args.get('itemname')
 
         query = MStockOptimizationModel.query.with_entities(
             MStockOptimizationModel.FROM_STORE_CODE,
@@ -33,6 +33,7 @@ def get_transfer_report_controller():
             MStockOptimizationModel.t_approved_date,
             MStockOptimizationModel.d_received_date,
             MStockOptimizationModel.d_couriered_date,
+            MStockOptimizationModel.ITEM_NAME
         )
 
         if from_store_code:
@@ -45,6 +46,8 @@ def get_transfer_report_controller():
             query = query.filter(MStockOptimizationModel.MODELNO == model_number)
         if brand:
             query = query.filter(MStockOptimizationModel.BRAND == brand)
+        if item_name:
+            query = query.filter(MStockOptimizationModel.ITEM_NAME == item_name)
         if state:
             states = state.split(',')
             query = query.filter(MStockOptimizationModel.STATE.in_(states))
@@ -86,6 +89,7 @@ def get_transfer_report_controller():
                 "TO_STORE_NAME": row.TO_STORE_NAME,
                 "TO_STORE_CODE": row.TO_STORE_CODE,
                 "MODEL_NUMBER": row.MODELNO,
+                "ITEM_NAME":row.ITEM_NAME,
                 "BRAND": row.BRAND,
                 "RECOMMENDED_QUANTITY": row.SUPPLIED_QTY,
                 "APPROVED_QUANTITY": row.approved_qty,
@@ -136,6 +140,7 @@ def get_transfer_report_controller():
                 "TO_STORE_NAME": row.TO_STORE_NAME,
                 "TO_STORE_CODE": row.TO_STORE_CODE,
                 "MODEL_NUMBER": row.MODELNO,
+                "ITEM_NAME":row.ITEM_NAME,
                 "BRAND": row.BRAND,
                 "RECOMMENDED_QUANTITY": row.SUPPLIED_QTY,
                 "APPROVED_QUANTITY": row.approved_qty,               
@@ -185,7 +190,7 @@ def get_overall_transfer_report_count_controller():
     brand = request.args.get("brand")
     status = request.args.get("status")
     state = request.args.get("state")
-
+    item_name = request.args.get('itemname')
 
     latest_opt_date_subquery = (
         db.session.query(
@@ -203,6 +208,8 @@ def get_overall_transfer_report_count_controller():
         filters.append(MStockOptimizationModel.TO_STORE_CODE == to_store_code)
     if model_number:
         filters.append(MStockOptimizationModel.MODELNO == model_number)
+    if item_name:
+            query = query.filter(MStockOptimizationModel.ITEM_NAME == item_name)
     if brand:
         filters.append(MStockOptimizationModel.BRAND == brand)
     if state:
@@ -360,7 +367,7 @@ def get_overall_transfer_report_count_controller2():
     model_number = request.args.get("modelnumber")
     brand = request.args.get("brand")
     status = request.args.get("status")
-
+    
     latest_opt_date_subquery = (
         db.session.query(
             func.max(MStockOptimizationModel.OPT_DATE).label("latest_opt_date")
