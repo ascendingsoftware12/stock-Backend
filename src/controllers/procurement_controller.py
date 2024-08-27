@@ -13,7 +13,7 @@ def get_not_approved_procurement_controller():
     model_number = request.args.get("model_number")
     brand = request.args.get("brand")
     state = request.args.get("state")
-
+    item_name = request.args.get('itemname')
 
     filters = [
         or_(
@@ -28,6 +28,8 @@ def get_not_approved_procurement_controller():
         filters.append(MStockOptimizationModel.MODELNO == model_number)
     if brand:
         filters.append(MStockOptimizationModel.BRAND == brand)
+    if item_name:
+            query = query.filter(MStockOptimizationModel.ITEM_NAME == item_name)
     if state:
         states = state.split(',')
         filters.append(MStockOptimizationModel.STATE.in_(states))
@@ -149,6 +151,7 @@ def calculate_not_approved_procurement_fields(stock):
         "model_number": stock.MODELNO,
         "state": stock.STATE,
         "brand": stock.BRAND,
+        "item_name":stock.ITEM_NAME,
         "last_28_days_sold_qty": last_28_days_sold_qty,
         "current_stock": current_stock,
         "demand_quantity": demand_quantity,
@@ -177,7 +180,7 @@ def get_approved_procurement_controller():
     model_number = request.args.get("model_number")
     brand = request.args.get("brand")
     state = request.args.get("state")
-
+    item_name = request.args.get('itemname')
 
     filters = [
             MStockOptimizationModel.p_approved_flag == "TRUE",
@@ -189,6 +192,8 @@ def get_approved_procurement_controller():
         filters.append(MStockOptimizationModel.MODELNO == model_number)
     if brand:
         filters.append(MStockOptimizationModel.BRAND == brand)
+    if item_name:
+            query = query.filter(MStockOptimizationModel.ITEM_NAME == item_name)
     if state:
         states = state.split(',')
         filters.append(MStockOptimizationModel.STATE.in_(states))
@@ -285,6 +290,7 @@ def calculate_approved_procurement_fields(stock):
         "model_number": stock.MODELNO,
         "state": stock.STATE,
         "brand": stock.BRAND,
+        "item_name":stock.ITEM_NAME,
         "last_28_days_sold_qty": stock.DEMAND_STORE_SALES_QTY,
         "current_stock": stock.DEMAND_STORE_STOCK_QTY,
         "demand_quantity": stock.SUPPLIED_QTY,
