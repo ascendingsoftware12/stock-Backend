@@ -57,10 +57,10 @@ def get_model_name_controller():
 
 def get_store_brand_model_name_controller():
     try:
-        result = db.session.query(ExcessStockModel.STATE,ExcessStockModel.CITY,ExcessStockModel.STORE_NAME,ExcessStockModel.STORE_CATEGORY,ExcessStockModel.FRANCH_TYPE,ExcessStockModel.BRAND,ExcessStockModel.MODELNO,ExcessStockModel.STORE_CODE,ExcessStockModel.ITEM_NAME).all()
+        result = db.session.query(ExcessStockModel.STATE,ExcessStockModel.CITY,ExcessStockModel.STORE_NAME,ExcessStockModel.STORE_CATEGORY,ExcessStockModel.FRANCH_TYPE,ExcessStockModel.BRAND,ExcessStockModel.MODELNO,ExcessStockModel.STORE_CODE,ExcessStockModel.ITEM_NAME,ExcessStockModel.SECTION).all()
         res =[]
         for row in result:
-            res.append({"STATE":row[0],"CITY":row[1],"STORE":row[2],"STORECATEGORY":row[3],"STORECODE":row[7],"FRANCHTYPE":row[4],"BRAND":row[5],"MODELNUMBER":row[6],"ITEMNAME":row[8]})
+            res.append({"STATE":row[0],"CITY":row[1],"STORE":row[2],"STORECATEGORY":row[3],"STORECODE":row[7],"FRANCHTYPE":row[4],"BRAND":row[5],"MODELNUMBER":row[6],"ITEMNAME":row[8],"SECTION":row[9]})
             
         # print(res)
         # state , city , store, store category, franch type, brand, model
