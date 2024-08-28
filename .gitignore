@@ -37,3 +37,4 @@ instance/config.py
 
 # macOS system files
 .DS_Store
+.env

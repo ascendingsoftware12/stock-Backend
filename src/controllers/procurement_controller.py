@@ -29,7 +29,7 @@ def get_not_approved_procurement_controller():
     if brand:
         filters.append(MStockOptimizationModel.BRAND == brand)
     if item_name:
-            query = query.filter(MStockOptimizationModel.ITEM_NAME == item_name)
+        filters.append(MStockOptimizationModel.ITEM_NAME == item_name)
     if state:
         states = state.split(',')
         filters.append(MStockOptimizationModel.STATE.in_(states))
@@ -194,7 +194,7 @@ def get_approved_procurement_controller():
     if brand:
         filters.append(MStockOptimizationModel.BRAND == brand)
     if item_name:
-            query = query.filter(MStockOptimizationModel.ITEM_NAME == item_name)
+        filters.append(MStockOptimizationModel.ITEM_NAME == item_name)
     if state:
         states = state.split(',')
         filters.append(MStockOptimizationModel.STATE.in_(states))
