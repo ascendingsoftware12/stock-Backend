@@ -13,7 +13,11 @@ def get_section_controller():
         
         return jsonify(result_list)
     except Exception as e:
-        return jsonify({"success": 0, "error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_section_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 def get_brand_name_controller():
     try:
@@ -23,7 +27,11 @@ def get_brand_name_controller():
         
         return jsonify(result_list)
     except Exception as e:
-        return jsonify({"success": 0, "error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_brand_name_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 def get_store_name_controller():
     try:
@@ -33,7 +41,11 @@ def get_store_name_controller():
         
         return jsonify(result_list)
     except Exception as e:
-        return jsonify({"success": 0, "error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_store_name_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 def get_item_name_controller():
     try:
@@ -43,7 +55,11 @@ def get_item_name_controller():
         
         return jsonify(result_list)
     except Exception as e:
-        return jsonify({"success": 0, "error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_item_name_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
     
 def get_model_name_controller():
     try:
@@ -53,7 +69,11 @@ def get_model_name_controller():
         
         return jsonify(result_list)
     except Exception as e:
-        return jsonify({"success": 0, "error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_model_name_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 def get_store_brand_model_name_controller():
     try:
@@ -66,7 +86,11 @@ def get_store_brand_model_name_controller():
         # state , city , store, store category, franch type, brand, model
         return jsonify(res)
     except Exception as e:
-        return jsonify({"success": 0, "error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_store_brand_model_name_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
     
 def get_state_name_controller():
     try:
@@ -76,7 +100,11 @@ def get_state_name_controller():
         
         return jsonify(result_list)
     except Exception as e:
-        return jsonify({"success": 0, "error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_state_name_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
     
 def get_from_store_to_store_brand_model_controller():
     try:
@@ -90,4 +118,8 @@ def get_from_store_to_store_brand_model_controller():
         
         return jsonify(res)
     except Exception as e:
-        return jsonify({"success": 0, "error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_from_store_to_store_brand_model_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)

@@ -113,7 +113,11 @@ def get_headoffice_stock_summary_list_controller():
         return jsonify(summary_data), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_headoffice_stock_summary_list_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def get_store_stock_summary_list_controller(store_code):
@@ -203,7 +207,11 @@ def get_store_stock_summary_list_controller(store_code):
         return jsonify(summary_data), 200
     
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_store_stock_summary_list_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 
@@ -324,4 +332,8 @@ def get_store_stock_summary_list_controller1(store_code):
         return jsonify(summary_data), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_store_stock_summary_list_controller1()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)

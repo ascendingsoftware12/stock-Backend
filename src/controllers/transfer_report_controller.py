@@ -180,7 +180,11 @@ def get_transfer_report_controller():
     
         return jsonify(result)
     except Exception as e:
-        return jsonify({"success": 0, "err": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_transfer_report_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def get_overall_transfer_report_count_controller():

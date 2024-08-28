@@ -85,7 +85,11 @@ def get_approve_transfer_controller():
 
         return jsonify(result)
     except Exception as e:
-        return jsonify({"success": 0, "err": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_approve_transfer_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def get_approve_transfer_controller1():
@@ -124,7 +128,11 @@ def get_approve_transfer_controller1():
 
         return result
     except Exception as e:
-        return jsonify({"success": 0, "err": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_approve_transfer_controller1()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def update_approve_transfer_controller():
@@ -144,4 +152,8 @@ def update_approve_transfer_controller():
         db.session.commit()
         return jsonify({"success": 1, "message": "Approved Quantity updated"})
     except Exception as e:
-        return jsonify({"success": 0, "err": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return update_approve_transfer_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)

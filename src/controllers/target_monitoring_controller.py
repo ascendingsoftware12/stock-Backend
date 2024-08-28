@@ -11,7 +11,11 @@ def get_store_target_monitoring_controller(store_code):
 
         return jsonify(result)
     except Exception as e:
-        return jsonify({"success": 0, "error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_store_target_monitoring_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
     
 def get_store_section_data(store_code, section):
     return {
@@ -93,7 +97,11 @@ def get_store_month_year_based_target_monitoring_controller(store_code):
         return jsonify(results), 200
 
     except Exception as e:
-        return jsonify({"success": 0, "error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_store_month_year_based_target_monitoring_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 def get_head_office_stores_sales_controller():
     try:
@@ -172,7 +180,11 @@ def get_head_office_stores_sales_controller():
        
         return jsonify(result)
     except Exception as e:
-        return (jsonify({"success": 0, "error": str(e)}), 500)
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_head_office_stores_sales_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 def get_head_office_store_target_achieved_status_controller():
     try:
@@ -258,7 +270,11 @@ def get_head_office_store_target_achieved_status_controller():
                 result.append(result_dict)
         return result
     except Exception as e:
-        return (jsonify({"success": 0, "error": str(e)}), 500)
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_head_office_store_target_achieved_status_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 #--------------------------------------------------------
 def get_head_office_cm_vs_3mnth_avg_growth_controller():
@@ -339,7 +355,11 @@ def get_head_office_cm_vs_3mnth_avg_growth_controller():
 
         return result
     except Exception as e:
-        return (jsonify({"success": 0, "error": str(e)}), 500)
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_head_office_cm_vs_3mnth_avg_growth_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
     
 
 def get_head_office_cm_vs_lm_growth_controller():
@@ -419,7 +439,11 @@ def get_head_office_cm_vs_lm_growth_controller():
 
         return result
     except Exception as e:
-        return (jsonify({"success": 0, "error": str(e)}), 500)
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_head_office_cm_vs_lm_growth_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
     
 
 def get_head_office_dendrogram_controller():
@@ -822,4 +846,8 @@ def get_head_office_dendrogram_controller():
         
         return jsonify(result)
     except Exception as e:
-        return (jsonify({"success": 0, "error": str(e)}), 500)
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_head_office_dendrogram_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)

@@ -53,7 +53,11 @@ def get_tranfer_receive_summary_controller(store_code):
 
         return jsonify(data), 201
     except Exception as e:
-        return jsonify({"error": str(e), "success": 0}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_tranfer_receive_summary_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def update_tranfer_receive_summary_controller():
@@ -80,6 +84,9 @@ def update_tranfer_receive_summary_controller():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": str(e), "success": 0}), 500
+        if "MySQL server has gone away" in str(e):
+            return update_tranfer_receive_summary_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
     return jsonify({"message": "Records updated successfully", "success": 1}), 200

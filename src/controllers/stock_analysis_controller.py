@@ -30,7 +30,11 @@ def get_overall_stock_position_controller():
         return jsonify(overall_stock_position_total)
 
     except Exception as e:
-        return jsonify({"error": str(e), "success": 0}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_overall_stock_position_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def get_shop_level_stock_position_controller():
@@ -57,7 +61,11 @@ def get_shop_level_stock_position_controller():
         return jsonify(shop_level_stock_position_total)
 
     except Exception as e:
-        return jsonify({"error": str(e), "success": 0}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_shop_level_stock_position_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 # -----------------------------------------------------
@@ -149,7 +157,11 @@ def get_overall_new_and_stock_position_controller():
         return jsonify(overall_new_and_stock_position_total)
 
     except Exception as e:
-        return jsonify({"error": str(e), "success": 0}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_overall_new_and_stock_position_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def get_shop_level_new_and_stock_position_controller():
@@ -238,7 +250,11 @@ def get_shop_level_new_and_stock_position_controller():
         return jsonify(shop_level_new_and_stock_position_total)
 
     except Exception as e:
-        return jsonify({"error": str(e), "success": 0}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_shop_level_new_and_stock_position_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 # -----------------------------------------------------
@@ -354,7 +370,11 @@ def get_overall_stock_ageing_controller():
         return jsonify(results), 201
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_overall_stock_ageing_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def get_shop_level_stock_ageing_controller():
@@ -469,7 +489,11 @@ def get_shop_level_stock_ageing_controller():
         return jsonify(results), 201
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_shop_level_stock_ageing_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def get_age_range_bounds(age_range):
@@ -549,7 +573,11 @@ def get_overall_sales_category_by_stock_qty_bucket_controller():
 
         return jsonify(results)
     except Exception as e:
-        return jsonify({"error": str(e), "success": 0}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_overall_sales_category_by_stock_qty_bucket_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def get_shop_level_sales_category_by_stock_qty_bucket_controller():
@@ -617,7 +645,11 @@ def get_shop_level_sales_category_by_stock_qty_bucket_controller():
 
         return jsonify(results)
     except Exception as e:
-        return jsonify({"error": str(e), "success": 0}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_shop_level_sales_category_by_stock_qty_bucket_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 # -----------------------------------------------------
@@ -704,7 +736,11 @@ def get_overall_dsi_by_saleable_qty_bucket_controller():
 
         return jsonify(results)
     except Exception as e:
-        return jsonify({"error": str(e), "success": 0}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_overall_dsi_by_saleable_qty_bucket_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def get_shop_level_dsi_by_saleable_qty_bucket_controller():
@@ -790,7 +826,11 @@ def get_shop_level_dsi_by_saleable_qty_bucket_controller():
 
         return jsonify(results)
     except Exception as e:
-        return jsonify({"error": str(e), "success": 0}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_shop_level_dsi_by_saleable_qty_bucket_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 # -----------------------------------------------------
@@ -860,7 +900,11 @@ def get_overall_item_level_details_controller():
         return jsonify(combined_totals)
 
     except Exception as e:
-        return jsonify({"error": str(e), "success": 0}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_overall_item_level_details_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def get_overall_stock_totals_by_flag(it_flag, age_condition):
@@ -944,7 +988,11 @@ def get_shop_level_store_level_details_controller():
         return jsonify(combined_totals)
 
     except Exception as e:
-        return jsonify({"error": str(e), "success": 0}), 500
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_shop_level_store_level_details_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def get_shop_level_stock_totals_by_flag(it_flag, age_condition):
