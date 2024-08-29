@@ -18,38 +18,46 @@ def get_store_target_monitoring_controller(store_code):
             return (jsonify({"success": 0, "error": str(e)}), 500)
     
 def get_store_section_data(store_code, section):
-    return {
-        "target": db.session.query(func.round(func.sum(GeneralBranchRankingModel.target))).filter(
-            and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
-        ).scalar(),
-        "tot_qty": db.session.query(func.round(func.sum(GeneralBranchRankingModel.TOTAL_QTY))).filter(
-            and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
-        ).scalar(),
-        "tot_sales": db.session.query(func.round(func.sum(GeneralBranchRankingModel.TOTAL_SALES))).filter(
-            and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
-        ).scalar(),
-        "target_ach_percent": db.session.query(func.round(func.avg(GeneralBranchRankingModel.Target_Ach_percentage))).filter(
-            and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
-        ).scalar(),
-        "avg_qty_sold_per_day": db.session.query(func.round(func.avg(GeneralBranchRankingModel.AVG_VAL_SOLD_PER_DAY))).filter(
-            and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
-        ).scalar(),
-        "avg_qty_ach_target": db.session.query(func.round(func.avg(GeneralBranchRankingModel.AVG_VALUE_ACH_TARGET))).filter(
-            and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
-        ).scalar(),
-        "cm_3month_growth": db.session.query(func.round(func.avg(GeneralBranchRankingModel.CM_3MNTH_GROWTH))).filter(
-            and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
-        ).scalar(),
-        "cm_vs_lm_growth": db.session.query(func.round(func.avg(GeneralBranchRankingModel.CM_LM_GROWTH))).filter(
-            and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
-        ).scalar(),
-        "ach_ratio": db.session.query(func.round(func.avg(GeneralBranchRankingModel.ACH_RATIO))).filter(
-            and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
-        ).scalar(),
-        "project_target_ach_percent": db.session.query(func.round(func.avg(GeneralBranchRankingModel.PROJ_TARGET))).filter(
-            and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
-        ).scalar(),
-    }
+    try:
+        return {
+            "target": db.session.query(func.round(func.sum(GeneralBranchRankingModel.target))).filter(
+                and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
+            ).scalar(),
+            "tot_qty": db.session.query(func.round(func.sum(GeneralBranchRankingModel.TOTAL_QTY))).filter(
+                and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
+            ).scalar(),
+            "tot_sales": db.session.query(func.round(func.sum(GeneralBranchRankingModel.TOTAL_SALES))).filter(
+                and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
+            ).scalar(),
+            "target_ach_percent": db.session.query(func.round(func.avg(GeneralBranchRankingModel.Target_Ach_percentage))).filter(
+                and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
+            ).scalar(),
+            "avg_qty_sold_per_day": db.session.query(func.round(func.avg(GeneralBranchRankingModel.AVG_VAL_SOLD_PER_DAY))).filter(
+                and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
+            ).scalar(),
+            "avg_qty_ach_target": db.session.query(func.round(func.avg(GeneralBranchRankingModel.AVG_VALUE_ACH_TARGET))).filter(
+                and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
+            ).scalar(),
+            "cm_3month_growth": db.session.query(func.round(func.avg(GeneralBranchRankingModel.CM_3MNTH_GROWTH))).filter(
+                and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
+            ).scalar(),
+            "cm_vs_lm_growth": db.session.query(func.round(func.avg(GeneralBranchRankingModel.CM_LM_GROWTH))).filter(
+                and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
+            ).scalar(),
+            "ach_ratio": db.session.query(func.round(func.avg(GeneralBranchRankingModel.ACH_RATIO))).filter(
+                and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
+            ).scalar(),
+            "project_target_ach_percent": db.session.query(func.round(func.avg(GeneralBranchRankingModel.PROJ_TARGET))).filter(
+                and_(GeneralBranchRankingModel.section == section, GeneralBranchRankingModel.store_code == store_code)
+            ).scalar(),
+        }
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_store_section_data(store_code,section)
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
+
 
 
 def get_store_month_year_based_target_monitoring_controller(store_code):

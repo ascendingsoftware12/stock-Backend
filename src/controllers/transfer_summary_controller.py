@@ -60,27 +60,36 @@ def get_tranfer_summary_controller(storecode):
 
 
 def update_tranfer_summary_controller():
-    data = request.get_json()
-
-    if not data or not isinstance(data, list):
-        return jsonify({"error": "Invalid data format", "success": 0}), 400
-
-    for item in data:
-        record_id = item.get("id")
-        couriered_quantity = item.get("courieredQuantity")
-        couriered_date = item.get("courieredDate")
-
-        if record_id is None or couriered_quantity is None or couriered_date is None:
-            return jsonify({"error": "Missing fields in data", "success": 0}), 400
-
-        record = MStockOptimizationModel.query.get(record_id)
-        if record:
-            record.t_couriered_qty = couriered_quantity
-            record.d_couriered_date = couriered_date
-            record.t_couriered_flag = "TRUE"
-
     try:
-        db.session.commit()
+        data = request.get_json()
+
+        if not data or not isinstance(data, list):
+            return jsonify({"error": "Invalid data format", "success": 0}), 400
+
+        for item in data:
+            record_id = item.get("id")
+            couriered_quantity = item.get("courieredQuantity")
+            couriered_date = item.get("courieredDate")
+
+            if record_id is None or couriered_quantity is None or couriered_date is None:
+                return jsonify({"error": "Missing fields in data", "success": 0}), 400
+
+            record = MStockOptimizationModel.query.get(record_id)
+            if record:
+                record.t_couriered_qty = couriered_quantity
+                record.d_couriered_date = couriered_date
+                record.t_couriered_flag = "TRUE"
+
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            if "MySQL server has gone away" in str(e):
+                return update_tranfer_summary_controller()
+            else:
+                return (jsonify({"success": 0, "error": str(e)}), 500)
+
+        return jsonify({"message": "Records updated successfully", "success": 1}), 200
     except Exception as e:
         db.session.rollback()
         if "MySQL server has gone away" in str(e):
@@ -88,4 +97,3 @@ def update_tranfer_summary_controller():
         else:
             return (jsonify({"success": 0, "error": str(e)}), 500)
 
-    return jsonify({"message": "Records updated successfully", "success": 1}), 200

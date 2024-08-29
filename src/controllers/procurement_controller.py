@@ -178,12 +178,13 @@ def calculate_not_approved_procurement_fields(stock):
             return calculate_not_approved_procurement_fields(stock)
 
 def calculate_total_yet_to_procure_projected_qty_for_not_approved():
-    total_qty = (
-        db.session.query(
-            func.sum(func.coalesce(MStockOptimizationModel.p_yet_to_procure_projected_qty, 0))
-        ).filter(MStockOptimizationModel.p_approved_flag != "TRUE").scalar()
-    )
-    return total_qty or 0
+        total_qty = (
+            db.session.query(
+                func.sum(func.coalesce(MStockOptimizationModel.p_yet_to_procure_projected_qty, 0))
+            ).filter(MStockOptimizationModel.p_approved_flag != "TRUE").scalar()
+        )
+        return total_qty or 0
+        
 
 
 # -----------------------------------

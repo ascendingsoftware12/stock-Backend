@@ -188,180 +188,188 @@ def get_transfer_report_controller():
 
 
 def get_overall_transfer_report_count_controller():
-    from_store_code = request.args.get("fromstorecode")
-    to_store_code = request.args.get("tostorecode")
-    model_number = request.args.get("modelnumber")
-    brand = request.args.get("brand")
-    status = request.args.get("status")
-    state = request.args.get("state")
-    item_name = request.args.get('itemname')
+    try:
+        from_store_code = request.args.get("fromstorecode")
+        to_store_code = request.args.get("tostorecode")
+        model_number = request.args.get("modelnumber")
+        brand = request.args.get("brand")
+        status = request.args.get("status")
+        state = request.args.get("state")
+        item_name = request.args.get('itemname')
 
-    latest_opt_date_subquery = (
-        db.session.query(
-            func.max(MStockOptimizationModel.OPT_DATE).label("latest_opt_date")
+        latest_opt_date_subquery = (
+            db.session.query(
+                func.max(MStockOptimizationModel.OPT_DATE).label("latest_opt_date")
+            )
+            .filter(MStockOptimizationModel.SUPPLY_QTY > 0)
+            .subquery()
         )
-        .filter(MStockOptimizationModel.SUPPLY_QTY > 0)
-        .subquery()
-    )
 
-    filters = [MStockOptimizationModel.OPT_DATE == latest_opt_date_subquery.c.latest_opt_date]
+        filters = [MStockOptimizationModel.OPT_DATE == latest_opt_date_subquery.c.latest_opt_date]
 
-    if from_store_code:
-        filters.append(MStockOptimizationModel.FROM_STORE_CODE == from_store_code)
-    if to_store_code:
-        filters.append(MStockOptimizationModel.TO_STORE_CODE == to_store_code)
-    if model_number:
-        filters.append(MStockOptimizationModel.MODELNO == model_number)
-    if item_name:
-            query = query.filter(MStockOptimizationModel.ITEM_NAME == item_name)
-    if brand:
-        filters.append(MStockOptimizationModel.BRAND == brand)
-    if state:
-        filters.append(MStockOptimizationModel.STATE == state)
-    if status == "All":
-            pass
-    
-    elif status == "ANC":
-            filters.append(
-                
-                    and_(
-                        MStockOptimizationModel.t_approved_flag == "TRUE",
+        if from_store_code:
+            filters.append(MStockOptimizationModel.FROM_STORE_CODE == from_store_code)
+        if to_store_code:
+            filters.append(MStockOptimizationModel.TO_STORE_CODE == to_store_code)
+        if model_number:
+            filters.append(MStockOptimizationModel.MODELNO == model_number)
+        if item_name:
+                query = query.filter(MStockOptimizationModel.ITEM_NAME == item_name)
+        if brand:
+            filters.append(MStockOptimizationModel.BRAND == brand)
+        if state:
+            filters.append(MStockOptimizationModel.STATE == state)
+        if status == "All":
+                pass
+        
+        elif status == "ANC":
+                filters.append(
+                    
                         and_(
-                            MStockOptimizationModel.t_couriered_flag.is_(None),
-                            MStockOptimizationModel.t_received_flag==None     
+                            MStockOptimizationModel.t_approved_flag == "TRUE",
+                            and_(
+                                MStockOptimizationModel.t_couriered_flag.is_(None),
+                                MStockOptimizationModel.t_received_flag==None     
+                            )
                         )
-                    )
-                
+                    
+                )
+
+        elif status == "CNR":
+            filters.append(
+                and_(
+                            MStockOptimizationModel.t_approved_flag == "TRUE",
+                            and_(
+                                MStockOptimizationModel.t_couriered_flag == "TRUE",
+                                MStockOptimizationModel.t_received_flag==None     
+                            )
+                        )
             )
 
-    elif status == "CNR":
-        filters.append(
-            and_(
-                        MStockOptimizationModel.t_approved_flag == "TRUE",
-                        and_(
-                            MStockOptimizationModel.t_couriered_flag == "TRUE",
-                            MStockOptimizationModel.t_received_flag==None     
+        stats_query = (
+            db.session.query(
+                func.count(case((MStockOptimizationModel.SUPPLIED_QTY > 0, 1))).label(
+                    "TotalTransfers"
+                ),
+                func.count(
+                    case((MStockOptimizationModel.t_approved_flag == "true", 1))
+                ).label("ApprovedTransfers"),
+                func.count(
+                    case(
+                        (
+                            and_(
+                                MStockOptimizationModel.t_approved_flag == "true",
+                                MStockOptimizationModel.t_couriered_flag == "true",
+                            ),
+                            1,
                         )
                     )
-        )
-
-    stats_query = (
-        db.session.query(
-            func.count(case((MStockOptimizationModel.SUPPLIED_QTY > 0, 1))).label(
-                "TotalTransfers"
-            ),
-            func.count(
-                case((MStockOptimizationModel.t_approved_flag == "true", 1))
-            ).label("ApprovedTransfers"),
-            func.count(
-                case(
-                    (
-                        and_(
-                            MStockOptimizationModel.t_approved_flag == "true",
-                            MStockOptimizationModel.t_couriered_flag == "true",
-                        ),
-                        1,
+                ).label("TransfersbyStore"),
+                func.count(
+                    case(
+                        (
+                            and_(
+                                and_(
+                                    MStockOptimizationModel.t_approved_flag == "true",
+                                    MStockOptimizationModel.t_couriered_flag == "true",
+                                ),
+                                MStockOptimizationModel.t_received_flag == "true",
+                            ),
+                            1,
+                        )
                     )
-                )
-            ).label("TransfersbyStore"),
-            func.count(
-                case(
-                    (
-                        and_(
+                ).label("TransfersReceived"),
+                func.sum(
+                    case(
+                        (
+                            and_(
+                                MStockOptimizationModel.SUPPLIED_QTY > 0,
+                                MStockOptimizationModel.OPT_DATE
+                                == latest_opt_date_subquery.c.latest_opt_date,
+                            ),
+                            MStockOptimizationModel.SUPPLIED_QTY,
+                        ),
+                        else_=0,
+                    )
+                ).label("TotalRecQuantity"),
+                func.sum(
+                    case(
+                        (
+                            MStockOptimizationModel.t_approved_flag == "true",
+                            MStockOptimizationModel.SUPPLY_QTY,
+                        ),
+                        else_=0,
+                    )
+                ).label("RecommendedQuantity"),
+                func.sum(
+                    case(
+                        (
+                            MStockOptimizationModel.t_approved_flag == "true",
+                            MStockOptimizationModel.approved_qty,
+                        ),
+                        else_=0,
+                    )
+                ).label("ApprovedQuantityByHO"),
+                func.sum(
+                    case(
+                        (
                             and_(
                                 MStockOptimizationModel.t_approved_flag == "true",
                                 MStockOptimizationModel.t_couriered_flag == "true",
                             ),
-                            MStockOptimizationModel.t_received_flag == "true",
+                            MStockOptimizationModel.t_couriered_qty,
                         ),
-                        1,
+                        else_=0,
                     )
-                )
-            ).label("TransfersReceived"),
-            func.sum(
-                case(
-                    (
-                        and_(
-                            MStockOptimizationModel.SUPPLIED_QTY > 0,
-                            MStockOptimizationModel.OPT_DATE
-                            == latest_opt_date_subquery.c.latest_opt_date,
-                        ),
-                        MStockOptimizationModel.SUPPLIED_QTY,
-                    ),
-                    else_=0,
-                )
-            ).label("TotalRecQuantity"),
-            func.sum(
-                case(
-                    (
-                        MStockOptimizationModel.t_approved_flag == "true",
-                        MStockOptimizationModel.SUPPLY_QTY,
-                    ),
-                    else_=0,
-                )
-            ).label("RecommendedQuantity"),
-            func.sum(
-                case(
-                    (
-                        MStockOptimizationModel.t_approved_flag == "true",
-                        MStockOptimizationModel.approved_qty,
-                    ),
-                    else_=0,
-                )
-            ).label("ApprovedQuantityByHO"),
-            func.sum(
-                case(
-                    (
-                        and_(
-                            MStockOptimizationModel.t_approved_flag == "true",
-                            MStockOptimizationModel.t_couriered_flag == "true",
-                        ),
-                        MStockOptimizationModel.t_couriered_qty,
-                    ),
-                    else_=0,
-                )
-            ).label("TransferedQuantity"),
-            func.sum(
-                case(
-                    (
-                        and_(
+                ).label("TransferedQuantity"),
+                func.sum(
+                    case(
+                        (
                             and_(
-                                MStockOptimizationModel.t_approved_flag == "true",
-                                MStockOptimizationModel.t_couriered_flag == "true",
+                                and_(
+                                    MStockOptimizationModel.t_approved_flag == "true",
+                                    MStockOptimizationModel.t_couriered_flag == "true",
+                                ),
+                                MStockOptimizationModel.t_received_flag == "true",
                             ),
-                            MStockOptimizationModel.t_received_flag == "true",
+                            MStockOptimizationModel.t_received_qty,
                         ),
-                        MStockOptimizationModel.t_received_qty,
-                    ),
-                    else_=0,
-                )
-            ).label("ReceivedQuantity"),
+                        else_=0,
+                    )
+                ).label("ReceivedQuantity"),
+            )
+            .select_from(MStockOptimizationModel)
+            .filter(
+                # and_(
+                    MStockOptimizationModel.OPT_DATE
+                    == latest_opt_date_subquery.c.latest_opt_date
+                # )
+            )
+            .filter(*filters)
+            .limit(1)
+            .one()
         )
-        .select_from(MStockOptimizationModel)
-        .filter(
-            # and_(
-                MStockOptimizationModel.OPT_DATE
-                == latest_opt_date_subquery.c.latest_opt_date
-            # )
-        )
-        .filter(*filters)
-        .limit(1)
-        .one()
-    )
 
-    response = {
-        "Total_Transfers": stats_query.TotalTransfers,
-        "Total_Rec_Quantity": stats_query.TotalRecQuantity,
-        "Approved_Transfers": stats_query.ApprovedTransfers,
-        "Recommended_Quantity": stats_query.RecommendedQuantity,
-        "Approved_Quantity_By_HO": stats_query.ApprovedQuantityByHO,
-        "Transfers_by_Store": stats_query.TransfersbyStore,
-        "Transfered_Quantity": stats_query.TransferedQuantity,
-        "Transfers_Received": stats_query.TransfersReceived,
-        "Received_Quantity": stats_query.ReceivedQuantity,
-    }
+        response = {
+            "Total_Transfers": stats_query.TotalTransfers,
+            "Total_Rec_Quantity": stats_query.TotalRecQuantity,
+            "Approved_Transfers": stats_query.ApprovedTransfers,
+            "Recommended_Quantity": stats_query.RecommendedQuantity,
+            "Approved_Quantity_By_HO": stats_query.ApprovedQuantityByHO,
+            "Transfers_by_Store": stats_query.TransfersbyStore,
+            "Transfered_Quantity": stats_query.TransferedQuantity,
+            "Transfers_Received": stats_query.TransfersReceived,
+            "Received_Quantity": stats_query.ReceivedQuantity,
+        }
 
-    return jsonify(response)
+        return jsonify(response)
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_overall_transfer_report_count_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
+
 
 
 

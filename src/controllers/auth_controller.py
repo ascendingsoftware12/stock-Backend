@@ -9,65 +9,80 @@ from src.utils.jwt_token_utils import generate_token
 
 
 def register_user_controller():
-    data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
-    role = data.get("role", "user")
+    try:
+        data = request.get_json()
+        username = data.get("username")
+        password = data.get("password")
+        role = data.get("role", "user")
 
-    if not username or not password:
-        return (
-            jsonify({"message": "Username and password required", "status": 0}),
-            400,
+        if not username or not password:
+            return (
+                jsonify({"message": "Username and password required", "status": 0}),
+                400,
+            )
+
+        if User.query.filter_by(username=username).first():
+            return jsonify({"message": "User already exists", "status": 2}), 400
+
+        hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+
+        new_user = User(
+            username=username,
+            password=hashed_password.decode("utf-8"),
+            role=role,
         )
 
-    if User.query.filter_by(username=username).first():
-        return jsonify({"message": "User already exists", "status": 2}), 400
+        db.session.add(new_user)
+        db.session.commit()
 
-    hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
-
-    new_user = User(
-        username=username,
-        password=hashed_password.decode("utf-8"),
-        role=role,
-    )
-
-    db.session.add(new_user)
-    db.session.commit()
-
-    return jsonify({"message": "User registered successfully", "status": 1}), 201
+        return jsonify({"message": "User registered successfully", "status": 1}), 201
+    
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return register_user_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 def login_user_controller():
-    data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
+    try:
+        data = request.get_json()
+        username = data.get("username")
+        password = data.get("password")
 
-    if not username or not password:
+        if not username or not password:
+            return (
+                jsonify({"message": "Username and password required", "status": 0}),
+                400,
+            )
+
+        user = User.query.filter_by(username=username).first()
+
+        if not user or not bcrypt.checkpw(
+            password.encode("utf-8"), user.password.encode("utf-8")
+        ):
+            return jsonify({"message": "Invalid credentials", "status": 0}), 401
+
+        token = generate_token(user.username, user.role)
         return (
-            jsonify({"message": "Username and password required", "status": 0}),
-            400,
+            jsonify(
+                {
+                    "message": "Login successful",
+                    "token": token,
+                    "username": user.username,
+                    "role": user.role,
+                    "status": 1,
+                }
+            ),
+            200,
         )
-
-    user = User.query.filter_by(username=username).first()
-
-    if not user or not bcrypt.checkpw(
-        password.encode("utf-8"), user.password.encode("utf-8")
-    ):
-        return jsonify({"message": "Invalid credentials", "status": 0}), 401
-
-    token = generate_token(user.username, user.role)
-    return (
-        jsonify(
-            {
-                "message": "Login successful",
-                "token": token,
-                "username": user.username,
-                "role": user.role,
-                "status": 1,
-            }
-        ),
-        200,
-    )
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return login_user_controller()
+        else:
+            return (jsonify({"success": 0, "error": str(e)}), 500)
 
 
 # blacklisted_tokens = set()
