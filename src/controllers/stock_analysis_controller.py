@@ -1029,7 +1029,7 @@ def overall_stock_analysis_search_controller():
     franch_type = request.args.get('franchtype')
     query = db.session.query(ExcessStockModel)
     item_name = request.args.get('itemname')
-    print(item_name)
+    
     if sales_category and sales_category !='':
         query = query.filter(ExcessStockModel.IT_FLAG == sales_category)
     if stock_category == "NEW" and stock_category != '':
@@ -1091,6 +1091,7 @@ def overall_stock_analysis_search_controller():
             "SALES_IT_NO_OF_PIECES":result.SALES_IT_NO_OF_PIECES,
             "IT_DSI": result.IT_DSI,
             "MODEL_NO": result.MODELNO,
+            "ITEM_NAME":result.ITEM_NAME
         }
         for result in results
     ]
@@ -1411,13 +1412,13 @@ def overall_stock_analysis_search_controller():
         new_stock_dict = {}
 
         for r in old_stock_totals:
-            model_no = r["MODEL_NO"]
+            model_no = r["ITEM_NAME"]
             old_stock_dict[model_no] = (
                 old_stock_dict.get(model_no, 0) + r["TOTAL_STOCK"]
             )
 
         for r in new_stock_totals:
-            model_no = r["MODEL_NO"]
+            model_no = r["ITEM_NAME"]
             new_stock_dict[model_no] = (
                 new_stock_dict.get(model_no, 0) + r["TOTAL_STOCK"]
             )
