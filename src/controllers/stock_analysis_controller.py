@@ -3,7 +3,7 @@ from sqlalchemy import and_, func
 from src import db
 from src.controllers.category_controller import get_section_controller
 from src.models.excess_stock_model import ExcessStockModel
-
+import pandas as pd
 
 # -----------------------------------------------------
 def get_overall_stock_position_controller():
@@ -896,8 +896,77 @@ def get_overall_item_level_details_controller():
                     "old_stock_percentage": old_stock_percentage,
                     "new_stock_percentage": new_stock_percentage,
                 }
+        
+        combined_totals["sample"] = {
+                        "NEVER SOLD": {
+                            "old_stock_total": 10,
+                            "new_stock_total": 10,
+                            "old_stock_percentage": 10,
+                            "new_stock_percentage": 10,
+                        },
+                        "NOT SOLD": {
+                            "old_stock_total": 10,
+                            "new_stock_total": 10,
+                            "old_stock_percentage": 10,
+                            "new_stock_percentage": 10,
+                        },
+                        "SALEABLE": {
+                            "old_stock_total": 10,
+                            "new_stock_total": 10,
+                            "old_stock_percentage":10,
+                            "new_stock_percentage": 10,
+                        },
+                    }
 
-        return jsonify(combined_totals)
+        combined_totals[item_name][flag] = {
+                    "old_stock_total": 22,
+                    "new_stock_total": 22,
+                    "old_stock_percentage": 2,
+                    "new_stock_percentage": 2,
+                }
+        
+        combined_totals["sample2"] = {
+                        "NEVER SOLD": {
+                            "old_stock_total": 10,
+                            "new_stock_total": 10,
+                            "old_stock_percentage": 10,
+                            "new_stock_percentage": 10,
+                        },
+                        "NOT SOLD": {
+                            "old_stock_total": 10,
+                            "new_stock_total": 10,
+                            "old_stock_percentage": 10,
+                            "new_stock_percentage": 10,
+                        },
+                        "SALEABLE": {
+                            "old_stock_total": 10,
+                            "new_stock_total": 10,
+                            "old_stock_percentage":10,
+                            "new_stock_percentage": 10,
+                        },
+                    }
+
+        combined_totals[item_name][flag] = {
+                    "old_stock_total": 22,
+                    "new_stock_total": 22,
+                    "old_stock_percentage": 2,
+                    "new_stock_percentage": 2,
+                }
+        def has_complete_data(record):
+            for status in record.values():
+                for key, value in status.items():
+                    if value == 0 or value == "0":
+                        return False
+            return True
+
+        # Separate records into complete and incomplete
+        complete_records = {k: v for k, v in combined_totals.items() if has_complete_data(v)}
+        incomplete_records = {k: v for k, v in combined_totals.items() if not has_complete_data(v)}
+      
+        # Combine results: complete records first, then incomplete records
+        complete_records.update(incomplete_records)
+        
+        return complete_records
 
     except Exception as e:
         db.session.rollback()
