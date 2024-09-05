@@ -11,6 +11,10 @@ def register():
 def login():
     return login_user_controller()
 
+@auth_bp.route('/user_import', methods=['POST'])
+def user_import():
+    return import_users_from_csv()
+
 # @auth_bp.route('/logout', methods=['POST'])
 # def user_logout():
 #     return logout_user_controller()

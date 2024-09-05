@@ -2,6 +2,7 @@ from flask import request, make_response, jsonify
 import bcrypt
 import os
 import jwt
+import pandas as pd
 
 from src import db
 from src.models.user_model import User
@@ -104,3 +105,35 @@ def login_user_controller():
 
 # def token_is_blacklisted(token):
 #     return token in blacklisted_tokens
+
+
+def import_users_from_csv():
+    try:
+        file_path = r"D:\PROGRAM\Flask_APIs\APIs\stock_optimization\src\controllers\userdata.csv"
+        df = pd.read_csv(file_path)
+
+        for index, row in df.iterrows():
+            username = row['name']
+            password = row['PASSWORD']
+            
+            if User.query.filter_by(username=username).first():
+                print(f"User {username} already exists, skipping...")
+                continue
+            
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            
+            new_user = User(
+                username=username,
+                password=hashed_password.decode('utf-8'),
+                role='user'
+            )
+            
+            db.session.add(new_user)
+
+        db.session.commit()
+        return (jsonify({"success": 1, "message": "Users imported"}), 200)
+
+    except Exception as e:
+        db.session.rollback()
+        return (jsonify({"success": 0, "error": str(e)}), 500)
+        
