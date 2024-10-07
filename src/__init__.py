@@ -60,6 +60,9 @@ def create_app():
     from src.routes.category_routes import category_bp
     from src.routes.auth_route import auth_bp
 
+    from src.routes.sales_all_in_one_live_routes import sales_all_in_one_live_bp
+
+
     app.register_blueprint(approve_transfer_bp)
     app.register_blueprint(transfer_report_bp)
     app.register_blueprint(stock_analysis_bp)
@@ -70,5 +73,6 @@ def create_app():
     app.register_blueprint(target_monitoring_bp)
     app.register_blueprint(category_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(sales_all_in_one_live_bp)
 
     return app
