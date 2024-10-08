@@ -976,6 +976,8 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller():
             ">25000": {},
         }
 
+        years_list = []
+
         for year, month, total_sales, total_qty in sales_data:
 
             if month in [1, 2, 3]:
@@ -984,6 +986,9 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller():
                 fiscal_year = year + 1
 
             financial_month = month_names[month]
+
+            if fiscal_year not in years_list:
+                years_list.append(fiscal_year)
 
             piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
             sales_with_gst = round(total_sales / 10000000, 2)
@@ -1007,7 +1012,9 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller():
 
         result_dict = {k: v for k, v in price_ranges.items() if v}
 
-        return jsonify(result_dict), 200
+        years_list.reverse()
+        return jsonify({"years": years_list,"values": result_dict}), 200
+
     except Exception as e:
         db.session.rollback()
         if "MySQL server has gone away" in str(e):
@@ -1072,6 +1079,8 @@ def get_sales_all_in_one_live_price_breakup_two_cr_controller():
             3: "Mar",
         }
 
+        years_list = []
+
         for year, month, total_sales, total_qty in sales_data:
             piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
             sales_with_gst = round(total_sales / 10000000, 2)
@@ -1082,6 +1091,9 @@ def get_sales_all_in_one_live_price_breakup_two_cr_controller():
                 fiscal_year = year + 1
 
             financial_month = month_names[month]
+
+            if fiscal_year not in years_list:
+                years_list.append(fiscal_year)
 
             price_breakup = "Null"
             if piecewise_sales > 0 and piecewise_sales <= 1000:
@@ -1120,7 +1132,9 @@ def get_sales_all_in_one_live_price_breakup_two_cr_controller():
 
         result_dict = {k: v for k, v in price_ranges.items() if v}
 
-        return jsonify(result_dict), 200
+        years_list.reverse()
+        return jsonify({"years": years_list,"values": result_dict}), 200
+
 
     except Exception as e:
         db.session.rollback()
