@@ -644,8 +644,6 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
         # ]
 
 
-        result_dict = {}
-
         month_names = {
             4: "Apr",
             5: "May",
@@ -662,24 +660,30 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
         }
 
         result = []   
+        result_dict = {}
+        years_list = []
 
-        for row in weekly_sales:
+
+        for week_number, month, year, sales_with_gst in weekly_sales:
             
-            if row.month in [1, 2, 3]:
-                fiscal_year = row.year
+            if month in [1, 2, 3]:
+                fiscal_year = year
             else:
-                fiscal_year = row.year + 1
+                fiscal_year = year + 1
 
-            financial_month = month_names[row.month]
+            financial_month = month_names[month]
 
-                
-            result.append({
-                "week_number": row.week_number,
-                "year": fiscal_year,
-                "sales_with_gst": row.sales_with_gst
-            })
+            if fiscal_year not in years_list:
+                years_list.append(fiscal_year)
 
-        return jsonify(result)
+            if fiscal_year not in result_dict:
+                result_dict[fiscal_year] = {}
+
+            result_dict[fiscal_year][week_number] = sales_with_gst
+
+    
+        # years_list.reverse()
+        return jsonify({"years": years_list,"values": result_dict}), 200
 
     except Exception as e:
         db.session.rollback()
