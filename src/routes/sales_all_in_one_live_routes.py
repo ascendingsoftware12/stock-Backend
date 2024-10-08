@@ -58,6 +58,14 @@ def get_sales_all_in_one_live_month_gp_lk():
 
 
 # -----------------------------------------------------
+# weekly analysis 
+# -----------------------------------------------------
+
+@sales_all_in_one_live_bp.route("/weekly_analysis_cr", methods=["GET"])
+def get_sales_all_in_one_live_weekly_analysis_cr():
+    return get_sales_all_in_one_live_weekly_analysis_cr_controller()
+
+# -----------------------------------------------------
 # product dimension 
 # -----------------------------------------------------
 
