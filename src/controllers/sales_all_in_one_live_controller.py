@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from sqlalchemy import and_, extract, func
+from sqlalchemy import and_, case, extract, func
 from src import db
 from src.models.sales_all_in_one_live_model import SalesAllInOneLive
 
@@ -69,14 +69,14 @@ def get_sales_all_in_one_live_controller():
 # ----------------------------------------------------------------------------------------------------------
 
 
-def get_sales_all_in_one_live_ytd_controller():
+def get_sales_all_in_one_live_ytd_cr_controller():
     try:
         pass
 
     except Exception as e:
         db.session.rollback()
         if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_ytd_controller()
+            return get_sales_all_in_one_live_ytd_cr_controller()
         else:
             return jsonify({"success": 0, "error": str(e)})
 
@@ -107,29 +107,71 @@ def month_name(month_number):
     return months[month_number - 1]
 
 
-def month_name1(month_number):
-    months = [
-        "Apr", "May", "Jun", "Jul", "Aug", "Sep", 
-        "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"
-    ]
-    return months[(month_number - 4) % 12]
-
-
-def get_financial_year(year, month):
-    if month >= 4:
-        return f"{year + 1}"
-    else:
-        return f"{year - 1}"
-
-
 # -----------------------------------------------------
 
 # -----------------------------------------------------
 # month cr
 # -----------------------------------------------------
 
-
 def get_sales_all_in_one_live_month_cr_controller():
+    try:
+        sales_data = (
+            db.session.query(
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+            )
+            .group_by(
+                extract("year", SalesAllInOneLive.invoice_date),
+                extract("month", SalesAllInOneLive.invoice_date),
+            )
+            .all()
+        )
+
+        result_list = []
+        yearly_totals = {}
+
+        month_names = {
+            4: "Apr", 5: "May", 6: "Jun", 7: "Jul",
+            8: "Aug", 9: "Sep", 10: "Oct",
+            11: "Nov", 12: "Dec", 1: "Jan",
+            2: "Feb", 3: "Mar"
+        }
+
+        for year, month, total_sales in sales_data:
+            if month in [1, 2, 3]:
+                fiscal_year = year  
+            else:
+                fiscal_year = year + 1 
+
+            financial_month = month_names[month]
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            if fiscal_year not in yearly_totals:
+                yearly_totals[fiscal_year] = {
+                    "FY": str(fiscal_year), 
+                    "Total": 0
+                }
+
+            yearly_totals[fiscal_year][financial_month] = sales_with_gst
+            yearly_totals[fiscal_year]["Total"] += sales_with_gst
+
+        for year, data in yearly_totals.items():
+            yearly_totals[year]["Total"] = round(yearly_totals[year]["Total"], 2)
+
+        result_list = list(yearly_totals.values())
+
+        return jsonify(result_list), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_month_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+def get_sales_all_in_one_live_month_cr_controller1():
     try:
 
         # invoice_date = request.args.get('invoice_date')
@@ -567,3 +609,254 @@ def get_sales_all_in_one_live_month_gp_lk_controller():
 
 
 # ----------------------------------------------------------------------------------------------------------
+
+
+
+# ----------------------------------------------------------------------------------------------------------
+# product dimension
+# ----------------------------------------------------------------------------------------------------------
+
+
+def get_sales_all_in_one_live_product_dimension_cr_controller():
+    try:
+        sales_data = (
+            db.session.query(
+                SalesAllInOneLive.product_group,
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+            )
+            .group_by(
+                SalesAllInOneLive.product_group,
+                extract("year", SalesAllInOneLive.invoice_date),
+                extract("month", SalesAllInOneLive.invoice_date),
+            )
+            .all()
+        )
+
+
+        result_dict = {}
+
+        month_names = {
+            4: "Apr", 5: "May", 6: "Jun", 7: "Jul",
+            8: "Aug", 9: "Sep", 10: "Oct",
+            11: "Nov", 12: "Dec", 1: "Jan",
+            2: "Feb", 3: "Mar"
+        }
+
+        for product_group, year, month, total_sales in sales_data:
+            
+            if month in [1, 2, 3]:
+                fiscal_year = year  
+            else:
+                fiscal_year = year + 1 
+
+            financial_month = month_names[month]
+            
+            total_sales = float(total_sales)
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            if product_group not in result_dict:
+                result_dict[product_group] = {}
+
+            if fiscal_year not in result_dict[product_group]:
+                result_dict[product_group][fiscal_year] = {}
+
+            result_dict[product_group][fiscal_year][financial_month] = sales_with_gst
+
+        return jsonify(result_dict), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_product_dimension_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# brand dimension
+# ----------------------------------------------------------------------------------------------------------
+
+
+def get_sales_all_in_one_live_brand_dimension_cr_controller():
+    try:
+        sales_data = (
+            db.session.query(
+                SalesAllInOneLive.brand_name,
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+            )
+            .group_by(
+                SalesAllInOneLive.brand_name,
+                extract("year", SalesAllInOneLive.invoice_date),
+                extract("month", SalesAllInOneLive.invoice_date),
+            )
+            .all()
+        )
+
+        result_dict = {}
+
+        month_names = {
+            4: "Apr", 5: "May", 6: "Jun", 7: "Jul",
+            8: "Aug", 9: "Sep", 10: "Oct",
+            11: "Nov", 12: "Dec", 1: "Jan",
+            2: "Feb", 3: "Mar"
+        }
+
+        for brand_name, year, month, total_sales in sales_data:
+
+            if month in [1, 2, 3]:
+                fiscal_year = year  
+            else:
+                fiscal_year = year + 1 
+
+            financial_month = month_names[month]
+
+            total_sales = float(total_sales)
+            sales_with_gst = round(total_sales / 10000000, 2)
+            
+
+            if brand_name not in result_dict:
+                result_dict[brand_name] = {}
+
+            if fiscal_year not in result_dict[brand_name]:
+                result_dict[brand_name][fiscal_year] = {}
+
+            result_dict[brand_name][fiscal_year][financial_month] = sales_with_gst
+
+        return jsonify(result_dict), 200
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_brand_dimension_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# item dimension
+# ----------------------------------------------------------------------------------------------------------
+
+
+def get_sales_all_in_one_live_item_dimension_cr_controller():
+    try:
+        sales_data = (
+            db.session.query(
+                SalesAllInOneLive.actual_item,
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+            )
+            .group_by(
+                SalesAllInOneLive.actual_item,
+                extract("year", SalesAllInOneLive.invoice_date),
+                extract("month", SalesAllInOneLive.invoice_date),
+            )
+            .all()
+        )
+
+        result_dict = {}
+
+        month_names = {
+            4: "Apr", 5: "May", 6: "Jun", 7: "Jul",
+            8: "Aug", 9: "Sep", 10: "Oct",
+            11: "Nov", 12: "Dec", 1: "Jan",
+            2: "Feb", 3: "Mar"
+        }
+
+        for actual_item, year, month, total_sales in sales_data:
+
+            if month in [1, 2, 3]:
+                fiscal_year = year  
+            else:
+                fiscal_year = year + 1 
+
+            financial_month = month_names[month]
+
+            total_sales = float(total_sales)
+            sales_with_gst = round(total_sales / 10000000, 2)
+            
+
+            if actual_item not in result_dict:
+                result_dict[actual_item] = {}
+
+            if fiscal_year not in result_dict[actual_item]:
+                result_dict[actual_item][fiscal_year] = {}
+
+            result_dict[actual_item][fiscal_year][financial_month] = sales_with_gst
+
+        return jsonify(result_dict), 200
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_item_dimension_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+# ----------------------------------------------------------------------------------------------------------
+
+
+
+# ----------------------------------------------------------------------------------------------------------
+# price breakup 1
+# ----------------------------------------------------------------------------------------------------------
+
+
+def get_sales_all_in_one_live_price_breakup_one_cr_controller():
+    try:
+        sales_data = (
+            db.session.query(
+                SalesAllInOneLive.sales_qty,
+                SalesAllInOneLive.total_sales,
+                (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty).label("piecewise_sales"),
+                case(
+                    (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 0, "Null"),
+                    ( (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 0) & 
+                      (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 5000), "0-5000"),
+                    ( (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 5000) & 
+                      (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 10000), "5001-10000"),
+                    ( (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 10000) & 
+                      (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 15000), "10001-15000"),
+                    ( (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 15000) & 
+                      (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 20000), "15001-20000"),
+                    ( (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 20000) & 
+                      (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 25000), "20001-25000"),
+                    (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 25000, ">25000"),
+                    else_="Unknown"  
+                ).label("price_breakup")
+            )
+            .filter(SalesAllInOneLive.sales_qty > 0)  
+            .all()
+        )
+
+        result = [
+            {
+                "sales_qty": row.sales_qty,
+                "total_sales": row.total_sales,
+                "piecewise_sales": round(row.piecewise_sales, 2),
+                "price_breakup": row.price_breakup
+            }
+            for row in sales_data
+        ]
+
+        return jsonify(result), 200
+    
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_price_breakup_one_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+# ----------------------------------------------------------------------------------------------------------
+

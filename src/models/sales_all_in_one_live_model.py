@@ -39,3 +39,26 @@ class SalesAllInOneLive(db.Model):
     sale_type = db.Column('SALE_TYPE', db.String(4), nullable=True)
     demo_flag = db.Column(db.String(1), default='N', nullable=True)
     data_refresh_time = db.Column('Data_Refresh_Time', db.DateTime, nullable=True)
+
+
+
+
+
+# ----------------------------------------------------------------------------------------------------------
+# template for empty controller
+# ----------------------------------------------------------------------------------------------------------
+
+
+# def get_sales_all_in_one_live_ytd_controller():
+#     try:
+#         pass
+
+#     except Exception as e:
+#         db.session.rollback()
+#         if "MySQL server has gone away" in str(e):
+#             return get_sales_all_in_one_live_ytd_controller()
+#         else:
+#             return jsonify({"success": 0, "error": str(e)})
+
+
+# ----------------------------------------------------------------------------------------------------------
