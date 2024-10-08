@@ -1,5 +1,3 @@
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
 from src import db
 
 class SalesAllInOneLive(db.Model):

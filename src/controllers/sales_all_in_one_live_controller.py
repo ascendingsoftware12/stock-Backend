@@ -815,6 +815,85 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
 
 def get_sales_all_in_one_live_price_breakup_one_cr_controller():
     try:
+        sales_data = (
+            db.session.query(
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
+            )
+            .group_by(extract("year", SalesAllInOneLive.invoice_date))
+            .all()
+        )
+
+        result_dict = {}
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        price_ranges = {
+            "0 - 5000": {},
+            "5001 - 10000": {},
+            "10001 - 15000": {},
+            "15001 - 20000": {},
+            "20001 - 25000": {},
+            ">25000": {},
+        }
+
+        for year, month, total_sales, total_qty in sales_data:
+
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            financial_month = month_names[month]
+
+            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            price_breakup = "Null"
+            if piecewise_sales > 0 and piecewise_sales <= 5000:
+                price_breakup = "0 - 5000"
+            elif piecewise_sales > 5000 and piecewise_sales <= 10000:
+                price_breakup = "5001 - 10000"
+            elif piecewise_sales > 10000 and piecewise_sales <= 15000:
+                price_breakup = "10001 - 15000"
+            elif piecewise_sales > 15000 and piecewise_sales <= 20000:
+                price_breakup = "15001 - 20000"
+            elif piecewise_sales > 20000 and piecewise_sales <= 25000:
+                price_breakup = "20001 - 25000"
+            elif piecewise_sales > 25000:
+                price_breakup = ">25000"
+
+            if price_breakup != "Null":
+                price_ranges[price_breakup][fiscal_year] = sales_with_gst
+
+        result_dict = {k: v for k, v in price_ranges.items() if v}
+
+        return jsonify(result_dict), 200
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_price_breakup_one_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+def get_sales_all_in_one_live_price_breakup_one_cr_controller2():
+    try:
         # Query to fetch sales data and calculate total sales and total quantity
         sales_data = (
             db.session.query(
@@ -999,9 +1078,118 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller1():
 # price breakup 2
 # ----------------------------------------------------------------------------------------------------------
 
+
 def get_sales_all_in_one_live_price_breakup_two_cr_controller():
     try:
-        # Query to fetch sales data and calculate total sales and total quantity
+        sales_data = (
+            db.session.query(
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
+            )
+            .group_by(extract("year", SalesAllInOneLive.invoice_date))
+            .all()
+        )
+
+        # Initialize the dictionary for the final result
+        result_dict = {}
+
+        # Define the price ranges with empty dictionaries for year sales
+        price_ranges = {
+            "0 - 1000": {},
+            "1001 - 2000": {},
+            "2001 - 3000": {},
+            "3001 - 4000": {},
+            "4001 - 5000": {},
+            "5001 - 6000": {},
+            "6001 - 7000": {},
+            "7001 - 8000": {},
+            "8001 - 9000": {},
+            "9001 - 10000": {},
+            "10001 - 20000": {},
+            "20001 - 30000": {},
+            "30001 - 40000": {},
+            "40001 - 50000": {},
+            ">50000": {},
+        }
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        for year, month, total_sales, total_qty in sales_data:
+            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            financial_month = month_names[month]
+
+            price_breakup = "Null"
+            if piecewise_sales > 0 and piecewise_sales <= 1000:
+                price_breakup = "0 - 1000"
+            elif piecewise_sales > 1000 and piecewise_sales <= 2000:
+                price_breakup = "1001 - 2000"
+            elif piecewise_sales > 2000 and piecewise_sales <= 3000:
+                price_breakup = "2001 - 3000"
+            elif piecewise_sales > 3000 and piecewise_sales <= 4000:
+                price_breakup = "3001 - 4000"
+            elif piecewise_sales > 4000 and piecewise_sales <= 5000:
+                price_breakup = "4001 - 5000"
+            elif piecewise_sales > 5000 and piecewise_sales <= 6000:
+                price_breakup = "5001 - 6000"
+            elif piecewise_sales > 6000 and piecewise_sales <= 7000:
+                price_breakup = "6001 - 7000"
+            elif piecewise_sales > 7000 and piecewise_sales <= 8000:
+                price_breakup = "7001 - 8000"
+            elif piecewise_sales > 8000 and piecewise_sales <= 9000:
+                price_breakup = "8001 - 9000"
+            elif piecewise_sales > 9000 and piecewise_sales <= 10000:
+                price_breakup = "9001 - 10000"
+            elif piecewise_sales > 10000 and piecewise_sales <= 20000:
+                price_breakup = "10001 - 20000"
+            elif piecewise_sales > 20000 and piecewise_sales <= 30000:
+                price_breakup = "20001 - 30000"
+            elif piecewise_sales > 30000 and piecewise_sales <= 40000:
+                price_breakup = "30001 - 40000"
+            elif piecewise_sales > 40000 and piecewise_sales <= 50000:
+                price_breakup = "40001 - 50000"
+            elif piecewise_sales > 50000:
+                price_breakup = ">50000"
+
+            if price_breakup != "Null":
+                price_ranges[price_breakup][fiscal_year] = sales_with_gst
+
+        result_dict = {k: v for k, v in price_ranges.items() if v}
+
+        return jsonify(result_dict), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_price_breakup_two_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+
+def get_sales_all_in_one_live_price_breakup_two_cr_controller1():
+    try:
         sales_data = (
             db.session.query(
                 extract("year", SalesAllInOneLive.invoice_date).label("year"),
