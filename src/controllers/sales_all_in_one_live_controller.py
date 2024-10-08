@@ -113,6 +113,7 @@ def month_name(month_number):
 # month cr
 # -----------------------------------------------------
 
+
 def get_sales_all_in_one_live_month_cr_controller():
     try:
         sales_data = (
@@ -132,26 +133,31 @@ def get_sales_all_in_one_live_month_cr_controller():
         yearly_totals = {}
 
         month_names = {
-            4: "Apr", 5: "May", 6: "Jun", 7: "Jul",
-            8: "Aug", 9: "Sep", 10: "Oct",
-            11: "Nov", 12: "Dec", 1: "Jan",
-            2: "Feb", 3: "Mar"
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
         }
 
         for year, month, total_sales in sales_data:
             if month in [1, 2, 3]:
-                fiscal_year = year  
+                fiscal_year = year
             else:
-                fiscal_year = year + 1 
+                fiscal_year = year + 1
 
             financial_month = month_names[month]
             sales_with_gst = round(total_sales / 10000000, 2)
 
             if fiscal_year not in yearly_totals:
-                yearly_totals[fiscal_year] = {
-                    "FY": str(fiscal_year), 
-                    "Total": 0
-                }
+                yearly_totals[fiscal_year] = {"FY": str(fiscal_year), "Total": 0}
 
             yearly_totals[fiscal_year][financial_month] = sales_with_gst
             yearly_totals[fiscal_year]["Total"] += sales_with_gst
@@ -206,7 +212,7 @@ def get_sales_all_in_one_live_month_cr_controller1():
         #     conditions.append(SalesAllInOneLive.item_description == item_description)
 
         # .filter(and_(*conditions) if conditions else True)
-        
+
         sales_data = (
             db.session.query(
                 extract("year", SalesAllInOneLive.invoice_date).label("year"),
@@ -231,18 +237,15 @@ def get_sales_all_in_one_live_month_cr_controller1():
                 result_dict[year] = []
                 yearly_totals[year] = 0
 
-            result_dict[year].append({
-                "month": financial_month,
-                "Sales with GST (Cr)": sales_with_gst
-            })
+            result_dict[year].append(
+                {"month": financial_month, "Sales with GST (Cr)": sales_with_gst}
+            )
 
             yearly_totals[year] += sales_with_gst
 
         for year, month_data in result_dict.items():
-            month_data.append({
-                "total": round(yearly_totals[year], 2)  
-            })
-            
+            month_data.append({"total": round(yearly_totals[year], 2)})
+
         result = [{str(year): month_data} for year, month_data in result_dict.items()]
 
         return jsonify(result), 200
@@ -290,18 +293,15 @@ def get_sales_all_in_one_live_month_cr_without_gst_controller():
                 result_dict[year] = []
                 yearly_totals[year] = 0
 
-            result_dict[year].append({
-                "month": financial_month,
-                "Sales without GST (Cr)": sales_without_gst
-            })
+            result_dict[year].append(
+                {"month": financial_month, "Sales without GST (Cr)": sales_without_gst}
+            )
 
             yearly_totals[year] += sales_without_gst
 
         for year, month_data in result_dict.items():
-            month_data.append({
-                "total": round(yearly_totals[year], 2)  
-            })
-            
+            month_data.append({"total": round(yearly_totals[year], 2)})
+
         result = [{str(year): month_data} for year, month_data in result_dict.items()]
 
         return jsonify(result), 200
@@ -337,7 +337,6 @@ def get_sales_all_in_one_live_month_lk_controller():
             .all()
         )
 
-        
         result_dict = {}
         yearly_totals = {}
 
@@ -349,22 +348,22 @@ def get_sales_all_in_one_live_month_lk_controller():
                 result_dict[year] = []
                 yearly_totals[year] = 0
 
-            result_dict[year].append({
-                "month": financial_month,
-                "Sales with GST (Lk)": sales_lk,
-            })
+            result_dict[year].append(
+                {
+                    "month": financial_month,
+                    "Sales with GST (Lk)": sales_lk,
+                }
+            )
 
             yearly_totals[year] += sales_lk
 
         for year, month_data in result_dict.items():
-            month_data.append({
-                "total": round(yearly_totals[year], 2)  
-            })
-            
+            month_data.append({"total": round(yearly_totals[year], 2)})
+
         result = [{str(year): month_data} for year, month_data in result_dict.items()]
 
         return jsonify(result), 200
-        
+
     except Exception as e:
         db.session.rollback()
         if "MySQL server has gone away" in str(e):
@@ -408,18 +407,18 @@ def get_sales_all_in_one_live_month_lk_without_gst_controller():
                 result_dict[year] = []
                 yearly_totals[year] = 0
 
-            result_dict[year].append({
-                "month": financial_month,
-                "Sales without GST (Lk)": sales_without_gst_lk
-            })
+            result_dict[year].append(
+                {
+                    "month": financial_month,
+                    "Sales without GST (Lk)": sales_without_gst_lk,
+                }
+            )
 
             yearly_totals[year] += sales_without_gst_lk
 
         for year, month_data in result_dict.items():
-            month_data.append({
-                "total": round(yearly_totals[year], 2)  
-            })
-            
+            month_data.append({"total": round(yearly_totals[year], 2)})
+
         result = [{str(year): month_data} for year, month_data in result_dict.items()]
 
         return jsonify(result), 200
@@ -454,7 +453,6 @@ def get_sales_all_in_one_live_month_sales_qty_controller():
             .all()
         )
 
-
         result_dict = {}
         yearly_totals = {}
 
@@ -466,18 +464,13 @@ def get_sales_all_in_one_live_month_sales_qty_controller():
                 result_dict[year] = []
                 yearly_totals[year] = 0
 
-            result_dict[year].append({
-                "month": financial_month,
-                "Sales Qty": sales_qty
-            })
+            result_dict[year].append({"month": financial_month, "Sales Qty": sales_qty})
 
             yearly_totals[year] += sales_qty
 
         for year, month_data in result_dict.items():
-            month_data.append({
-                "total": round(yearly_totals[year], 2)  
-            })
-            
+            month_data.append({"total": round(yearly_totals[year], 2)})
+
         result = [{str(year): month_data} for year, month_data in result_dict.items()]
 
         return jsonify(result), 200
@@ -512,7 +505,6 @@ def get_sales_all_in_one_live_month_total_sales_controller():
             .all()
         )
 
-        
         result_dict = {}
         yearly_totals = {}
 
@@ -524,18 +516,15 @@ def get_sales_all_in_one_live_month_total_sales_controller():
                 result_dict[year] = []
                 yearly_totals[year] = 0
 
-            result_dict[year].append({
-                "month": financial_month,
-                "Total Sales": total_sales
-            })
+            result_dict[year].append(
+                {"month": financial_month, "Total Sales": total_sales}
+            )
 
             yearly_totals[year] += total_sales
 
         for year, month_data in result_dict.items():
-            month_data.append({
-                "total": round(yearly_totals[year], 2)  
-            })
-            
+            month_data.append({"total": round(yearly_totals[year], 2)})
+
         result = [{str(year): month_data} for year, month_data in result_dict.items()]
 
         return jsonify(result), 200
@@ -571,7 +560,6 @@ def get_sales_all_in_one_live_month_gp_lk_controller():
             .all()
         )
 
-
         result_dict = {}
         yearly_totals = {}
 
@@ -583,22 +571,18 @@ def get_sales_all_in_one_live_month_gp_lk_controller():
                 result_dict[year] = []
                 yearly_totals[year] = 0
 
-            result_dict[year].append({
-                "month": financial_month,
-                "GP (Lk)": gros_profit_lk
-            })
+            result_dict[year].append(
+                {"month": financial_month, "GP (Lk)": gros_profit_lk}
+            )
 
             yearly_totals[year] += gros_profit_lk
 
         for year, month_data in result_dict.items():
-            month_data.append({
-                "total": round(yearly_totals[year], 2)  
-            })
-            
+            month_data.append({"total": round(yearly_totals[year], 2)})
+
         result = [{str(year): month_data} for year, month_data in result_dict.items()]
 
         return jsonify(result), 200
-
 
     except Exception as e:
         db.session.rollback()
@@ -609,7 +593,6 @@ def get_sales_all_in_one_live_month_gp_lk_controller():
 
 
 # ----------------------------------------------------------------------------------------------------------
-
 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -634,25 +617,32 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
             .all()
         )
 
-
         result_dict = {}
 
         month_names = {
-            4: "Apr", 5: "May", 6: "Jun", 7: "Jul",
-            8: "Aug", 9: "Sep", 10: "Oct",
-            11: "Nov", 12: "Dec", 1: "Jan",
-            2: "Feb", 3: "Mar"
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
         }
 
         for product_group, year, month, total_sales in sales_data:
-            
+
             if month in [1, 2, 3]:
-                fiscal_year = year  
+                fiscal_year = year
             else:
-                fiscal_year = year + 1 
+                fiscal_year = year + 1
 
             financial_month = month_names[month]
-            
+
             total_sales = float(total_sales)
             sales_with_gst = round(total_sales / 10000000, 2)
 
@@ -702,24 +692,31 @@ def get_sales_all_in_one_live_brand_dimension_cr_controller():
         result_dict = {}
 
         month_names = {
-            4: "Apr", 5: "May", 6: "Jun", 7: "Jul",
-            8: "Aug", 9: "Sep", 10: "Oct",
-            11: "Nov", 12: "Dec", 1: "Jan",
-            2: "Feb", 3: "Mar"
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
         }
 
         for brand_name, year, month, total_sales in sales_data:
 
             if month in [1, 2, 3]:
-                fiscal_year = year  
+                fiscal_year = year
             else:
-                fiscal_year = year + 1 
+                fiscal_year = year + 1
 
             financial_month = month_names[month]
 
             total_sales = float(total_sales)
             sales_with_gst = round(total_sales / 10000000, 2)
-            
 
             if brand_name not in result_dict:
                 result_dict[brand_name] = {}
@@ -766,24 +763,31 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
         result_dict = {}
 
         month_names = {
-            4: "Apr", 5: "May", 6: "Jun", 7: "Jul",
-            8: "Aug", 9: "Sep", 10: "Oct",
-            11: "Nov", 12: "Dec", 1: "Jan",
-            2: "Feb", 3: "Mar"
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
         }
 
         for actual_item, year, month, total_sales in sales_data:
 
             if month in [1, 2, 3]:
-                fiscal_year = year  
+                fiscal_year = year
             else:
-                fiscal_year = year + 1 
+                fiscal_year = year + 1
 
             financial_month = month_names[month]
 
             total_sales = float(total_sales)
             sales_with_gst = round(total_sales / 10000000, 2)
-            
 
             if actual_item not in result_dict:
                 result_dict[actual_item] = {}
@@ -805,36 +809,165 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
 # ----------------------------------------------------------------------------------------------------------
 
 
-
 # ----------------------------------------------------------------------------------------------------------
 # price breakup 1
 # ----------------------------------------------------------------------------------------------------------
 
-
 def get_sales_all_in_one_live_price_breakup_one_cr_controller():
+    try:
+        # Query to fetch sales data and calculate total sales and total quantity
+        sales_data = (
+            db.session.query(
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
+            )
+            .group_by(extract("year", SalesAllInOneLive.invoice_date))
+            .all()
+        )
+
+        result_dict = {}
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        for year, month, total_sales, total_qty in sales_data:
+
+            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
+
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            financial_month = month_names[month]
+
+            price_breakup = "Null"
+
+            if piecewise_sales > 0 and piecewise_sales <= 5000:
+                price_breakup = "0-5000"
+            elif piecewise_sales > 5000 and piecewise_sales <= 10000:
+                price_breakup = "5001-10000"
+            elif piecewise_sales > 10000 and piecewise_sales <= 15000:
+                price_breakup = "10001-15000"
+            elif piecewise_sales > 15000 and piecewise_sales <= 20000:
+                price_breakup = "15001-20000"
+            elif piecewise_sales > 20000 and piecewise_sales <= 25000:
+                price_breakup = "20001-25000"
+            elif piecewise_sales > 25000:
+                price_breakup = ">25000"
+
+            result_dict[fiscal_year] = {
+                "total_sales": round(total_sales, 2),
+                "sales_with_gst": sales_with_gst,
+                "piecewise_sales": round(piecewise_sales, 2),
+                "price_breakup": price_breakup
+            }
+
+        return jsonify(result_dict), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_price_breakup_one_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+def get_sales_all_in_one_live_price_breakup_one_cr_controller1():
     try:
         sales_data = (
             db.session.query(
                 SalesAllInOneLive.sales_qty,
                 SalesAllInOneLive.total_sales,
-                (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty).label("piecewise_sales"),
+                (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty).label(
+                    "piecewise_sales"
+                ),
                 case(
-                    (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 0, "Null"),
-                    ( (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 0) & 
-                      (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 5000), "0-5000"),
-                    ( (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 5000) & 
-                      (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 10000), "5001-10000"),
-                    ( (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 10000) & 
-                      (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 15000), "10001-15000"),
-                    ( (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 15000) & 
-                      (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 20000), "15001-20000"),
-                    ( (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 20000) & 
-                      (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 25000), "20001-25000"),
-                    (SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 25000, ">25000"),
-                    else_="Unknown"  
-                ).label("price_breakup")
+                    (
+                        SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                        <= 0,
+                        "Null",
+                    ),
+                    (
+                        (
+                            SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                            > 0
+                        )
+                        & (
+                            SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                            <= 5000
+                        ),
+                        "0-5000",
+                    ),
+                    (
+                        (
+                            SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                            > 5000
+                        )
+                        & (
+                            SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                            <= 10000
+                        ),
+                        "5001-10000",
+                    ),
+                    (
+                        (
+                            SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                            > 10000
+                        )
+                        & (
+                            SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                            <= 15000
+                        ),
+                        "10001-15000",
+                    ),
+                    (
+                        (
+                            SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                            > 15000
+                        )
+                        & (
+                            SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                            <= 20000
+                        ),
+                        "15001-20000",
+                    ),
+                    (
+                        (
+                            SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                            > 20000
+                        )
+                        & (
+                            SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                            <= 25000
+                        ),
+                        "20001-25000",
+                    ),
+                    (
+                        SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+                        > 25000,
+                        ">25000",
+                    ),
+                    else_="Unknown",
+                ).label("price_breakup"),
             )
-            .filter(SalesAllInOneLive.sales_qty > 0)  
+            .filter(SalesAllInOneLive.sales_qty > 0)
             .all()
         )
 
@@ -843,13 +976,13 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller():
                 "sales_qty": row.sales_qty,
                 "total_sales": row.total_sales,
                 "piecewise_sales": round(row.piecewise_sales, 2),
-                "price_breakup": row.price_breakup
+                "price_breakup": row.price_breakup,
             }
             for row in sales_data
         ]
 
         return jsonify(result), 200
-    
+
     except Exception as e:
         db.session.rollback()
         if "MySQL server has gone away" in str(e):
@@ -860,3 +993,103 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller():
 
 # ----------------------------------------------------------------------------------------------------------
 
+
+
+# ----------------------------------------------------------------------------------------------------------
+# price breakup 2
+# ----------------------------------------------------------------------------------------------------------
+
+def get_sales_all_in_one_live_price_breakup_two_cr_controller():
+    try:
+        # Query to fetch sales data and calculate total sales and total quantity
+        sales_data = (
+            db.session.query(
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
+            )
+            .group_by(extract("year", SalesAllInOneLive.invoice_date))
+            .all()
+        )
+
+        result_dict = {}
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        for year, month, total_sales, total_qty in sales_data:
+
+            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
+
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            financial_month = month_names[month]
+
+            price_breakup = "Null"
+
+            if piecewise_sales > 0 and piecewise_sales <= 1000:
+                price_breakup = "0-1000"
+            elif piecewise_sales > 1000 and piecewise_sales <= 2000:
+                price_breakup = "1001-2000"
+            elif piecewise_sales > 2000 and piecewise_sales <= 3000:
+                price_breakup = "2001-3000"
+            elif piecewise_sales > 3000 and piecewise_sales <= 4000:
+                price_breakup = "3001-4000"
+            elif piecewise_sales > 4000 and piecewise_sales <= 5000:
+                price_breakup = "4001-5000"
+            elif piecewise_sales > 5000 and piecewise_sales <= 6000:
+                price_breakup = "5001-6000"
+            elif piecewise_sales > 6000 and piecewise_sales <= 7000:
+                price_breakup = "6001-7000"
+            elif piecewise_sales > 7000 and piecewise_sales <= 8000:
+                price_breakup = "7001-8000"
+            elif piecewise_sales > 8000 and piecewise_sales <= 9000:
+                price_breakup = "8001-9000"
+            elif piecewise_sales > 9000 and piecewise_sales <= 10000:
+                price_breakup = "9001-10000"
+            elif piecewise_sales > 10000 and piecewise_sales <= 20000:
+                price_breakup = "10001-20000"
+            elif piecewise_sales > 20000 and piecewise_sales <= 30000:
+                price_breakup = "20001-30000"
+            elif piecewise_sales > 30000 and piecewise_sales <= 40000:
+                price_breakup = "30001-40000"
+            elif piecewise_sales > 40000 and piecewise_sales <= 50000:
+                price_breakup = "40001-50000"
+            elif piecewise_sales > 50000:
+                price_breakup = ">50000"
+
+            result_dict[fiscal_year] = {
+                "total_sales": round(total_sales, 2),
+                "sales_with_gst": sales_with_gst,
+                "piecewise_sales": round(piecewise_sales, 2),
+                "price_breakup": price_breakup
+            }
+
+        return jsonify(result_dict), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_price_breakup_two_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+# ----------------------------------------------------------------------------------------------------------

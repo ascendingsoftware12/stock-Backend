@@ -88,3 +88,11 @@ def get_sales_all_in_one_live_item_dimension_cr():
 @sales_all_in_one_live_bp.route("/price_breakup_one_cr", methods=["GET"])
 def get_sales_all_in_one_live_price_breakup_one_cr():
     return get_sales_all_in_one_live_price_breakup_one_cr_controller()
+
+# -----------------------------------------------------
+# price breakup 2
+# -----------------------------------------------------
+
+@sales_all_in_one_live_bp.route("/price_breakup_two_cr", methods=["GET"])
+def get_sales_all_in_one_live_price_breakup_two_cr():
+    return get_sales_all_in_one_live_price_breakup_two_cr_controller()
