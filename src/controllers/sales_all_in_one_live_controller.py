@@ -3,8 +3,82 @@ from sqlalchemy import and_, case, extract, func
 from src import db
 from src.models.sales_all_in_one_live_model import SalesAllInOneLive
 
+
 # ----------------------------------------------------------------------------------------------------------
-# Get all
+# ---------------------------------------- Main Methods ----------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+def get_sales_all_in_one_live_ytd_controller(factor):
+    pass
+
+
+def get_sales_all_in_one_live_monthly_controller(factor):
+    pass
+
+
+def get_sales_all_in_one_live_weekly_analysis_controller(factor):
+    pass
+
+def get_sales_all_in_one_live_day_analysis_controller(factor):
+    pass
+
+
+def get_sales_all_in_one_live_product_dimension_controller(factor):
+    pass
+
+
+def get_sales_all_in_one_live_brand_dimension_controller(factor):
+    pass
+
+
+def get_sales_all_in_one_live_item_dimension_controller(factor):
+    pass
+
+
+def get_sales_all_in_one_live_price_breakup_one_controller(factor):
+    pass
+
+
+def get_sales_all_in_one_live_price_breakup_two_controller(factor):
+    pass
+
+
+
+# ----------------------------------------------------------------------------------------------------------
+# ----------------------------------------- Main Methods (END) ---------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+
+# ----------------------------------------------------------------------------------------------------------
+# ----------------------------------------- Utility Functions  ----------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+def month_name(month_number):
+    months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ]
+    return months[month_number - 1]
+
+
+# ----------------------------------------------------------------------------------------------------------
+# --------------------------------------- Utility Functions (END) ------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# ------------------------------------------------ CRUD ----------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------
 
 
@@ -62,11 +136,16 @@ def get_sales_all_in_one_live_controller():
 
 
 # ----------------------------------------------------------------------------------------------------------
+# --------------------------------------------- CRUD (END) -------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
 
 
 # ----------------------------------------------------------------------------------------------------------
-# ytd
+# ------------------------------------------------- Cr -----------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------
+
+# -------------------------------------------- YTD -------------------------------------------
 
 
 def get_sales_all_in_one_live_ytd_cr_controller():
@@ -81,37 +160,7 @@ def get_sales_all_in_one_live_ytd_cr_controller():
             return jsonify({"success": 0, "error": str(e)})
 
 
-# ----------------------------------------------------------------------------------------------------------
-
-
-# ----------------------------------------------------------------------------------------------------------
-# month
-# ----------------------------------------------------------------------------------------------------------
-
-
-def month_name(month_number):
-    months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-    ]
-    return months[month_number - 1]
-
-
-# -----------------------------------------------------
-
-# -----------------------------------------------------
-# month cr
-# -----------------------------------------------------
+# --------------------------------------------- Month ----------------------------------------
 
 
 def get_sales_all_in_one_live_month_cr_controller():
@@ -258,7 +307,543 @@ def get_sales_all_in_one_live_month_cr_controller1():
             return jsonify({"success": 0, "error": str(e)})
 
 
-# -----------------------------------------------------
+# ----------------------------------------- Weekly Analysis ----------------------------------
+
+
+def get_sales_all_in_one_live_weekly_analysis_cr_controller():
+    try:
+        fiscal_start_month = 4
+        fiscal_start_day = 1
+
+        fiscal_start_date = func.concat(
+            func.year(SalesAllInOneLive.invoice_date) - case(
+                (extract('month', SalesAllInOneLive.invoice_date) < fiscal_start_month, 1),
+                else_=0
+            ),
+            '-',
+            fiscal_start_month,
+            '-',
+            fiscal_start_day
+        )
+        
+        week_number = func.floor(func.datediff(SalesAllInOneLive.invoice_date, fiscal_start_date) / 7) + 1
+
+        weekly_sales = (
+            db.session.query(
+                week_number.label("week_number"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                func.round(func.sum(SalesAllInOneLive.total_sales) / 10000000, 2).label("sales_with_gst")
+            )
+            .group_by(week_number)
+            .order_by(week_number)
+            .all()
+        )
+
+        # result = [
+        #     {
+        #         "week_number": row.week_number,
+        #         "year": row.year,
+        #         "sales_with_gst": row.sales_with_gst,
+        #         "month": row.month
+        #     }
+        #     for row in weekly_sales
+        # ]
+
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        result = []   
+        result_dict = {}
+        years_list = []
+
+
+        for week_number, month, year, sales_with_gst in weekly_sales:
+            
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            financial_month = month_names[month]
+
+            if fiscal_year not in years_list:
+                years_list.append(fiscal_year)
+
+            if fiscal_year not in result_dict:
+                result_dict[fiscal_year] = {}
+
+            result_dict[fiscal_year][week_number] = sales_with_gst
+
+    
+        # years_list.reverse()
+        return jsonify({"years": years_list,"values": result_dict}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_weekly_analysis_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+# ----------------------------------------- Day Analysis -------------------------------------
+
+
+
+# --------------------------------------- Product Dimension ----------------------------------
+
+
+def get_sales_all_in_one_live_product_dimension_cr_controller():
+    try:
+        sales_data = (
+            db.session.query(
+                SalesAllInOneLive.product_group,
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+            )
+            .group_by(
+                SalesAllInOneLive.product_group,
+                extract("year", SalesAllInOneLive.invoice_date),
+                extract("month", SalesAllInOneLive.invoice_date),
+            )
+            .all()
+        )
+
+        result_dict = {}
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        years_list = []
+
+        for product_group, year, month, total_sales in sales_data:
+
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            financial_month = month_names[month]
+            
+            if fiscal_year not in years_list:
+                years_list.append(fiscal_year)
+
+            
+
+            total_sales = float(total_sales)
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            if product_group not in result_dict:
+                result_dict[product_group] = {}
+
+            if fiscal_year not in result_dict[product_group]:
+                result_dict[product_group][fiscal_year] = {}
+
+            result_dict[product_group][fiscal_year][financial_month] = sales_with_gst
+
+        years_list.reverse()
+        return jsonify({"years": years_list,"values": result_dict}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_product_dimension_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+# ------------------------------------- Brand Dimension --------------------------------------
+
+
+def get_sales_all_in_one_live_brand_dimension_cr_controller():
+    try:
+        sales_data = (
+            db.session.query(
+                SalesAllInOneLive.brand_name,
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+            )
+            .group_by(
+                SalesAllInOneLive.brand_name,
+                extract("year", SalesAllInOneLive.invoice_date),
+                extract("month", SalesAllInOneLive.invoice_date),
+            )
+            .all()
+        )
+
+        result_dict = {}
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        years_list = []
+
+        for brand_name, year, month, total_sales in sales_data:
+
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            financial_month = month_names[month]
+
+            if fiscal_year not in years_list:
+               years_list.append(fiscal_year)
+
+
+            total_sales = float(total_sales)
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            if brand_name not in result_dict:
+                result_dict[brand_name] = {}
+
+            if fiscal_year not in result_dict[brand_name]:
+                result_dict[brand_name][fiscal_year] = {}
+
+            result_dict[brand_name][fiscal_year][financial_month] = sales_with_gst
+
+        years_list.reverse()
+        return jsonify({"years": years_list,"values": result_dict}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_brand_dimension_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+# -------------------------------------- Item Dimension --------------------------------------
+
+
+def get_sales_all_in_one_live_item_dimension_cr_controller():
+    try:
+        sales_data = (
+            db.session.query(
+                SalesAllInOneLive.actual_item,
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+            )
+            .group_by(
+                SalesAllInOneLive.actual_item,
+                extract("year", SalesAllInOneLive.invoice_date),
+                extract("month", SalesAllInOneLive.invoice_date),
+            )
+            .all()
+        )
+
+        result_dict = {}
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        years_list = []
+
+        for actual_item, year, month, total_sales in sales_data:
+
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            financial_month = month_names[month]
+
+            if fiscal_year not in years_list:
+                years_list.append(fiscal_year)
+
+            total_sales = float(total_sales)
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            if actual_item not in result_dict:
+                result_dict[actual_item] = {}
+
+            if fiscal_year not in result_dict[actual_item]:
+                result_dict[actual_item][fiscal_year] = {}
+
+            result_dict[actual_item][fiscal_year][financial_month] = sales_with_gst
+
+        years_list.reverse()
+        return jsonify({"years": years_list,"values": result_dict}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_item_dimension_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+# --------------------------------------- Price Breakup 1 ------------------------------------
+
+
+def get_sales_all_in_one_live_price_breakup_one_cr_controller():
+    try:
+        sales_data = (
+            db.session.query(
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
+            )
+            .group_by(extract("year", SalesAllInOneLive.invoice_date))
+            .all()
+        )
+
+        result_dict = {}
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        price_ranges = {
+            "0 - 5000": {},
+            "5001 - 10000": {},
+            "10001 - 15000": {},
+            "15001 - 20000": {},
+            "20001 - 25000": {},
+            ">25000": {},
+        }
+
+        years_set = set()
+
+        for year, month, total_sales, total_qty in sales_data:
+
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            financial_month = month_names[month]
+            years_set.add(fiscal_year)
+
+            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            price_breakup = "Null"
+            if piecewise_sales > 0 and piecewise_sales <= 5000:
+                price_breakup = "0 - 5000"
+            elif piecewise_sales > 5000 and piecewise_sales <= 10000:
+                price_breakup = "5001 - 10000"
+            elif piecewise_sales > 10000 and piecewise_sales <= 15000:
+                price_breakup = "10001 - 15000"
+            elif piecewise_sales > 15000 and piecewise_sales <= 20000:
+                price_breakup = "15001 - 20000"
+            elif piecewise_sales > 20000 and piecewise_sales <= 25000:
+                price_breakup = "20001 - 25000"
+            elif piecewise_sales > 25000:
+                price_breakup = ">25000"
+            else:
+                price_breakup = "Null"
+
+            if price_breakup != "Null":
+                price_ranges[price_breakup][fiscal_year] = sales_with_gst
+
+        # result_dict = {k: v for k, v in price_ranges.items()}
+
+        years_list = sorted(years_set, reverse=True)
+        for price_range in price_ranges:
+            for year in years_list:
+                price_ranges[price_range].setdefault(year, 0)
+
+        return jsonify({"years": years_list,"values": price_ranges}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_price_breakup_one_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+# --------------------------------------- Price Breakup 2 ------------------------------------
+
+
+def get_sales_all_in_one_live_price_breakup_two_cr_controller():
+    try:
+        sales_data = (
+            db.session.query(
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
+            )
+            .group_by(extract("year", SalesAllInOneLive.invoice_date))
+            .all()
+        )
+
+        result_dict = {}
+
+        price_ranges = {
+            "0 - 1000": {},
+            "1001 - 2000": {},
+            "2001 - 3000": {},
+            "3001 - 4000": {},
+            "4001 - 5000": {},
+            "5001 - 6000": {},
+            "6001 - 7000": {},
+            "7001 - 8000": {},
+            "8001 - 9000": {},
+            "9001 - 10000": {},
+            "10001 - 20000": {},
+            "20001 - 30000": {},
+            "30001 - 40000": {},
+            "40001 - 50000": {},
+            ">50000": {},
+        }
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        years_set = set()
+
+        for year, month, total_sales, total_qty in sales_data:
+            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            financial_month = month_names[month]
+
+            years_set.add(fiscal_year)
+
+            price_breakup = "Null"
+            if piecewise_sales > 0 and piecewise_sales <= 1000:
+                price_breakup = "0 - 1000"
+            elif piecewise_sales > 1000 and piecewise_sales <= 2000:
+                price_breakup = "1001 - 2000"
+            elif piecewise_sales > 2000 and piecewise_sales <= 3000:
+                price_breakup = "2001 - 3000"
+            elif piecewise_sales > 3000 and piecewise_sales <= 4000:
+                price_breakup = "3001 - 4000"
+            elif piecewise_sales > 4000 and piecewise_sales <= 5000:
+                price_breakup = "4001 - 5000"
+            elif piecewise_sales > 5000 and piecewise_sales <= 6000:
+                price_breakup = "5001 - 6000"
+            elif piecewise_sales > 6000 and piecewise_sales <= 7000:
+                price_breakup = "6001 - 7000"
+            elif piecewise_sales > 7000 and piecewise_sales <= 8000:
+                price_breakup = "7001 - 8000"
+            elif piecewise_sales > 8000 and piecewise_sales <= 9000:
+                price_breakup = "8001 - 9000"
+            elif piecewise_sales > 9000 and piecewise_sales <= 10000:
+                price_breakup = "9001 - 10000"
+            elif piecewise_sales > 10000 and piecewise_sales <= 20000:
+                price_breakup = "10001 - 20000"
+            elif piecewise_sales > 20000 and piecewise_sales <= 30000:
+                price_breakup = "20001 - 30000"
+            elif piecewise_sales > 30000 and piecewise_sales <= 40000:
+                price_breakup = "30001 - 40000"
+            elif piecewise_sales > 40000 and piecewise_sales <= 50000:
+                price_breakup = "40001 - 50000"
+            elif piecewise_sales > 50000:
+                price_breakup = ">50000"
+
+            if price_breakup != "Null":
+                price_ranges[price_breakup][fiscal_year] = sales_with_gst
+
+        # result_dict = {k: v for k, v in price_ranges.items()}
+
+        years_list = sorted(years_set, reverse=True)
+        for price_range in price_ranges:
+            for year in years_list:
+                price_ranges[price_range].setdefault(year, 0)
+
+        return jsonify({"years": years_list,"values": price_ranges}), 200
+
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_price_breakup_two_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+# ----------------------------------------------------------------------------------------------------------
+# ------------------------------------------------ CR (END) ------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+
 
 
 # -----------------------------------------------------
@@ -594,554 +1179,3 @@ def get_sales_all_in_one_live_month_gp_lk_controller():
 
 # ----------------------------------------------------------------------------------------------------------
 
-
-
-
-
-# ----------------------------------------------------------------------------------------------------------
-# weekly analysis
-# ----------------------------------------------------------------------------------------------------------
-
-
-def get_sales_all_in_one_live_weekly_analysis_cr_controller():
-    try:
-        fiscal_start_month = 4
-        fiscal_start_day = 1
-
-        fiscal_start_date = func.concat(
-            func.year(SalesAllInOneLive.invoice_date) - case(
-                (extract('month', SalesAllInOneLive.invoice_date) < fiscal_start_month, 1),
-                else_=0
-            ),
-            '-',
-            fiscal_start_month,
-            '-',
-            fiscal_start_day
-        )
-        
-        week_number = func.floor(func.datediff(SalesAllInOneLive.invoice_date, fiscal_start_date) / 7) + 1
-
-        weekly_sales = (
-            db.session.query(
-                week_number.label("week_number"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                func.round(func.sum(SalesAllInOneLive.total_sales) / 10000000, 2).label("sales_with_gst")
-            )
-            .group_by(week_number)
-            .order_by(week_number)
-            .all()
-        )
-
-        # result = [
-        #     {
-        #         "week_number": row.week_number,
-        #         "year": row.year,
-        #         "sales_with_gst": row.sales_with_gst,
-        #         "month": row.month
-        #     }
-        #     for row in weekly_sales
-        # ]
-
-
-        month_names = {
-            4: "Apr",
-            5: "May",
-            6: "Jun",
-            7: "Jul",
-            8: "Aug",
-            9: "Sep",
-            10: "Oct",
-            11: "Nov",
-            12: "Dec",
-            1: "Jan",
-            2: "Feb",
-            3: "Mar",
-        }
-
-        result = []   
-        result_dict = {}
-        years_list = []
-
-
-        for week_number, month, year, sales_with_gst in weekly_sales:
-            
-            if month in [1, 2, 3]:
-                fiscal_year = year
-            else:
-                fiscal_year = year + 1
-
-            financial_month = month_names[month]
-
-            if fiscal_year not in years_list:
-                years_list.append(fiscal_year)
-
-            if fiscal_year not in result_dict:
-                result_dict[fiscal_year] = {}
-
-            result_dict[fiscal_year][week_number] = sales_with_gst
-
-    
-        # years_list.reverse()
-        return jsonify({"years": years_list,"values": result_dict}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_weekly_analysis_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
-
-
-# ----------------------------------------------------------------------------------------------------------
-
-
-# ----------------------------------------------------------------------------------------------------------
-# product dimension
-# ----------------------------------------------------------------------------------------------------------
-
-
-def get_sales_all_in_one_live_product_dimension_cr_controller():
-    try:
-        sales_data = (
-            db.session.query(
-                SalesAllInOneLive.product_group,
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-            )
-            .group_by(
-                SalesAllInOneLive.product_group,
-                extract("year", SalesAllInOneLive.invoice_date),
-                extract("month", SalesAllInOneLive.invoice_date),
-            )
-            .all()
-        )
-
-        result_dict = {}
-
-        month_names = {
-            4: "Apr",
-            5: "May",
-            6: "Jun",
-            7: "Jul",
-            8: "Aug",
-            9: "Sep",
-            10: "Oct",
-            11: "Nov",
-            12: "Dec",
-            1: "Jan",
-            2: "Feb",
-            3: "Mar",
-        }
-
-        years_list = []
-
-        for product_group, year, month, total_sales in sales_data:
-
-            if month in [1, 2, 3]:
-                fiscal_year = year
-            else:
-                fiscal_year = year + 1
-
-            financial_month = month_names[month]
-            
-            if fiscal_year not in years_list:
-                years_list.append(fiscal_year)
-
-            
-
-            total_sales = float(total_sales)
-            sales_with_gst = round(total_sales / 10000000, 2)
-
-            if product_group not in result_dict:
-                result_dict[product_group] = {}
-
-            if fiscal_year not in result_dict[product_group]:
-                result_dict[product_group][fiscal_year] = {}
-
-            result_dict[product_group][fiscal_year][financial_month] = sales_with_gst
-
-        years_list.reverse()
-        return jsonify({"years": years_list,"values": result_dict}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_product_dimension_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
-
-
-# ----------------------------------------------------------------------------------------------------------
-
-
-# ----------------------------------------------------------------------------------------------------------
-# brand dimension
-# ----------------------------------------------------------------------------------------------------------
-
-
-def get_sales_all_in_one_live_brand_dimension_cr_controller():
-    try:
-        sales_data = (
-            db.session.query(
-                SalesAllInOneLive.brand_name,
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-            )
-            .group_by(
-                SalesAllInOneLive.brand_name,
-                extract("year", SalesAllInOneLive.invoice_date),
-                extract("month", SalesAllInOneLive.invoice_date),
-            )
-            .all()
-        )
-
-        result_dict = {}
-
-        month_names = {
-            4: "Apr",
-            5: "May",
-            6: "Jun",
-            7: "Jul",
-            8: "Aug",
-            9: "Sep",
-            10: "Oct",
-            11: "Nov",
-            12: "Dec",
-            1: "Jan",
-            2: "Feb",
-            3: "Mar",
-        }
-
-        years_list = []
-
-        for brand_name, year, month, total_sales in sales_data:
-
-            if month in [1, 2, 3]:
-                fiscal_year = year
-            else:
-                fiscal_year = year + 1
-
-            financial_month = month_names[month]
-
-            if fiscal_year not in years_list:
-               years_list.append(fiscal_year)
-
-
-            total_sales = float(total_sales)
-            sales_with_gst = round(total_sales / 10000000, 2)
-
-            if brand_name not in result_dict:
-                result_dict[brand_name] = {}
-
-            if fiscal_year not in result_dict[brand_name]:
-                result_dict[brand_name][fiscal_year] = {}
-
-            result_dict[brand_name][fiscal_year][financial_month] = sales_with_gst
-
-        years_list.reverse()
-        return jsonify({"years": years_list,"values": result_dict}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_brand_dimension_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
-
-
-# ----------------------------------------------------------------------------------------------------------
-
-
-# ----------------------------------------------------------------------------------------------------------
-# item dimension
-# ----------------------------------------------------------------------------------------------------------
-
-
-def get_sales_all_in_one_live_item_dimension_cr_controller():
-    try:
-        sales_data = (
-            db.session.query(
-                SalesAllInOneLive.actual_item,
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-            )
-            .group_by(
-                SalesAllInOneLive.actual_item,
-                extract("year", SalesAllInOneLive.invoice_date),
-                extract("month", SalesAllInOneLive.invoice_date),
-            )
-            .all()
-        )
-
-        result_dict = {}
-
-        month_names = {
-            4: "Apr",
-            5: "May",
-            6: "Jun",
-            7: "Jul",
-            8: "Aug",
-            9: "Sep",
-            10: "Oct",
-            11: "Nov",
-            12: "Dec",
-            1: "Jan",
-            2: "Feb",
-            3: "Mar",
-        }
-
-        years_list = []
-
-        for actual_item, year, month, total_sales in sales_data:
-
-            if month in [1, 2, 3]:
-                fiscal_year = year
-            else:
-                fiscal_year = year + 1
-
-            financial_month = month_names[month]
-
-            if fiscal_year not in years_list:
-                years_list.append(fiscal_year)
-
-            total_sales = float(total_sales)
-            sales_with_gst = round(total_sales / 10000000, 2)
-
-            if actual_item not in result_dict:
-                result_dict[actual_item] = {}
-
-            if fiscal_year not in result_dict[actual_item]:
-                result_dict[actual_item][fiscal_year] = {}
-
-            result_dict[actual_item][fiscal_year][financial_month] = sales_with_gst
-
-        years_list.reverse()
-        return jsonify({"years": years_list,"values": result_dict}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_item_dimension_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
-
-
-# ----------------------------------------------------------------------------------------------------------
-
-
-# ----------------------------------------------------------------------------------------------------------
-# price breakup 1
-# ----------------------------------------------------------------------------------------------------------
-
-def get_sales_all_in_one_live_price_breakup_one_cr_controller():
-    try:
-        sales_data = (
-            db.session.query(
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
-            )
-            .group_by(extract("year", SalesAllInOneLive.invoice_date))
-            .all()
-        )
-
-        result_dict = {}
-
-        month_names = {
-            4: "Apr",
-            5: "May",
-            6: "Jun",
-            7: "Jul",
-            8: "Aug",
-            9: "Sep",
-            10: "Oct",
-            11: "Nov",
-            12: "Dec",
-            1: "Jan",
-            2: "Feb",
-            3: "Mar",
-        }
-
-        price_ranges = {
-            "0 - 5000": {},
-            "5001 - 10000": {},
-            "10001 - 15000": {},
-            "15001 - 20000": {},
-            "20001 - 25000": {},
-            ">25000": {},
-        }
-
-        years_list = []
-
-        for year, month, total_sales, total_qty in sales_data:
-
-            if month in [1, 2, 3]:
-                fiscal_year = year
-            else:
-                fiscal_year = year + 1
-
-            financial_month = month_names[month]
-
-            if fiscal_year not in years_list:
-                years_list.append(fiscal_year)
-
-            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
-            sales_with_gst = round(total_sales / 10000000, 2)
-
-            price_breakup = "Null"
-            if piecewise_sales > 0 and piecewise_sales <= 5000:
-                price_breakup = "0 - 5000"
-            elif piecewise_sales > 5000 and piecewise_sales <= 10000:
-                price_breakup = "5001 - 10000"
-            elif piecewise_sales > 10000 and piecewise_sales <= 15000:
-                price_breakup = "10001 - 15000"
-            elif piecewise_sales > 15000 and piecewise_sales <= 20000:
-                price_breakup = "15001 - 20000"
-            elif piecewise_sales > 20000 and piecewise_sales <= 25000:
-                price_breakup = "20001 - 25000"
-            elif piecewise_sales > 25000:
-                price_breakup = ">25000"
-
-            if price_breakup != "Null":
-                price_ranges[price_breakup][fiscal_year] = sales_with_gst
-
-        result_dict = {k: v for k, v in price_ranges.items() if v}
-
-        years_list.reverse()
-        return jsonify({"years": years_list,"values": result_dict}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_price_breakup_one_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
-
-# ----------------------------------------------------------------------------------------------------------
-
-
-
-# ----------------------------------------------------------------------------------------------------------
-# price breakup 2
-# ----------------------------------------------------------------------------------------------------------
-
-
-def get_sales_all_in_one_live_price_breakup_two_cr_controller():
-    try:
-        sales_data = (
-            db.session.query(
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
-            )
-            .group_by(extract("year", SalesAllInOneLive.invoice_date))
-            .all()
-        )
-
-        result_dict = {}
-
-        price_ranges = {
-            "0 - 1000": {},
-            "1001 - 2000": {},
-            "2001 - 3000": {},
-            "3001 - 4000": {},
-            "4001 - 5000": {},
-            "5001 - 6000": {},
-            "6001 - 7000": {},
-            "7001 - 8000": {},
-            "8001 - 9000": {},
-            "9001 - 10000": {},
-            "10001 - 20000": {},
-            "20001 - 30000": {},
-            "30001 - 40000": {},
-            "40001 - 50000": {},
-            ">50000": {},
-        }
-
-        month_names = {
-            4: "Apr",
-            5: "May",
-            6: "Jun",
-            7: "Jul",
-            8: "Aug",
-            9: "Sep",
-            10: "Oct",
-            11: "Nov",
-            12: "Dec",
-            1: "Jan",
-            2: "Feb",
-            3: "Mar",
-        }
-
-        years_list = []
-
-        for year, month, total_sales, total_qty in sales_data:
-            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
-            sales_with_gst = round(total_sales / 10000000, 2)
-
-            if month in [1, 2, 3]:
-                fiscal_year = year
-            else:
-                fiscal_year = year + 1
-
-            financial_month = month_names[month]
-
-            if fiscal_year not in years_list:
-                years_list.append(fiscal_year)
-
-            price_breakup = "Null"
-            if piecewise_sales > 0 and piecewise_sales <= 1000:
-                price_breakup = "0 - 1000"
-            elif piecewise_sales > 1000 and piecewise_sales <= 2000:
-                price_breakup = "1001 - 2000"
-            elif piecewise_sales > 2000 and piecewise_sales <= 3000:
-                price_breakup = "2001 - 3000"
-            elif piecewise_sales > 3000 and piecewise_sales <= 4000:
-                price_breakup = "3001 - 4000"
-            elif piecewise_sales > 4000 and piecewise_sales <= 5000:
-                price_breakup = "4001 - 5000"
-            elif piecewise_sales > 5000 and piecewise_sales <= 6000:
-                price_breakup = "5001 - 6000"
-            elif piecewise_sales > 6000 and piecewise_sales <= 7000:
-                price_breakup = "6001 - 7000"
-            elif piecewise_sales > 7000 and piecewise_sales <= 8000:
-                price_breakup = "7001 - 8000"
-            elif piecewise_sales > 8000 and piecewise_sales <= 9000:
-                price_breakup = "8001 - 9000"
-            elif piecewise_sales > 9000 and piecewise_sales <= 10000:
-                price_breakup = "9001 - 10000"
-            elif piecewise_sales > 10000 and piecewise_sales <= 20000:
-                price_breakup = "10001 - 20000"
-            elif piecewise_sales > 20000 and piecewise_sales <= 30000:
-                price_breakup = "20001 - 30000"
-            elif piecewise_sales > 30000 and piecewise_sales <= 40000:
-                price_breakup = "30001 - 40000"
-            elif piecewise_sales > 40000 and piecewise_sales <= 50000:
-                price_breakup = "40001 - 50000"
-            elif piecewise_sales > 50000:
-                price_breakup = ">50000"
-
-            if price_breakup != "Null":
-                price_ranges[price_breakup][fiscal_year] = sales_with_gst
-
-        result_dict = {k: v for k, v in price_ranges.items() if v}
-
-        years_list.reverse()
-        return jsonify({"years": years_list,"values": result_dict}), 200
-
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_price_breakup_two_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
-
-
-# ----------------------------------------------------------------------------------------------------------
