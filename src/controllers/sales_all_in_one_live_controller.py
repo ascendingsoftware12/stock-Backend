@@ -2,6 +2,7 @@ from flask import request, jsonify
 from sqlalchemy import and_, case, extract, func
 from src import db
 from src.models.sales_all_in_one_live_model import SalesAllInOneLive
+from datetime import datetime
 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -148,7 +149,7 @@ def get_sales_all_in_one_live_controller():
 # -------------------------------------------- YTD -------------------------------------------
 
 
-def get_sales_all_in_one_live_ytd_cr_controller():
+def get_sales_all_in_one_live_ytd_cr_controller1():
     try:
         pass
 
@@ -158,6 +159,59 @@ def get_sales_all_in_one_live_ytd_cr_controller():
             return get_sales_all_in_one_live_ytd_cr_controller()
         else:
             return jsonify({"success": 0, "error": str(e)})
+
+
+def get_sales_all_in_one_live_ytd_cr_controller():
+    try:
+        latest_invoice_date = (
+            db.session.query(func.max(SalesAllInOneLive.invoice_date))
+            .scalar()
+        )
+
+        if not latest_invoice_date:
+            return jsonify({"success": 0, "error": "No sales data found."}), 404
+
+        latest_year = latest_invoice_date.year
+        latest_month = latest_invoice_date.month
+        latest_day = latest_invoice_date.day
+
+        start_month = 4 
+
+        fiscal_years = [latest_year, latest_year - 1, latest_year - 2, latest_year - 3]
+
+        result = {}
+
+        for year in fiscal_years:
+            start_date = datetime(year, start_month, 1)
+            end_date = datetime(year, latest_month, latest_day)
+
+            if year != latest_year:
+                end_date = datetime(year, latest_month, latest_day)
+
+            total_sales = (
+                db.session.query(func.sum(SalesAllInOneLive.total_sales))
+                .filter(
+                    SalesAllInOneLive.invoice_date >= start_date,
+                    SalesAllInOneLive.invoice_date <= end_date
+                )
+                .scalar() or 0  
+            )
+
+            print(total_sales)
+            sales_with_gst = round(total_sales / 10000000, 2)
+            result[year + 1] = sales_with_gst
+
+        sorted_result = dict(sorted(result.items(), reverse=True))
+
+        return jsonify(sorted_result), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_product_dimension_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
 
 
 # --------------------------------------------- Month ----------------------------------------
@@ -310,7 +364,7 @@ def get_sales_all_in_one_live_month_cr_controller1():
 # ----------------------------------------- Weekly Analysis ----------------------------------
 
 
-def get_sales_all_in_one_live_weekly_analysis_cr_controller():
+def get_sales_all_in_one_live_weekly_analysis_cr_controller1():
     try:
         fiscal_start_month = 4
         fiscal_start_day = 1
@@ -400,8 +454,146 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
             return jsonify({"success": 0, "error": str(e)})
 
 
+
+def get_sales_all_in_one_live_weekly_analysis_cr_controller():
+    try:
+        fiscal_start_month = 4
+        fiscal_start_day = 1
+
+        fiscal_start_date = func.concat(
+            func.year(SalesAllInOneLive.invoice_date) - case(
+                (extract('month', SalesAllInOneLive.invoice_date) < fiscal_start_month, 1),
+                else_=0
+            ),
+            '-',
+            fiscal_start_month,
+            '-',
+            fiscal_start_day
+        )
+
+        week_number = func.floor(func.datediff(SalesAllInOneLive.invoice_date, fiscal_start_date) / 7) + 1
+
+        weekly_sales = (
+            db.session.query(
+                week_number.label("week_number"),
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                func.round(func.sum(SalesAllInOneLive.total_sales) / 10000000, 2).label("sales_with_gst")
+            )
+            .group_by(week_number, extract("year", SalesAllInOneLive.invoice_date), extract("month", SalesAllInOneLive.invoice_date))
+            .order_by(week_number)
+            .all()
+        )
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        result_dict = {}  # To store final output
+        years_list = []   # To store years seen in the data
+
+        for week_number, month, year, sales_with_gst in weekly_sales:
+            # Only include week numbers 1 to 52
+            if week_number > 52:
+                continue
+
+            # Determine the fiscal year
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            # Keep track of all fiscal years
+            if fiscal_year not in years_list:
+                years_list.append(fiscal_year)
+
+            # Format the week number (e.g., "Week 01", "Week 02")
+            week_label = f"Week {int(week_number):02}"
+
+            # Initialize the week entry if not already present
+            if week_label not in result_dict:
+                result_dict[week_label] = {}
+
+            # Assign sales data to the correct fiscal year under each week
+            result_dict[week_label][fiscal_year] = sales_with_gst
+
+        # Sort the years in reverse order if needed
+        years_list.sort(reverse=True)
+
+        return jsonify({"values": result_dict, "years": years_list}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_weekly_analysis_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
 # ----------------------------------------- Day Analysis -------------------------------------
 
+
+def get_sales_all_in_one_live_day_analysis_cr_controller():
+    try:
+        sales_data = (
+            db.session.query(
+                extract("month", SalesAllInOneLive.invoice_date).label("month"),
+                extract("year", SalesAllInOneLive.invoice_date).label("year"),
+                func.week(SalesAllInOneLive.invoice_date).label("week"),
+                func.dayofweek(SalesAllInOneLive.invoice_date).label("day_of_week"),
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales")
+            )
+            .group_by(
+                extract("year", SalesAllInOneLive.invoice_date),
+                func.week(SalesAllInOneLive.invoice_date),
+                func.dayofweek(SalesAllInOneLive.invoice_date)
+            )
+            .order_by(extract("year", SalesAllInOneLive.invoice_date).desc())
+            .all()
+        )
+
+        day_map = {
+            1: "Mon",
+            2: "Tue",
+            3: "Wed",
+            4: "Thu",
+            5: "Fri",
+            6: "Sat",
+            7: "Sun"
+        }
+
+        result = {}
+        for month, year, week, day_of_week, total_sales in sales_data:
+            fiscal_year = year if month in [1, 2, 3] else year + 1
+            
+            sales_with_gst = round(total_sales / 10000000, 2)
+
+            if fiscal_year not in result:
+                result[fiscal_year] = {}
+            
+            if week not in result[fiscal_year]:
+                result[fiscal_year][week] = {day: None for day in day_map.values()}
+
+            result[fiscal_year][week][day_map[day_of_week]] = sales_with_gst
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_day_analysis_cr_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
 
 
 # --------------------------------------- Product Dimension ----------------------------------
