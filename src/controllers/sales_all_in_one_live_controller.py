@@ -148,21 +148,14 @@ def get_sales_all_in_one_live_controller():
 
 # -------------------------------------------- YTD -------------------------------------------
 
-
-def get_sales_all_in_one_live_ytd_cr_controller1():
-    try:
-        pass
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_ytd_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
-
-
 def get_sales_all_in_one_live_ytd_cr_controller():
     try:
+
+        period_from = request.args.get('period_from')
+        period_to = request.args.get('period_to')
+
+        print("------------>", period_from, period_to)
+
         latest_invoice_date = (
             db.session.query(func.max(SalesAllInOneLive.invoice_date))
             .scalar()
@@ -181,6 +174,7 @@ def get_sales_all_in_one_live_ytd_cr_controller():
 
         result = {}
 
+        
         for year in fiscal_years:
             start_date = datetime(year, start_month, 1)
             end_date = datetime(year, latest_month, latest_day)
@@ -208,7 +202,7 @@ def get_sales_all_in_one_live_ytd_cr_controller():
     except Exception as e:
         db.session.rollback()
         if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_product_dimension_cr_controller()
+            return get_sales_all_in_one_live_ytd_cr_controller()
         else:
             return jsonify({"success": 0, "error": str(e)})
 
@@ -219,18 +213,61 @@ def get_sales_all_in_one_live_ytd_cr_controller():
 
 def get_sales_all_in_one_live_month_cr_controller():
     try:
+
+        period_from = request.args.get('period_from')
+        period_to = request.args.get('period_to')
+
+        # invoice_date = request.args.get('invoice_date')
+        # srn_flag = request.args.get('srn_flag')
+        # sales_type = request.args.get('sales_type')
+        # section = request.args.get('section')
+        # brand_name = request.args.get('brand_name')
+        # model_no = request.args.get('model_no')
+        # item_description = request.args.get('item_description')
+
+        # conditions = []
+
+        # if invoice_date:
+        #     conditions.append(SalesAllInOneLive.invoice_date == invoice_date)
+
+        # if srn_flag:
+        #     conditions.append(SalesAllInOneLive.srn_flag == srn_flag)
+
+        # if sales_type:
+        #     conditions.append(SalesAllInOneLive.sale_type == sales_type)
+
+        # if section:
+        #     conditions.append(SalesAllInOneLive.section == section)
+
+        # if brand_name:
+        #     conditions.append(SalesAllInOneLive.brand_name == brand_name)
+
+        # if model_no:
+        #     conditions.append(SalesAllInOneLive.model_no == model_no)
+
+        # if item_description:
+        #     conditions.append(SalesAllInOneLive.item_description == item_description)
+
+       
         sales_data = (
             db.session.query(
                 extract("year", SalesAllInOneLive.invoice_date).label("year"),
                 extract("month", SalesAllInOneLive.invoice_date).label("month"),
                 func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
             )
-            .group_by(
+            
+        )
+
+        if period_from:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+        if period_to:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
+
+
+        sales_data = sales_data.group_by(
                 extract("year", SalesAllInOneLive.invoice_date),
                 extract("month", SalesAllInOneLive.invoice_date),
-            )
-            .all()
-        )
+            ).all()
 
         result_list = []
         yearly_totals = {}
@@ -271,87 +308,6 @@ def get_sales_all_in_one_live_month_cr_controller():
         result_list = list(yearly_totals.values())
 
         return jsonify(result_list), 200
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_month_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
-
-
-def get_sales_all_in_one_live_month_cr_controller1():
-    try:
-
-        # invoice_date = request.args.get('invoice_date')
-        # srn_flag = request.args.get('srn_flag')
-        # sales_type = request.args.get('sales_type')
-        # section = request.args.get('section')
-        # brand_name = request.args.get('brand_name')
-        # model_no = request.args.get('model_no')
-        # item_description = request.args.get('item_description')
-
-        # conditions = []
-
-        # if invoice_date:
-        #     conditions.append(SalesAllInOneLive.invoice_date == invoice_date)
-
-        # if srn_flag:
-        #     conditions.append(SalesAllInOneLive.srn_flag == srn_flag)
-
-        # if sales_type:
-        #     conditions.append(SalesAllInOneLive.sale_type == sales_type)
-
-        # if section:
-        #     conditions.append(SalesAllInOneLive.section == section)
-
-        # if brand_name:
-        #     conditions.append(SalesAllInOneLive.brand_name == brand_name)
-
-        # if model_no:
-        #     conditions.append(SalesAllInOneLive.model_no == model_no)
-
-        # if item_description:
-        #     conditions.append(SalesAllInOneLive.item_description == item_description)
-
-        # .filter(and_(*conditions) if conditions else True)
-
-        sales_data = (
-            db.session.query(
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-            )
-            .group_by(
-                extract("year", SalesAllInOneLive.invoice_date),
-                extract("month", SalesAllInOneLive.invoice_date),
-            )
-            .all()
-        )
-
-        result_dict = {}
-        yearly_totals = {}
-
-        for year, month, total_sales in sales_data:
-            financial_month = month_name(month)
-            sales_with_gst = round(total_sales / 10000000, 2)
-
-            if year not in result_dict:
-                result_dict[year] = []
-                yearly_totals[year] = 0
-
-            result_dict[year].append(
-                {"month": financial_month, "Sales with GST (Cr)": sales_with_gst}
-            )
-
-            yearly_totals[year] += sales_with_gst
-
-        for year, month_data in result_dict.items():
-            month_data.append({"total": round(yearly_totals[year], 2)})
-
-        result = [{str(year): month_data} for year, month_data in result_dict.items()]
-
-        return jsonify(result), 200
 
     except Exception as e:
         db.session.rollback()
@@ -457,6 +413,13 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller1():
 
 def get_sales_all_in_one_live_weekly_analysis_cr_controller():
     try:
+
+        period_from = request.args.get('period_from')
+        period_to = request.args.get('period_to')
+
+        print("------------>", period_from, period_to)
+        
+        
         fiscal_start_month = 4
         fiscal_start_day = 1
 
@@ -480,10 +443,16 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
                 extract("year", SalesAllInOneLive.invoice_date).label("year"),
                 func.round(func.sum(SalesAllInOneLive.total_sales) / 10000000, 2).label("sales_with_gst")
             )
-            .group_by(week_number, extract("year", SalesAllInOneLive.invoice_date), extract("month", SalesAllInOneLive.invoice_date))
-            .order_by(week_number)
-            .all()
+            
         )
+
+        if period_from:
+            weekly_sales = weekly_sales.filter(SalesAllInOneLive.invoice_date >= period_from)
+        if period_to:
+            weekly_sales = weekly_sales.filter(SalesAllInOneLive.invoice_date <= period_to)
+
+
+        weekly_sales = weekly_sales.group_by(week_number, extract("year", SalesAllInOneLive.invoice_date), extract("month", SalesAllInOneLive.invoice_date)).order_by(week_number).all()
 
         month_names = {
             4: "Apr",
@@ -545,6 +514,11 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
 
 def get_sales_all_in_one_live_day_analysis_cr_controller():
     try:
+
+        period_from = request.args.get('period_from')
+        period_to = request.args.get('period_to')
+
+        print("------------>", period_from, period_to)
         sales_data = (
             db.session.query(
                 extract("month", SalesAllInOneLive.invoice_date).label("month"),
@@ -553,14 +527,20 @@ def get_sales_all_in_one_live_day_analysis_cr_controller():
                 func.dayofweek(SalesAllInOneLive.invoice_date).label("day_of_week"),
                 func.sum(SalesAllInOneLive.total_sales).label("total_sales")
             )
-            .group_by(
+            
+        )
+
+
+        if period_from:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+        if period_to:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
+
+        sales_data = sales_data.group_by(
                 extract("year", SalesAllInOneLive.invoice_date),
                 func.week(SalesAllInOneLive.invoice_date),
                 func.dayofweek(SalesAllInOneLive.invoice_date)
-            )
-            .order_by(extract("year", SalesAllInOneLive.invoice_date).desc())
-            .all()
-        )
+            ).order_by(extract("year", SalesAllInOneLive.invoice_date).desc()).all()
 
         day_map = {
             1: "Mon",
@@ -601,6 +581,12 @@ def get_sales_all_in_one_live_day_analysis_cr_controller():
 
 def get_sales_all_in_one_live_product_dimension_cr_controller():
     try:
+
+        period_from = request.args.get('period_from')
+        period_to = request.args.get('period_to')
+
+        print("------------>", period_from, period_to)
+
         sales_data = (
             db.session.query(
                 SalesAllInOneLive.product_group,
@@ -608,13 +594,19 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
                 extract("month", SalesAllInOneLive.invoice_date).label("month"),
                 func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
             )
-            .group_by(
+            
+        )
+
+        if period_from:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+        if period_to:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
+
+        sales_data = sales_data.group_by(
                 SalesAllInOneLive.product_group,
                 extract("year", SalesAllInOneLive.invoice_date),
                 extract("month", SalesAllInOneLive.invoice_date),
-            )
-            .all()
-        )
+            ).all()
 
         result_dict = {}
 
@@ -676,6 +668,12 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
 
 def get_sales_all_in_one_live_brand_dimension_cr_controller():
     try:
+
+        period_from = request.args.get('period_from')
+        period_to = request.args.get('period_to')
+
+        print("------------>", period_from, period_to)
+
         sales_data = (
             db.session.query(
                 SalesAllInOneLive.brand_name,
@@ -683,14 +681,21 @@ def get_sales_all_in_one_live_brand_dimension_cr_controller():
                 extract("month", SalesAllInOneLive.invoice_date).label("month"),
                 func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
             )
-            .group_by(
+            
+        )
+
+        if period_from:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+        if period_to:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
+
+
+        sales_data = sales_data.group_by(
                 SalesAllInOneLive.brand_name,
                 extract("year", SalesAllInOneLive.invoice_date),
                 extract("month", SalesAllInOneLive.invoice_date),
-            )
-            .all()
-        )
-
+            ).all()
+        
         result_dict = {}
 
         month_names = {
@@ -750,6 +755,12 @@ def get_sales_all_in_one_live_brand_dimension_cr_controller():
 
 def get_sales_all_in_one_live_item_dimension_cr_controller():
     try:
+
+        period_from = request.args.get('period_from')
+        period_to = request.args.get('period_to')
+
+        print("------------>", period_from, period_to)
+
         sales_data = (
             db.session.query(
                 SalesAllInOneLive.actual_item,
@@ -757,14 +768,20 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
                 extract("month", SalesAllInOneLive.invoice_date).label("month"),
                 func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
             )
-            .group_by(
+            
+        )
+
+        if period_from:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+        if period_to:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
+
+        sales_data = sales_data.group_by(
                 SalesAllInOneLive.actual_item,
                 extract("year", SalesAllInOneLive.invoice_date),
                 extract("month", SalesAllInOneLive.invoice_date),
-            )
-            .all()
-        )
-
+            ).all()
+        
         result_dict = {}
 
         month_names = {
@@ -823,6 +840,12 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
 
 def get_sales_all_in_one_live_price_breakup_one_cr_controller():
     try:
+
+        period_from = request.args.get('period_from')
+        period_to = request.args.get('period_to')
+
+        print("------------>", period_from, period_to)
+
         sales_data = (
             db.session.query(
                 extract("year", SalesAllInOneLive.invoice_date).label("year"),
@@ -830,9 +853,15 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller():
                 func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
                 func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
             )
-            .group_by(extract("year", SalesAllInOneLive.invoice_date))
-            .all()
+            
         )
+
+        if period_from:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+        if period_to:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
+
+        sales_data = sales_data.group_by(extract("year", SalesAllInOneLive.invoice_date)).all()
 
         result_dict = {}
 
@@ -916,6 +945,12 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller():
 
 def get_sales_all_in_one_live_price_breakup_two_cr_controller():
     try:
+
+        period_from = request.args.get('period_from')
+        period_to = request.args.get('period_to')
+
+        print("------------>", period_from, period_to)
+
         sales_data = (
             db.session.query(
                 extract("year", SalesAllInOneLive.invoice_date).label("year"),
@@ -923,9 +958,15 @@ def get_sales_all_in_one_live_price_breakup_two_cr_controller():
                 func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
                 func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
             )
-            .group_by(extract("year", SalesAllInOneLive.invoice_date))
-            .all()
+            
         )
+
+        if period_from:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+        if period_to:
+            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
+
+        sales_data = sales_data.group_by(extract("year", SalesAllInOneLive.invoice_date)).all()
 
         result_dict = {}
 
