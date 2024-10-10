@@ -679,7 +679,6 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
                 extract("month", SalesAllInOneLive.invoice_date).label("month"),
                 func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
             )
-            
         )
 
         if period_from:
@@ -688,10 +687,10 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
         sales_data = sales_data.group_by(
-                SalesAllInOneLive.product_group,
-                extract("year", SalesAllInOneLive.invoice_date),
-                extract("month", SalesAllInOneLive.invoice_date),
-            ).all()
+            SalesAllInOneLive.product_group,
+            extract("year", SalesAllInOneLive.invoice_date),
+            extract("month", SalesAllInOneLive.invoice_date),
+        ).all()
 
         result_dict = {}
 
@@ -711,6 +710,7 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
         }
 
         years_list = []
+        yearly_totals = {}
 
         for product_group, year, month, total_sales in sales_data:
 
@@ -724,8 +724,6 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
             if fiscal_year not in years_list:
                 years_list.append(fiscal_year)
 
-            
-
             total_sales = float(total_sales)
             sales_with_gst = round(total_sales / 10000000, 2)
 
@@ -735,7 +733,31 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
             if fiscal_year not in result_dict[product_group]:
                 result_dict[product_group][fiscal_year] = {}
 
-            result_dict[product_group][fiscal_year][financial_month] = sales_with_gst
+            if product_group not in yearly_totals:
+                yearly_totals[product_group] = {}
+
+            if fiscal_year not in yearly_totals[product_group]:
+                yearly_totals[product_group][fiscal_year] = 0
+
+            # result_dict[product_group][fiscal_year][financial_month] = sales_with_gst
+
+            yearly_totals[product_group][fiscal_year] += sales_with_gst
+            
+            result_dict[product_group][fiscal_year][financial_month] = {
+                "sales_with_gst": sales_with_gst,
+            }
+
+        for product_group, fiscal_year_data in result_dict.items():
+            for fiscal_year, months_data in fiscal_year_data.items():
+                yearly_total = yearly_totals[product_group][fiscal_year]
+                # if yearly_total > 0:
+                for month, data in months_data.items():
+                    if data["sales_with_gst"] == 0:
+                        result_dict[product_group][fiscal_year][month] = f"{data["sales_with_gst"]} ({0.00}%)"
+                    else:
+                        percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
+                    # result_dict[product_group][fiscal_year][month]["percentage"] = percentage
+                        result_dict[product_group][fiscal_year][month] = f"{data["sales_with_gst"]} ({percentage}%)"
 
         years_list.reverse()
         return jsonify({"years": years_list,"values": result_dict}), 200
