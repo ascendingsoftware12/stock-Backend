@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -24,14 +25,21 @@ def create_app():
     app.config['CORS_HEADERS'] = 'Content-Type'
     # Config section
     app.config["SQLALCHEMY_DATABASE_URI"] = (
-        "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}".format(
-            DB_USER=os.getenv("DB_USER"),
-            DB_PASSWORD=os.getenv("DB_PASSWORD"),
-            DB_HOST=os.getenv("DB_HOST"),
-            DB_NAME=os.getenv("DB_NAME"),
-            pool_pre_ping=True, 
-            pool_recycle=300
+        "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}".format(
+            DB_USER="appadmin",
+            DB_PASSWORD="wGatap1926",
+            DB_HOST="182.16.16.28",
+            DB_NAME="apx_stock_apps",
+            DB_PORT="3306",            
         )
+        #  "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}".format(
+        #     DB_USER=os.getenv("DB_USER"),
+        #     DB_PASSWORD=os.getenv("DB_PASSWORD"),
+        #     DB_HOST=os.getenv("DB_HOST"),
+        #     DB_NAME=os.getenv("DB_NAME"),
+        #     pool_pre_ping=True, 
+        #     pool_recycle=300
+        #  )
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -62,7 +70,8 @@ def create_app():
 
     from src.routes.sales_all_in_one_live_routes import sales_all_in_one_live_bp
 
-
+    from src.routes.test_routes import test_bp
+    
     app.register_blueprint(approve_transfer_bp)
     app.register_blueprint(transfer_report_bp)
     app.register_blueprint(stock_analysis_bp)
@@ -74,5 +83,6 @@ def create_app():
     app.register_blueprint(category_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(sales_all_in_one_live_bp)
+    app.register_blueprint(test_bp)
 
     return app
