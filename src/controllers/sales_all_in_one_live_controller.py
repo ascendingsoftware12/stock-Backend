@@ -821,6 +821,7 @@ def get_sales_all_in_one_live_brand_dimension_cr_controller():
         }
 
         years_list = []
+        yearly_totals = {}
 
         for brand_name, year, month, total_sales in sales_data:
 
@@ -844,7 +845,31 @@ def get_sales_all_in_one_live_brand_dimension_cr_controller():
             if fiscal_year not in result_dict[brand_name]:
                 result_dict[brand_name][fiscal_year] = {}
 
-            result_dict[brand_name][fiscal_year][financial_month] = sales_with_gst
+            if brand_name not in yearly_totals:
+                yearly_totals[brand_name] = {}
+
+            if fiscal_year not in yearly_totals[brand_name]:
+                yearly_totals[brand_name][fiscal_year] = 0
+
+            # result_dict[brand_name][fiscal_year][financial_month] = sales_with_gst
+
+            yearly_totals[brand_name][fiscal_year] += sales_with_gst
+            
+            result_dict[brand_name][fiscal_year][financial_month] = {
+                "sales_with_gst": sales_with_gst,
+            }
+        
+        for brand_name, fiscal_year_data in result_dict.items():
+            for fiscal_year, months_data in fiscal_year_data.items():
+                yearly_total = yearly_totals[brand_name][fiscal_year]
+                # if yearly_total > 0:
+                for month, data in months_data.items():
+                    if data["sales_with_gst"] == 0:
+                        result_dict[brand_name][fiscal_year][month] = f"{data["sales_with_gst"]} ({0.00}%)"
+                    else:
+                        percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
+                    # result_dict[brand_name][fiscal_year][month]["percentage"] = percentage
+                        result_dict[brand_name][fiscal_year][month] = f"{data["sales_with_gst"]} ({percentage}%)"
 
         years_list.reverse()
         return jsonify({"years": years_list,"values": result_dict}), 200
@@ -907,6 +932,7 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
         }
 
         years_list = []
+        yearly_totals = {}
 
         for actual_item, year, month, total_sales in sales_data:
 
@@ -929,7 +955,31 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
             if fiscal_year not in result_dict[actual_item]:
                 result_dict[actual_item][fiscal_year] = {}
 
-            result_dict[actual_item][fiscal_year][financial_month] = sales_with_gst
+            if actual_item not in yearly_totals:
+                yearly_totals[actual_item] = {}
+
+            if fiscal_year not in yearly_totals[actual_item]:
+                yearly_totals[actual_item][fiscal_year] = 0
+
+            # result_dict[actual_item][fiscal_year][financial_month] = sales_with_gst
+
+            yearly_totals[actual_item][fiscal_year] += sales_with_gst
+            
+            result_dict[actual_item][fiscal_year][financial_month] = {
+                "sales_with_gst": sales_with_gst,
+            }
+
+        for actual_item, fiscal_year_data in result_dict.items():
+            for fiscal_year, months_data in fiscal_year_data.items():
+                yearly_total = yearly_totals[actual_item][fiscal_year]
+                # if yearly_total > 0:
+                for month, data in months_data.items():
+                    if data["sales_with_gst"] == 0:
+                        result_dict[actual_item][fiscal_year][month] = f"{data["sales_with_gst"]} ({0.00}%)"
+                    else:
+                        percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
+                    # result_dict[actual_item][fiscal_year][month]["percentage"] = percentage
+                        result_dict[actual_item][fiscal_year][month] = f"{data["sales_with_gst"]} ({percentage}%)"
 
         years_list.reverse()
         return jsonify({"years": years_list,"values": result_dict}), 200
