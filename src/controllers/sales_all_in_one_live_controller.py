@@ -257,9 +257,9 @@ def get_sales_all_in_one_live_month_cr_controller():
             )
         )
 
-        if period_from:
+        if period_from and period_from != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to:
+        if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
 
@@ -409,7 +409,6 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller1():
             return jsonify({"success": 0, "error": str(e)})
 
 
-
 def get_sales_all_in_one_live_weekly_analysis_cr_controller():
     try:
 
@@ -445,9 +444,9 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
             
         )
 
-        if period_from:
+        if period_from and period_from != "":
             weekly_sales = weekly_sales.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to:
+        if period_to and period_to != "":
             weekly_sales = weekly_sales.filter(SalesAllInOneLive.invoice_date <= period_to)
 
 
@@ -594,9 +593,9 @@ def get_sales_all_in_one_live_day_analysis_cr_controller():
             
         )
 
-        if period_from:
+        if period_from and period_from != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to:
+        if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
         sales_data = sales_data.group_by(
@@ -681,9 +680,9 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
             )
         )
 
-        if period_from:
+        if period_from and period_from != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to:
+        if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
         sales_data = sales_data.group_by(
@@ -791,9 +790,9 @@ def get_sales_all_in_one_live_brand_dimension_cr_controller():
             
         )
 
-        if period_from:
+        if period_from and period_from != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to:
+        if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
 
@@ -893,6 +892,9 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
 
         print("------------>", period_from, period_to)
 
+        if period_from is None or period_to is None:
+            return jsonify({"error": "Both period_from and period_to are required", "success": 0})
+
         sales_data = (
             db.session.query(
                 SalesAllInOneLive.actual_item,
@@ -900,12 +902,11 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
                 extract("month", SalesAllInOneLive.invoice_date).label("month"),
                 func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
             )
-            
         )
 
-        if period_from:
+        if period_from and period_from != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to:
+        if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
         sales_data = sales_data.group_by(
@@ -1013,9 +1014,9 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller():
             
         )
 
-        if period_from:
+        if period_from and period_from != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to:
+        if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
         sales_data = sales_data.group_by(extract("year", SalesAllInOneLive.invoice_date)).all()
@@ -1118,9 +1119,9 @@ def get_sales_all_in_one_live_price_breakup_two_cr_controller():
             
         )
 
-        if period_from:
+        if period_from and period_from != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to:
+        if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
         sales_data = sales_data.group_by(extract("year", SalesAllInOneLive.invoice_date)).all()
