@@ -25,21 +25,21 @@ def create_app():
     app.config['CORS_HEADERS'] = 'Content-Type'
     # Config section
     app.config["SQLALCHEMY_DATABASE_URI"] = (
-    #     "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}".format(
-    #         DB_USER="appadmin",
-    #         DB_PASSWORD="wGatap1926",
-    #         DB_HOST="182.16.16.28",
-    #         DB_NAME="apx_stock_apps",
-    #         DB_PORT="3306",            
-    #     )
-         "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}".format(
-            DB_USER=os.getenv("DB_USER"),
-            DB_PASSWORD=os.getenv("DB_PASSWORD"),
-            DB_HOST=os.getenv("DB_HOST"),
-            DB_NAME=os.getenv("DB_NAME"),
-            pool_pre_ping=True, 
-            pool_recycle=300
-         )
+        "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}".format(
+            DB_USER="appadmin",
+            DB_PASSWORD="wGatap1926",
+            DB_HOST="182.16.16.28",
+            DB_NAME="apx_stock_apps",
+            DB_PORT="3306",            
+        )
+        #  "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}".format(
+        #     DB_USER=os.getenv("DB_USER"),
+        #     DB_PASSWORD=os.getenv("DB_PASSWORD"),
+        #     DB_HOST=os.getenv("DB_HOST"),
+        #     DB_NAME=os.getenv("DB_NAME"),
+        #     pool_pre_ping=True, 
+        #     pool_recycle=300
+        #  )
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 

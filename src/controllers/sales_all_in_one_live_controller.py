@@ -805,11 +805,11 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
                 # if yearly_total > 0:
                 for month, data in months_data.items():
                     if data["sales_with_gst"] == 0:
-                        result_dict[product_group][fiscal_year][month] = f"{data["sales_with_gst"]} ({0.00}%)"
+                        result_dict[product_group][fiscal_year][month] = f"{data['sales_with_gst']} ({0.00}%)"
                     else:
                         percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
                     # result_dict[product_group][fiscal_year][month]["percentage"] = percentage
-                        result_dict[product_group][fiscal_year][month] = f"{data["sales_with_gst"]} ({percentage}%)"
+                        result_dict[product_group][fiscal_year][month] = f"{data['sales_with_gst']} ({percentage}%)"
 
         years_list.reverse()
         return jsonify({"years": years_list,"values": result_dict}), 200
@@ -917,11 +917,11 @@ def get_sales_all_in_one_live_brand_dimension_cr_controller():
                 # if yearly_total > 0:
                 for month, data in months_data.items():
                     if data["sales_with_gst"] == 0:
-                        result_dict[brand_name][fiscal_year][month] = f"{data["sales_with_gst"]} ({0.00}%)"
+                        result_dict[brand_name][fiscal_year][month] = f"{data['sales_with_gst']} ({0.00}%)"
                     else:
                         percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
                     # result_dict[brand_name][fiscal_year][month]["percentage"] = percentage
-                        result_dict[brand_name][fiscal_year][month] = f"{data["sales_with_gst"]} ({percentage}%)"
+                        result_dict[brand_name][fiscal_year][month] = f"{data['sales_with_gst']} ({percentage}%)"
 
         years_list.reverse()
         return jsonify({"years": years_list,"values": result_dict}), 200
@@ -945,6 +945,8 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
 
         print("------------>", period_from, period_to)
 
+        # if period_from is None or period_to is None:
+        #     return jsonify({"error": "Both period_from and period_to are required", "success": 0})
 
         sales_data = (
             db.session.query(
@@ -1027,11 +1029,11 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
                 # if yearly_total > 0:
                 for month, data in months_data.items():
                     if data["sales_with_gst"] == 0:
-                        result_dict[actual_item][fiscal_year][month] = f"{data["sales_with_gst"]} ({0.00}%)"
+                        result_dict[actual_item][fiscal_year][month] = f"{data['sales_with_gst']} ({0.00}%)"
                     else:
                         percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
                     # result_dict[actual_item][fiscal_year][month]["percentage"] = percentage
-                        result_dict[actual_item][fiscal_year][month] = f"{data["sales_with_gst"]} ({percentage}%)"
+                        result_dict[actual_item][fiscal_year][month] = f"{data['sales_with_gst']} ({percentage}%)"
 
         years_list.reverse()
         return jsonify({"years": years_list,"values": result_dict}), 200

@@ -1,7 +1,7 @@
 from src import db
 
 class SalesAllInOneLive(db.Model):
-    __tablename__ = 'apx_sales_dashboards_sales_all_in_one_live'
+    __tablename__ = 'sales_all_in_one_live'
     
     id = db.Column(db.Integer,primary_key=True)
     invoice_date = db.Column(db.Date)
