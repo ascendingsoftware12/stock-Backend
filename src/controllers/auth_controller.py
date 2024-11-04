@@ -109,12 +109,12 @@ def login_user_controller():
 
 def import_users_from_csv():
     try:
-        file_path = r"D:\PROGRAM\Flask_APIs\APIs\stock_optimization\src\controllers\userdata.csv"
+        file_path = r"D:\PROGRAM\Flask_APIs\APIs\stock_optimization\src\controllers\usernew.csv"
         df = pd.read_csv(file_path)
 
         for index, row in df.iterrows():
-            username = row['name']
-            password = row['PASSWORD']
+            username = row['username']
+            password = row['password']
             
             if User.query.filter_by(username=username).first():
                 print(f"User {username} already exists, skipping...")

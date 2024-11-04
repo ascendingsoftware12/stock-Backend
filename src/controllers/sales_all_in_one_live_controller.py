@@ -10,39 +10,156 @@ from collections import defaultdict
 # ----------------------------------------------------------------------------------------------------------
 
 def get_sales_all_in_one_live_ytd_controller(factor):
-    pass
+    if factor == 'cr':
+        return get_sales_all_in_one_live_ytd_cr_controller()
+    elif factor == 'cr_without_gst':
+        pass
+    elif factor == 'lk':
+        pass
+    elif factor == 'lk_without_gst':
+        pass
+    elif factor == 'sales_qty':
+        pass
+    elif factor == 'total_sales':
+        pass
+    elif factor == 'gp_lk':
+        pass
 
 
 def get_sales_all_in_one_live_monthly_controller(factor):
-    pass
+    if factor == 'cr':
+        return get_sales_all_in_one_live_month_cr_controller()
+    elif factor == 'cr_without_gst':
+        pass
+    elif factor == 'lk':
+        pass
+    elif factor == 'lk_without_gst':
+        pass
+    elif factor == 'sales_qty':
+        pass
+    elif factor == 'total_sales':
+        pass
+    elif factor == 'gp_lk':
+        pass
 
 
 def get_sales_all_in_one_live_weekly_analysis_controller(factor):
-    pass
+    if factor == 'cr':
+        return get_sales_all_in_one_live_weekly_analysis_cr_controller()
+    elif factor == 'cr_without_gst':
+        pass
+    elif factor == 'lk':
+        pass
+    elif factor == 'lk_without_gst':
+        pass
+    elif factor == 'sales_qty':
+        pass
+    elif factor == 'total_sales':
+        pass
+    elif factor == 'gp_lk':
+        pass
+
 
 def get_sales_all_in_one_live_day_analysis_controller(factor):
-    pass
+    if factor == 'cr':
+        return get_sales_all_in_one_live_day_analysis_cr_controller()
+    elif factor == 'cr_without_gst':
+        pass
+    elif factor == 'lk':
+        pass
+    elif factor == 'lk_without_gst':
+        pass
+    elif factor == 'sales_qty':
+        pass
+    elif factor == 'total_sales':
+        pass
+    elif factor == 'gp_lk':
+        pass
 
 
 def get_sales_all_in_one_live_product_dimension_controller(factor):
-    pass
+    if factor == 'cr':
+        return get_sales_all_in_one_live_product_dimension_cr_controller()
+    elif factor == 'cr_without_gst':
+        pass
+    elif factor == 'lk':
+        pass
+    elif factor == 'lk_without_gst':
+        pass
+    elif factor == 'sales_qty':
+        pass
+    elif factor == 'total_sales':
+        pass
+    elif factor == 'gp_lk':
+        pass
 
 
 def get_sales_all_in_one_live_brand_dimension_controller(factor):
-    pass
+    if factor == 'cr':
+        return get_sales_all_in_one_live_brand_dimension_cr_controller()
+    elif factor == 'cr_without_gst':
+        pass
+    elif factor == 'lk':
+        pass
+    elif factor == 'lk_without_gst':
+        pass
+    elif factor == 'sales_qty':
+        pass
+    elif factor == 'total_sales':
+        pass
+    elif factor == 'gp_lk':
+        pass
 
 
 def get_sales_all_in_one_live_item_dimension_controller(factor):
-    pass
+    if factor == 'cr':
+        return get_sales_all_in_one_live_item_dimension_cr_controller()
+    elif factor == 'cr_without_gst':
+        pass
+    elif factor == 'lk':
+        pass
+    elif factor == 'lk_without_gst':
+        pass
+    elif factor == 'sales_qty':
+        pass
+    elif factor == 'total_sales':
+        pass
+    elif factor == 'gp_lk':
+        pass
 
 
 def get_sales_all_in_one_live_price_breakup_one_controller(factor):
-    pass
+    if factor == 'cr':
+        return get_sales_all_in_one_live_price_breakup_one_cr_controller()
+    elif factor == 'cr_without_gst':
+        pass
+    elif factor == 'lk':
+        pass
+    elif factor == 'lk_without_gst':
+        pass
+    elif factor == 'sales_qty':
+        pass
+    elif factor == 'total_sales':
+        pass
+    elif factor == 'gp_lk':
+        pass
 
 
 def get_sales_all_in_one_live_price_breakup_two_controller(factor):
-    pass
-
+    if factor == 'cr':
+        return get_sales_all_in_one_live_price_breakup_two_cr_controller()
+    elif factor == 'cr_without_gst':
+        pass
+    elif factor == 'lk':
+        pass
+    elif factor == 'lk_without_gst':
+        pass
+    elif factor == 'sales_qty':
+        pass
+    elif factor == 'total_sales':
+        pass
+    elif factor == 'gp_lk':
+        pass
 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -52,7 +169,7 @@ def get_sales_all_in_one_live_price_breakup_two_controller(factor):
 
 
 # ----------------------------------------------------------------------------------------------------------
-# ----------------------------------------- Utility Functions  ----------------------------------------------
+# ----------------------------------------- Utility Functions  ---------------------------------------------
 # ----------------------------------------------------------------------------------------------------------
 
 def month_name(month_number):
@@ -511,11 +628,11 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
                     result_dict[week_label][fiscal_year]["percentage"] = percentage
 
                     if data["sales_with_gst"] == 0:
-                            result_dict[week_label][fiscal_year] = f"{data["sales_with_gst"]} ({0.00}%)"
+                            result_dict[week_label][fiscal_year] = f"{data['sales_with_gst']} ({0.00}%)"
                     else:
                         percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
                         # result_dict[week_label][fiscal_year]["percentage"] = percentage
-                        result_dict[week_label][fiscal_year] = f"{data["sales_with_gst"]} ({percentage}%)"
+                        result_dict[week_label][fiscal_year] = f"{data['sales_with_gst']} ({percentage}%)"
 
         years_list.sort(reverse=True)
 
@@ -691,7 +808,7 @@ def get_sales_all_in_one_live_day_analysis_cr_controller():
                         for day in day_mapping.values():
                             if sales[day]["sales_with_gst"] != "-":
                                 percentage = round((sales[day]["sales_with_gst"] / weekly_total) * 100, 2)
-                                sales[day] = f"{sales[day]["sales_with_gst"]} ({percentage}%)"
+                                sales[day] = f"{sales[day]['sales_with_gst']} ({percentage}%)"
                                 # sales[day]["percentage"] = percentage
                             else:
                                 sales[day] = f"{0.00} ({0.00}%)"
@@ -712,6 +829,7 @@ def get_sales_all_in_one_live_day_analysis_cr_controller():
             return get_sales_all_in_one_live_day_analysis_cr_controller()
         else:
             return jsonify({"success": 0, "error": str(e)})
+
 
 # --------------------------------------- Product Dimension ----------------------------------
 
@@ -1517,7 +1635,70 @@ def get_sales_all_in_one_live_price_breakup_two_cr_controller1():
 # ----------------------------------------------------------------------------------------------------------
 
 
+# ----------------------------------------------------------------------------------------------------------
+# ------------------------------------------ Cr without GST ------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
 
+
+# ----------------------------------------------------------------------------------------------------------
+# ----------------------------------------- Cr without GST (END) -------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# ----------------------------------------------- Lk -------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# --------------------------------------------- Lk (END) ---------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# ------------------------------------------ Lk without GST ------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# ----------------------------------------- Lk without GST (END) -------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# ------------------------------------------ Sales QTY -----------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# ----------------------------------------- Sales QTY (END) ------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# ------------------------------------------ Total Sales ---------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# ----------------------------------------- Total Sales (END) ----------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# -------------------------------------------- GP Lk -------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+# -------------------------------------------- GP Lk (END) -------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------
+
+
+
+
+
+# ---------------------------------------------------------------------------------------------------------------
 
 
 # -----------------------------------------------------
