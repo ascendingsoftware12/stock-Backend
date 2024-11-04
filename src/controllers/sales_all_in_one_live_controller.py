@@ -268,17 +268,11 @@ def get_sales_all_in_one_live_controller():
 
 def get_sales_all_in_one_live_ytd_cr_controller():
     try:
-
         period_from = request.args.get('period_from')
         period_to = request.args.get('period_to')
 
-        print("------------>", period_from, period_to)
-
-        latest_invoice_date = (
-            db.session.query(func.max(SalesAllInOneLive.invoice_date))
-            .scalar()
-        )
-
+        # Get the latest invoice date to determine the fiscal year and month
+        latest_invoice_date = db.session.query(func.max(SalesAllInOneLive.invoice_date)).scalar()
         if not latest_invoice_date:
             return jsonify({"success": 0, "error": "No sales data found."}), 404
 
@@ -286,32 +280,44 @@ def get_sales_all_in_one_live_ytd_cr_controller():
         latest_month = latest_invoice_date.month
         latest_day = latest_invoice_date.day
 
-        start_month = 4 
-
+        start_month = 4  # Fiscal year starts in April
         fiscal_years = [latest_year, latest_year - 1, latest_year - 2, latest_year - 3]
-
         result = {}
 
-        
+        previous_sales = None  # Track previous year's sales to calculate YoY percentage
+
         for year in fiscal_years:
             start_date = datetime(year, start_month, 1)
             end_date = datetime(year, latest_month, latest_day)
 
-            if year != latest_year:
-                end_date = datetime(year, latest_month, latest_day)
-
+            # Query to calculate total sales for the YTD period
             total_sales = (
                 db.session.query(func.sum(SalesAllInOneLive.total_sales))
                 .filter(
                     SalesAllInOneLive.invoice_date >= start_date,
                     SalesAllInOneLive.invoice_date <= end_date
                 )
-                .scalar() or 0  
+                .scalar() or 0
             )
 
-            print(total_sales)
             sales_with_gst = round(total_sales / 10000000, 2)
-            result[year + 1] = sales_with_gst
+
+            # Calculate YoY percentage change if previous year's sales data is available
+            if previous_sales is not None:
+                if previous_sales != 0:
+                    percentage_change = round(((sales_with_gst - previous_sales) / previous_sales) * 100, 2)
+                    sales_with_gst_display = f"{sales_with_gst} ({'+' if percentage_change >= 0 else ''}{percentage_change}%)"
+                else:
+                    # Handle division by zero case for previous_sales
+                    sales_with_gst_display = f"{sales_with_gst} (0.00%)"
+            else:
+                sales_with_gst_display = f"{sales_with_gst} (0.00%)"  # No previous year to compare
+
+            # Store result with YoY change
+            result[year + 1] = sales_with_gst_display
+
+            # Update previous_sales for next iteration
+            previous_sales = sales_with_gst
 
         sorted_result = dict(sorted(result.items(), reverse=True))
 
@@ -330,42 +336,9 @@ def get_sales_all_in_one_live_ytd_cr_controller():
 
 def get_sales_all_in_one_live_month_cr_controller():
     try:
-
         period_from = request.args.get('period_from')
         period_to = request.args.get('period_to')
 
-        # invoice_date = request.args.get('invoice_date')
-        # srn_flag = request.args.get('srn_flag')
-        # sales_type = request.args.get('sales_type')
-        # section = request.args.get('section')
-        # brand_name = request.args.get('brand_name')
-        # model_no = request.args.get('model_no')
-        # item_description = request.args.get('item_description')
-
-        # conditions = []
-
-        # if invoice_date:
-        #     conditions.append(SalesAllInOneLive.invoice_date == invoice_date)
-
-        # if srn_flag:
-        #     conditions.append(SalesAllInOneLive.srn_flag == srn_flag)
-
-        # if sales_type:
-        #     conditions.append(SalesAllInOneLive.sale_type == sales_type)
-
-        # if section:
-        #     conditions.append(SalesAllInOneLive.section == section)
-
-        # if brand_name:
-        #     conditions.append(SalesAllInOneLive.brand_name == brand_name)
-
-        # if model_no:
-        #     conditions.append(SalesAllInOneLive.model_no == model_no)
-
-        # if item_description:
-        #     conditions.append(SalesAllInOneLive.item_description == item_description)
-
-       
         sales_data = (
             db.session.query(
                 extract("year", SalesAllInOneLive.invoice_date).label("year"),
@@ -374,34 +347,25 @@ def get_sales_all_in_one_live_month_cr_controller():
             )
         )
 
-        if period_from and period_from != "":
+        if period_from:
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to and period_to != "":
+        if period_to:
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
-
         sales_data = sales_data.group_by(
-                extract("year", SalesAllInOneLive.invoice_date),
-                extract("month", SalesAllInOneLive.invoice_date),
-            ).all()
+            extract("year", SalesAllInOneLive.invoice_date),
+            extract("month", SalesAllInOneLive.invoice_date),
+        ).all()
 
         result_list = []
         yearly_totals = {}
 
         month_names = {
-            4: "Apr",
-            5: "May",
-            6: "Jun",
-            7: "Jul",
-            8: "Aug",
-            9: "Sep",
-            10: "Oct",
-            11: "Nov",
-            12: "Dec",
-            1: "Jan",
-            2: "Feb",
-            3: "Mar",
+            4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep",
+            10: "Oct", 11: "Nov", 12: "Dec", 1: "Jan", 2: "Feb", 3: "Mar",
         }
+
+        previous_sales = {}
 
         for year, month, total_sales in sales_data:
             if month in [1, 2, 3]:
@@ -412,11 +376,22 @@ def get_sales_all_in_one_live_month_cr_controller():
             financial_month = month_names[month]
             sales_with_gst = round(total_sales / 10000000, 2)
 
+            previous_month_sales = previous_sales.get(fiscal_year, {}).get(month - 1 if month > 1 else 12)
+            if previous_month_sales is not None:
+                percentage_change = round(((sales_with_gst - previous_month_sales) / previous_month_sales) * 100, 2)
+                change_display = f"{sales_with_gst} ({'+' if percentage_change >= 0 else ''}{percentage_change}%)"
+            else:
+                change_display = f"{sales_with_gst} (0.00%)"  # No previous month for comparison
+
             if fiscal_year not in yearly_totals:
                 yearly_totals[fiscal_year] = {"FY": str(fiscal_year), "Total": 0}
 
-            yearly_totals[fiscal_year][financial_month] = sales_with_gst
+            yearly_totals[fiscal_year][financial_month] = change_display
             yearly_totals[fiscal_year]["Total"] += sales_with_gst
+
+            if fiscal_year not in previous_sales:
+                previous_sales[fiscal_year] = {}
+            previous_sales[fiscal_year][month] = sales_with_gst
 
         for year, data in yearly_totals.items():
             yearly_totals[year]["Total"] = round(yearly_totals[year]["Total"], 2)
@@ -434,105 +409,6 @@ def get_sales_all_in_one_live_month_cr_controller():
 
 
 # ----------------------------------------- Weekly Analysis ----------------------------------
-
-#last
-def get_sales_all_in_one_live_weekly_analysis_cr_controller1():
-    try:
-
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
-
-        print("------------>", period_from, period_to)
-        
-        
-        fiscal_start_month = 4
-        fiscal_start_day = 1
-
-        fiscal_start_date = func.concat(
-            func.year(SalesAllInOneLive.invoice_date) - case(
-                (extract('month', SalesAllInOneLive.invoice_date) < fiscal_start_month, 1),
-                else_=0
-            ),
-            '-',
-            fiscal_start_month,
-            '-',
-            fiscal_start_day
-        )
-
-        week_number = func.floor(func.datediff(SalesAllInOneLive.invoice_date, fiscal_start_date) / 7) + 1
-
-        weekly_sales = (
-            db.session.query(
-                week_number.label("week_number"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                func.round(func.sum(SalesAllInOneLive.total_sales) / 10000000, 2).label("sales_with_gst")
-            )
-            
-        )
-
-        if period_from and period_from != "":
-            weekly_sales = weekly_sales.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to and period_to != "":
-            weekly_sales = weekly_sales.filter(SalesAllInOneLive.invoice_date <= period_to)
-
-
-        weekly_sales = weekly_sales.group_by(week_number, extract("year", SalesAllInOneLive.invoice_date), extract("month", SalesAllInOneLive.invoice_date)).order_by(week_number).all()
-
-        month_names = {
-            4: "Apr",
-            5: "May",
-            6: "Jun",
-            7: "Jul",
-            8: "Aug",
-            9: "Sep",
-            10: "Oct",
-            11: "Nov",
-            12: "Dec",
-            1: "Jan",
-            2: "Feb",
-            3: "Mar",
-        }
-
-        result_dict = {}  # To store final output
-        years_list = []   # To store years seen in the data
-
-        for week_number, month, year, sales_with_gst in weekly_sales:
-            # Only include week numbers 1 to 52
-            if week_number > 52:
-                continue
-
-            # Determine the fiscal year
-            if month in [1, 2, 3]:
-                fiscal_year = year
-            else:
-                fiscal_year = year + 1
-
-            # Keep track of all fiscal years
-            if fiscal_year not in years_list:
-                years_list.append(fiscal_year)
-
-            # Format the week number (e.g., "Week 01", "Week 02")
-            week_label = f"Week {int(week_number):02}"
-
-            # Initialize the week entry if not already present
-            if week_label not in result_dict:
-                result_dict[week_label] = {}
-
-            # Assign sales data to the correct fiscal year under each week
-            result_dict[week_label][fiscal_year] = sales_with_gst
-
-        # Sort the years in reverse order if needed
-        years_list.sort(reverse=True)
-
-        return jsonify({"values": result_dict, "years": years_list}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_weekly_analysis_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
 
 
 def get_sales_all_in_one_live_weekly_analysis_cr_controller():
@@ -647,92 +523,6 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
 
 
 # ----------------------------------------- Day Analysis -------------------------------------
-
-def get_sales_all_in_one_live_day_analysis_cr_controller1():
-    try:
-
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
-
-        print("------------>", period_from, period_to)
-
-        sales_data = (
-            db.session.query(
-                func.date_format(SalesAllInOneLive.invoice_date, '%M').label("month"),
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                func.week(SalesAllInOneLive.invoice_date).label("week"),
-                func.dayofweek(SalesAllInOneLive.invoice_date).label("day_of_week"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales")
-            )
-            
-        )
-
-        if period_from and period_from != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to and period_to != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
-
-        sales_data = sales_data.group_by(
-                extract("year", SalesAllInOneLive.invoice_date),
-                func.week(SalesAllInOneLive.invoice_date),
-                func.dayofweek(SalesAllInOneLive.invoice_date)
-            ).order_by(extract("year", SalesAllInOneLive.invoice_date).desc()).all()
-
-        # Prepare the structured output
-        formatted_data = []
-
-        # Create a mapping for the weekdays
-        day_mapping = {
-            1: "mon",
-            2: "tue",
-            3: "wed",
-            4: "thu",
-            5: "fri",
-            6: "sat",
-            7: "sun"
-        }
-
-        # Create a nested dictionary to hold the data grouped by year, month, and week
-        grouped_sales = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {
-            "year": None,
-            "month": None,
-            "week": None,
-            "mon": "-",
-            "tue": "-",
-            "wed": "-",
-            "thu": "-",
-            "fri": "-",
-            "sat": "-",
-            "sun": "-",
-        })))
-
-        # Populate the grouped_sales dictionary
-        for month, year, week, day_of_week, total_sales in sales_data:
-            fiscal_year = year if month in [1, 2, 3] else year + 1
-            day_key = day_mapping[day_of_week]
-            week_key = f"Week{week}"
-            grouped_sales[fiscal_year][month][week_key][day_key] = round(total_sales / 10000000, 2)
-
-        # Format the output
-        for fiscal_year, months in grouped_sales.items():
-            for month, weeks in months.items():
-                for week, sales in weeks.items():
-                    sales["year"] = str(fiscal_year)
-                    sales["month"] = month
-                    sales["week"] = week
-                    formatted_data.append(sales)
-
-        # Display the formatted data
-        for entry in formatted_data:
-            print(entry)
-        return jsonify(formatted_data), 200
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_day_analysis_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
 
 
 def get_sales_all_in_one_live_day_analysis_cr_controller():
@@ -1276,108 +1066,6 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller():
             return jsonify({"success": 0, "error": str(e)})
 
 
-def get_sales_all_in_one_live_price_breakup_one_cr_controller1():
-    try:
-
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
-
-        print("------------>", period_from, period_to)
-
-        sales_data = (
-            db.session.query(
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
-            )
-            
-        )
-
-        if period_from and period_from != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to and period_to != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
-
-        sales_data = sales_data.group_by(extract("year", SalesAllInOneLive.invoice_date)).all()
-
-        result_dict = {}
-
-        month_names = {
-            4: "Apr",
-            5: "May",
-            6: "Jun",
-            7: "Jul",
-            8: "Aug",
-            9: "Sep",
-            10: "Oct",
-            11: "Nov",
-            12: "Dec",
-            1: "Jan",
-            2: "Feb",
-            3: "Mar",
-        }
-
-        price_ranges = {
-            "0 - 5000": {},
-            "5001 - 10000": {},
-            "10001 - 15000": {},
-            "15001 - 20000": {},
-            "20001 - 25000": {},
-            ">25000": {},
-        }
-
-        years_set = set()
-
-        for year, month, total_sales, total_qty in sales_data:
-
-            if month in [1, 2, 3]:
-                fiscal_year = year
-            else:
-                fiscal_year = year + 1
-
-            financial_month = month_names[month]
-            years_set.add(fiscal_year)
-
-            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
-            sales_with_gst = round(total_sales / 10000000, 2)
-
-            price_breakup = "Null"
-            if piecewise_sales > 0 and piecewise_sales <= 5000:
-                price_breakup = "0 - 5000"
-            elif piecewise_sales > 5000 and piecewise_sales <= 10000:
-                price_breakup = "5001 - 10000"
-            elif piecewise_sales > 10000 and piecewise_sales <= 15000:
-                price_breakup = "10001 - 15000"
-            elif piecewise_sales > 15000 and piecewise_sales <= 20000:
-                price_breakup = "15001 - 20000"
-            elif piecewise_sales > 20000 and piecewise_sales <= 25000:
-                price_breakup = "20001 - 25000"
-            elif piecewise_sales > 25000:
-                price_breakup = ">25000"
-            else:
-                price_breakup = "Null"
-
-            if price_breakup != "Null":
-                price_ranges[price_breakup][fiscal_year] = sales_with_gst
-
-        # result_dict = {k: v for k, v in price_ranges.items()}
-
-        years_list = sorted(years_set, reverse=True)
-        for price_range in price_ranges:
-            for year in years_list:
-                price_ranges[price_range].setdefault(year, 0)
-
-        return jsonify({"years": years_list,"values": price_ranges}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_price_breakup_one_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
-
-
 # --------------------------------------- Price Breakup 2 ------------------------------------
 
 
@@ -1493,134 +1181,6 @@ def get_sales_all_in_one_live_price_breakup_two_cr_controller():
                 sales_data[year] = f"{sales_value} ({percentage}%)"
 
         return jsonify({"years": years_list, "values": price_ranges}), 200
-
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_price_breakup_two_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
-
-
-def get_sales_all_in_one_live_price_breakup_two_cr_controller1():
-    try:
-
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
-
-        print("------------>", period_from, period_to)
-
-        sales_data = (
-            db.session.query(
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
-            )
-            
-        )
-
-        if period_from and period_from != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to and period_to != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
-
-        sales_data = sales_data.group_by(extract("year", SalesAllInOneLive.invoice_date)).all()
-
-        result_dict = {}
-
-        price_ranges = {
-            "0 - 1000": {},
-            "1001 - 2000": {},
-            "2001 - 3000": {},
-            "3001 - 4000": {},
-            "4001 - 5000": {},
-            "5001 - 6000": {},
-            "6001 - 7000": {},
-            "7001 - 8000": {},
-            "8001 - 9000": {},
-            "9001 - 10000": {},
-            "10001 - 20000": {},
-            "20001 - 30000": {},
-            "30001 - 40000": {},
-            "40001 - 50000": {},
-            ">50000": {},
-        }
-
-        month_names = {
-            4: "Apr",
-            5: "May",
-            6: "Jun",
-            7: "Jul",
-            8: "Aug",
-            9: "Sep",
-            10: "Oct",
-            11: "Nov",
-            12: "Dec",
-            1: "Jan",
-            2: "Feb",
-            3: "Mar",
-        }
-
-        years_set = set()
-
-        for year, month, total_sales, total_qty in sales_data:
-            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
-            sales_with_gst = round(total_sales / 10000000, 2)
-
-            if month in [1, 2, 3]:
-                fiscal_year = year
-            else:
-                fiscal_year = year + 1
-
-            financial_month = month_names[month]
-
-            years_set.add(fiscal_year)
-
-            price_breakup = "Null"
-            if piecewise_sales > 0 and piecewise_sales <= 1000:
-                price_breakup = "0 - 1000"
-            elif piecewise_sales > 1000 and piecewise_sales <= 2000:
-                price_breakup = "1001 - 2000"
-            elif piecewise_sales > 2000 and piecewise_sales <= 3000:
-                price_breakup = "2001 - 3000"
-            elif piecewise_sales > 3000 and piecewise_sales <= 4000:
-                price_breakup = "3001 - 4000"
-            elif piecewise_sales > 4000 and piecewise_sales <= 5000:
-                price_breakup = "4001 - 5000"
-            elif piecewise_sales > 5000 and piecewise_sales <= 6000:
-                price_breakup = "5001 - 6000"
-            elif piecewise_sales > 6000 and piecewise_sales <= 7000:
-                price_breakup = "6001 - 7000"
-            elif piecewise_sales > 7000 and piecewise_sales <= 8000:
-                price_breakup = "7001 - 8000"
-            elif piecewise_sales > 8000 and piecewise_sales <= 9000:
-                price_breakup = "8001 - 9000"
-            elif piecewise_sales > 9000 and piecewise_sales <= 10000:
-                price_breakup = "9001 - 10000"
-            elif piecewise_sales > 10000 and piecewise_sales <= 20000:
-                price_breakup = "10001 - 20000"
-            elif piecewise_sales > 20000 and piecewise_sales <= 30000:
-                price_breakup = "20001 - 30000"
-            elif piecewise_sales > 30000 and piecewise_sales <= 40000:
-                price_breakup = "30001 - 40000"
-            elif piecewise_sales > 40000 and piecewise_sales <= 50000:
-                price_breakup = "40001 - 50000"
-            elif piecewise_sales > 50000:
-                price_breakup = ">50000"
-
-            if price_breakup != "Null":
-                price_ranges[price_breakup][fiscal_year] = sales_with_gst
-
-        # result_dict = {k: v for k, v in price_ranges.items()}
-
-        years_list = sorted(years_set, reverse=True)
-        for price_range in price_ranges:
-            for year in years_list:
-                price_ranges[price_range].setdefault(year, 0)
-
-        return jsonify({"years": years_list,"values": price_ranges}), 200
-
 
     except Exception as e:
         db.session.rollback()
