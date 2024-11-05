@@ -248,15 +248,14 @@ def get_itemsdesc_brand_model_and_section_controller():
                 SalesAllInOneLive.item_description,
             )
             
-        if brand_name:
+        if brand_name and brand_name != '':
             query = query.filter(SalesAllInOneLive.brand_name == brand_name)
-        if model_no:
+        if model_no and model_no != '':
             query = query.filter(SalesAllInOneLive.model_no == model_no)
-        if section:
+        if section and section != '':
             query = query.filter(SalesAllInOneLive.section == section)
-        if item_description:
+        if item_description and item_description != '':
             query = query.filter(SalesAllInOneLive.item_description == item_description)
-
 
         result = query.distinct().all()
         
