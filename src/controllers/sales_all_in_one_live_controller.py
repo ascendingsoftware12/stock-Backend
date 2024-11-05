@@ -9,156 +9,157 @@ from collections import defaultdict
 # ---------------------------------------- Main Methods ----------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------
 
+
 def get_sales_all_in_one_live_ytd_controller(factor):
-    if factor == 'cr':
+    if factor == "cr":
         return get_sales_all_in_one_live_ytd_cr_controller()
-    elif factor == 'cr_without_gst':
+    elif factor == "cr_without_gst":
         pass
-    elif factor == 'lk':
+    elif factor == "lk":
         pass
-    elif factor == 'lk_without_gst':
+    elif factor == "lk_without_gst":
         pass
-    elif factor == 'sales_qty':
+    elif factor == "sales_qty":
         pass
-    elif factor == 'total_sales':
+    elif factor == "total_sales":
         pass
-    elif factor == 'gp_lk':
+    elif factor == "gp_lk":
         pass
 
 
 def get_sales_all_in_one_live_monthly_controller(factor):
-    if factor == 'cr':
+    if factor == "cr":
         return get_sales_all_in_one_live_month_cr_controller()
-    elif factor == 'cr_without_gst':
+    elif factor == "cr_without_gst":
         pass
-    elif factor == 'lk':
+    elif factor == "lk":
         pass
-    elif factor == 'lk_without_gst':
+    elif factor == "lk_without_gst":
         pass
-    elif factor == 'sales_qty':
+    elif factor == "sales_qty":
         pass
-    elif factor == 'total_sales':
+    elif factor == "total_sales":
         pass
-    elif factor == 'gp_lk':
+    elif factor == "gp_lk":
         pass
 
 
 def get_sales_all_in_one_live_weekly_analysis_controller(factor):
-    if factor == 'cr':
+    if factor == "cr":
         return get_sales_all_in_one_live_weekly_analysis_cr_controller()
-    elif factor == 'cr_without_gst':
+    elif factor == "cr_without_gst":
         pass
-    elif factor == 'lk':
+    elif factor == "lk":
         pass
-    elif factor == 'lk_without_gst':
+    elif factor == "lk_without_gst":
         pass
-    elif factor == 'sales_qty':
+    elif factor == "sales_qty":
         pass
-    elif factor == 'total_sales':
+    elif factor == "total_sales":
         pass
-    elif factor == 'gp_lk':
+    elif factor == "gp_lk":
         pass
 
 
 def get_sales_all_in_one_live_day_analysis_controller(factor):
-    if factor == 'cr':
+    if factor == "cr":
         return get_sales_all_in_one_live_day_analysis_cr_controller()
-    elif factor == 'cr_without_gst':
+    elif factor == "cr_without_gst":
         pass
-    elif factor == 'lk':
+    elif factor == "lk":
         pass
-    elif factor == 'lk_without_gst':
+    elif factor == "lk_without_gst":
         pass
-    elif factor == 'sales_qty':
+    elif factor == "sales_qty":
         pass
-    elif factor == 'total_sales':
+    elif factor == "total_sales":
         pass
-    elif factor == 'gp_lk':
+    elif factor == "gp_lk":
         pass
 
 
 def get_sales_all_in_one_live_product_dimension_controller(factor):
-    if factor == 'cr':
+    if factor == "cr":
         return get_sales_all_in_one_live_product_dimension_cr_controller()
-    elif factor == 'cr_without_gst':
+    elif factor == "cr_without_gst":
         pass
-    elif factor == 'lk':
+    elif factor == "lk":
         pass
-    elif factor == 'lk_without_gst':
+    elif factor == "lk_without_gst":
         pass
-    elif factor == 'sales_qty':
+    elif factor == "sales_qty":
         pass
-    elif factor == 'total_sales':
+    elif factor == "total_sales":
         pass
-    elif factor == 'gp_lk':
+    elif factor == "gp_lk":
         pass
 
 
 def get_sales_all_in_one_live_brand_dimension_controller(factor):
-    if factor == 'cr':
+    if factor == "cr":
         return get_sales_all_in_one_live_brand_dimension_cr_controller()
-    elif factor == 'cr_without_gst':
+    elif factor == "cr_without_gst":
         pass
-    elif factor == 'lk':
+    elif factor == "lk":
         pass
-    elif factor == 'lk_without_gst':
+    elif factor == "lk_without_gst":
         pass
-    elif factor == 'sales_qty':
+    elif factor == "sales_qty":
         pass
-    elif factor == 'total_sales':
+    elif factor == "total_sales":
         pass
-    elif factor == 'gp_lk':
+    elif factor == "gp_lk":
         pass
 
 
 def get_sales_all_in_one_live_item_dimension_controller(factor):
-    if factor == 'cr':
+    if factor == "cr":
         return get_sales_all_in_one_live_item_dimension_cr_controller()
-    elif factor == 'cr_without_gst':
+    elif factor == "cr_without_gst":
         pass
-    elif factor == 'lk':
+    elif factor == "lk":
         pass
-    elif factor == 'lk_without_gst':
+    elif factor == "lk_without_gst":
         pass
-    elif factor == 'sales_qty':
+    elif factor == "sales_qty":
         pass
-    elif factor == 'total_sales':
+    elif factor == "total_sales":
         pass
-    elif factor == 'gp_lk':
+    elif factor == "gp_lk":
         pass
 
 
 def get_sales_all_in_one_live_price_breakup_one_controller(factor):
-    if factor == 'cr':
+    if factor == "cr":
         return get_sales_all_in_one_live_price_breakup_one_cr_controller()
-    elif factor == 'cr_without_gst':
+    elif factor == "cr_without_gst":
         pass
-    elif factor == 'lk':
+    elif factor == "lk":
         pass
-    elif factor == 'lk_without_gst':
+    elif factor == "lk_without_gst":
         pass
-    elif factor == 'sales_qty':
+    elif factor == "sales_qty":
         pass
-    elif factor == 'total_sales':
+    elif factor == "total_sales":
         pass
-    elif factor == 'gp_lk':
+    elif factor == "gp_lk":
         pass
 
 
 def get_sales_all_in_one_live_price_breakup_two_controller(factor):
-    if factor == 'cr':
+    if factor == "cr":
         return get_sales_all_in_one_live_price_breakup_two_cr_controller()
-    elif factor == 'cr_without_gst':
+    elif factor == "cr_without_gst":
         pass
-    elif factor == 'lk':
+    elif factor == "lk":
         pass
-    elif factor == 'lk_without_gst':
+    elif factor == "lk_without_gst":
         pass
-    elif factor == 'sales_qty':
+    elif factor == "sales_qty":
         pass
-    elif factor == 'total_sales':
+    elif factor == "total_sales":
         pass
-    elif factor == 'gp_lk':
+    elif factor == "gp_lk":
         pass
 
 
@@ -167,10 +168,10 @@ def get_sales_all_in_one_live_price_breakup_two_controller(factor):
 # ----------------------------------------------------------------------------------------------------------
 
 
-
 # ----------------------------------------------------------------------------------------------------------
 # ----------------------------------------- Utility Functions  ---------------------------------------------
 # ----------------------------------------------------------------------------------------------------------
+
 
 def month_name(month_number):
     months = [
@@ -188,6 +189,97 @@ def month_name(month_number):
         "Dec",
     ]
     return months[month_number - 1]
+
+
+def get_unique_invoice_dates_controller():
+    try:
+        result = db.session.query(SalesAllInOneLive.invoice_date.distinct()).all()
+        result_list = [row[0] for row in result]
+
+        return jsonify(result_list)
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_unique_invoice_dates_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+def get_unique_sale_types_controller():
+    try:
+        result = db.session.query(SalesAllInOneLive.sale_type.distinct()).all()
+        result_list = [row[0] for row in result]
+
+        return jsonify(result_list)
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_unique_sale_types_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+def get_unique_srn_flags_controller():
+    try:
+        result = db.session.query(SalesAllInOneLive.srn_flag.distinct()).all()
+        result_list = [row[0] for row in result]
+
+        return jsonify(result_list)
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_unique_srn_flags_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+def get_itemsdesc_brand_model_and_section_controller():
+    try:
+    
+        brand_name = request.args.get("brand_name")
+        model_no = request.args.get("model_no")
+        section = request.args.get("section")
+        item_description = request.args.get("item_description")
+    
+        query = db.session.query(
+                SalesAllInOneLive.brand_name,
+                SalesAllInOneLive.model_no,
+                SalesAllInOneLive.section,
+                SalesAllInOneLive.item_description,
+            )
+            
+        if brand_name:
+            query = query.filter(SalesAllInOneLive.brand_name == brand_name)
+        if model_no:
+            query = query.filter(SalesAllInOneLive.model_no == model_no)
+        if section:
+            query = query.filter(SalesAllInOneLive.section == section)
+        if item_description:
+            query = query.filter(SalesAllInOneLive.item_description == item_description)
+
+
+        result = query.distinct().all()
+        
+        brand_names = list(set(row.brand_name for row in result if row.brand_name))
+        model_nos = list(set(row.model_no for row in result if row.model_no))
+        sections = list(set(row.section for row in result if row.section))
+        item_descriptions = list(set(row.item_description for row in result if row.item_description))
+
+        response_data = {
+            "brand_names": brand_names,
+            "model_nos": model_nos,
+            "sections": sections,
+            "item_descriptions": item_descriptions
+        }
+
+        return jsonify(response_data)
+    
+    except Exception as e:
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_itemsdesc_brand_model_and_section_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -258,7 +350,6 @@ def get_sales_all_in_one_live_controller():
 # ----------------------------------------------------------------------------------------------------------
 
 
-
 # ----------------------------------------------------------------------------------------------------------
 # ------------------------------------------------- Cr -----------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------
@@ -268,11 +359,13 @@ def get_sales_all_in_one_live_controller():
 
 def get_sales_all_in_one_live_ytd_cr_controller():
     try:
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
+        period_from = request.args.get("period_from")
+        period_to = request.args.get("period_to")
 
         # Get the latest invoice date to determine the fiscal year and month
-        latest_invoice_date = db.session.query(func.max(SalesAllInOneLive.invoice_date)).scalar()
+        latest_invoice_date = db.session.query(
+            func.max(SalesAllInOneLive.invoice_date)
+        ).scalar()
         if not latest_invoice_date:
             return jsonify({"success": 0, "error": "No sales data found."}), 404
 
@@ -295,9 +388,10 @@ def get_sales_all_in_one_live_ytd_cr_controller():
                 db.session.query(func.sum(SalesAllInOneLive.total_sales))
                 .filter(
                     SalesAllInOneLive.invoice_date >= start_date,
-                    SalesAllInOneLive.invoice_date <= end_date
+                    SalesAllInOneLive.invoice_date <= end_date,
                 )
-                .scalar() or 0
+                .scalar()
+                or 0
             )
 
             sales_with_gst = round(total_sales / 10000000, 2)
@@ -305,13 +399,17 @@ def get_sales_all_in_one_live_ytd_cr_controller():
             # Calculate YoY percentage change if previous year's sales data is available
             if previous_sales is not None:
                 if previous_sales != 0:
-                    percentage_change = round(((sales_with_gst - previous_sales) / previous_sales) * 100, 2)
+                    percentage_change = round(
+                        ((sales_with_gst - previous_sales) / previous_sales) * 100, 2
+                    )
                     sales_with_gst_display = f"{sales_with_gst} ({'+' if percentage_change >= 0 else ''}{percentage_change}%)"
                 else:
                     # Handle division by zero case for previous_sales
                     sales_with_gst_display = f"{sales_with_gst} (0.00%)"
             else:
-                sales_with_gst_display = f"{sales_with_gst} (0.00%)"  # No previous year to compare
+                sales_with_gst_display = (
+                    f"{sales_with_gst} (0.00%)"  # No previous year to compare
+                )
 
             # Store result with YoY change
             result[year + 1] = sales_with_gst_display
@@ -336,19 +434,19 @@ def get_sales_all_in_one_live_ytd_cr_controller():
 
 def get_sales_all_in_one_live_month_cr_controller():
     try:
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
+        period_from = request.args.get("period_from")
+        period_to = request.args.get("period_to")
 
-        sales_data = (
-            db.session.query(
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-            )
+        sales_data = db.session.query(
+            extract("year", SalesAllInOneLive.invoice_date).label("year"),
+            extract("month", SalesAllInOneLive.invoice_date).label("month"),
+            func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
         )
 
         if period_from:
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+            sales_data = sales_data.filter(
+                SalesAllInOneLive.invoice_date >= period_from
+            )
         if period_to:
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
@@ -361,8 +459,18 @@ def get_sales_all_in_one_live_month_cr_controller():
         yearly_totals = {}
 
         month_names = {
-            4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep",
-            10: "Oct", 11: "Nov", 12: "Dec", 1: "Jan", 2: "Feb", 3: "Mar",
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
         }
 
         previous_sales = {}
@@ -376,12 +484,20 @@ def get_sales_all_in_one_live_month_cr_controller():
             financial_month = month_names[month]
             sales_with_gst = round(total_sales / 10000000, 2)
 
-            previous_month_sales = previous_sales.get(fiscal_year, {}).get(month - 1 if month > 1 else 12)
+            previous_month_sales = previous_sales.get(fiscal_year, {}).get(
+                month - 1 if month > 1 else 12
+            )
             if previous_month_sales is not None:
-                percentage_change = round(((sales_with_gst - previous_month_sales) / previous_month_sales) * 100, 2)
+                percentage_change = round(
+                    ((sales_with_gst - previous_month_sales) / previous_month_sales)
+                    * 100,
+                    2,
+                )
                 change_display = f"{sales_with_gst} ({'+' if percentage_change >= 0 else ''}{percentage_change}%)"
             else:
-                change_display = f"{sales_with_gst} (0.00%)"  # No previous month for comparison
+                change_display = (
+                    f"{sales_with_gst} (0.00%)"  # No previous month for comparison
+                )
 
             if fiscal_year not in yearly_totals:
                 yearly_totals[fiscal_year] = {"FY": str(fiscal_year), "Total": 0}
@@ -413,8 +529,8 @@ def get_sales_all_in_one_live_month_cr_controller():
 
 def get_sales_all_in_one_live_weekly_analysis_cr_controller():
     try:
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
+        period_from = request.args.get("period_from")
+        period_to = request.args.get("period_to")
 
         print("------------>", period_from, period_to)
 
@@ -422,37 +538,55 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
         fiscal_start_day = 1
 
         fiscal_start_date = func.concat(
-            func.year(SalesAllInOneLive.invoice_date) - case(
-                (extract('month', SalesAllInOneLive.invoice_date) < fiscal_start_month, 1),
-                else_=0
+            func.year(SalesAllInOneLive.invoice_date)
+            - case(
+                (
+                    extract("month", SalesAllInOneLive.invoice_date)
+                    < fiscal_start_month,
+                    1,
+                ),
+                else_=0,
             ),
-            '-',
+            "-",
             fiscal_start_month,
-            '-',
-            fiscal_start_day
+            "-",
+            fiscal_start_day,
         )
 
-        week_number = func.floor(func.datediff(SalesAllInOneLive.invoice_date, fiscal_start_date) / 7) + 1
-
-        weekly_sales = (
-            db.session.query(
-                week_number.label("week_number"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                func.round(func.sum(SalesAllInOneLive.total_sales) / 10000000, 2).label("sales_with_gst")
+        week_number = (
+            func.floor(
+                func.datediff(SalesAllInOneLive.invoice_date, fiscal_start_date) / 7
             )
+            + 1
+        )
+
+        weekly_sales = db.session.query(
+            week_number.label("week_number"),
+            extract("month", SalesAllInOneLive.invoice_date).label("month"),
+            extract("year", SalesAllInOneLive.invoice_date).label("year"),
+            func.round(func.sum(SalesAllInOneLive.total_sales) / 10000000, 2).label(
+                "sales_with_gst"
+            ),
         )
 
         if period_from and period_from != "":
-            weekly_sales = weekly_sales.filter(SalesAllInOneLive.invoice_date >= period_from)
+            weekly_sales = weekly_sales.filter(
+                SalesAllInOneLive.invoice_date >= period_from
+            )
         if period_to and period_to != "":
-            weekly_sales = weekly_sales.filter(SalesAllInOneLive.invoice_date <= period_to)
+            weekly_sales = weekly_sales.filter(
+                SalesAllInOneLive.invoice_date <= period_to
+            )
 
-        weekly_sales = weekly_sales.group_by(
-            week_number,
-            extract("year", SalesAllInOneLive.invoice_date),
-            extract("month", SalesAllInOneLive.invoice_date)
-        ).order_by(week_number).all()
+        weekly_sales = (
+            weekly_sales.group_by(
+                week_number,
+                extract("year", SalesAllInOneLive.invoice_date),
+                extract("month", SalesAllInOneLive.invoice_date),
+            )
+            .order_by(week_number)
+            .all()
+        )
 
         month_names = {
             4: "Apr",
@@ -469,9 +603,9 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
             3: "Mar",
         }
 
-        result_dict = {} 
-        years_list = []   
-        yearly_totals = {}  
+        result_dict = {}
+        years_list = []
+        yearly_totals = {}
 
         for week_number, month, year, sales_with_gst in weekly_sales:
             if week_number > 52:
@@ -504,11 +638,17 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
                     result_dict[week_label][fiscal_year]["percentage"] = percentage
 
                     if data["sales_with_gst"] == 0:
-                            result_dict[week_label][fiscal_year] = f"{data['sales_with_gst']} ({0.00}%)"
+                        result_dict[week_label][
+                            fiscal_year
+                        ] = f"{data['sales_with_gst']} ({0.00}%)"
                     else:
-                        percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
+                        percentage = round(
+                            (data["sales_with_gst"] / yearly_total) * 100, 2
+                        )
                         # result_dict[week_label][fiscal_year]["percentage"] = percentage
-                        result_dict[week_label][fiscal_year] = f"{data['sales_with_gst']} ({percentage}%)"
+                        result_dict[week_label][
+                            fiscal_year
+                        ] = f"{data['sales_with_gst']} ({percentage}%)"
 
         years_list.sort(reverse=True)
 
@@ -527,31 +667,35 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
 
 def get_sales_all_in_one_live_day_analysis_cr_controller():
     try:
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
+        period_from = request.args.get("period_from")
+        period_to = request.args.get("period_to")
 
         print("------------>", period_from, period_to)
 
-        sales_data = (
-            db.session.query(
-                func.date_format(SalesAllInOneLive.invoice_date, '%M').label("month"),
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                func.week(SalesAllInOneLive.invoice_date).label("week"),
-                func.dayofweek(SalesAllInOneLive.invoice_date).label("day_of_week"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales")
-            )
+        sales_data = db.session.query(
+            func.date_format(SalesAllInOneLive.invoice_date, "%M").label("month"),
+            extract("year", SalesAllInOneLive.invoice_date).label("year"),
+            func.week(SalesAllInOneLive.invoice_date).label("week"),
+            func.dayofweek(SalesAllInOneLive.invoice_date).label("day_of_week"),
+            func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
         )
 
         if period_from and period_from != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+            sales_data = sales_data.filter(
+                SalesAllInOneLive.invoice_date >= period_from
+            )
         if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
-        sales_data = sales_data.group_by(
-            extract("year", SalesAllInOneLive.invoice_date),
-            func.week(SalesAllInOneLive.invoice_date),
-            func.dayofweek(SalesAllInOneLive.invoice_date)
-        ).order_by(extract("year", SalesAllInOneLive.invoice_date).desc()).all()
+        sales_data = (
+            sales_data.group_by(
+                extract("year", SalesAllInOneLive.invoice_date),
+                func.week(SalesAllInOneLive.invoice_date),
+                func.dayofweek(SalesAllInOneLive.invoice_date),
+            )
+            .order_by(extract("year", SalesAllInOneLive.invoice_date).desc())
+            .all()
+        )
 
         formatted_data = []
 
@@ -562,21 +706,27 @@ def get_sales_all_in_one_live_day_analysis_cr_controller():
             4: "thu",
             5: "fri",
             6: "sat",
-            7: "sun"
+            7: "sun",
         }
 
-        grouped_sales = defaultdict(lambda: defaultdict(lambda: defaultdict(lambda: {
-            "year": None,
-            "month": None,
-            "week": None,
-            "mon": {"sales_with_gst": "-", "percentage": "-"},
-            "tue": {"sales_with_gst": "-", "percentage": "-"},
-            "wed": {"sales_with_gst": "-", "percentage": "-"},
-            "thu": {"sales_with_gst": "-", "percentage": "-"},
-            "fri": {"sales_with_gst": "-", "percentage": "-"},
-            "sat": {"sales_with_gst": "-", "percentage": "-"},
-            "sun": {"sales_with_gst": "-", "percentage": "-"},
-        })))
+        grouped_sales = defaultdict(
+            lambda: defaultdict(
+                lambda: defaultdict(
+                    lambda: {
+                        "year": None,
+                        "month": None,
+                        "week": None,
+                        "mon": {"sales_with_gst": "-", "percentage": "-"},
+                        "tue": {"sales_with_gst": "-", "percentage": "-"},
+                        "wed": {"sales_with_gst": "-", "percentage": "-"},
+                        "thu": {"sales_with_gst": "-", "percentage": "-"},
+                        "fri": {"sales_with_gst": "-", "percentage": "-"},
+                        "sat": {"sales_with_gst": "-", "percentage": "-"},
+                        "sun": {"sales_with_gst": "-", "percentage": "-"},
+                    }
+                )
+            )
+        )
 
         weekly_totals = defaultdict(lambda: defaultdict(float))
 
@@ -586,7 +736,9 @@ def get_sales_all_in_one_live_day_analysis_cr_controller():
             week_key = f"Week{week}"
 
             sales_with_gst = round(total_sales / 10000000, 2)
-            grouped_sales[fiscal_year][month][week_key][day_key]["sales_with_gst"] = sales_with_gst
+            grouped_sales[fiscal_year][month][week_key][day_key][
+                "sales_with_gst"
+            ] = sales_with_gst
 
             weekly_totals[fiscal_year][week_key] += sales_with_gst
 
@@ -597,8 +749,13 @@ def get_sales_all_in_one_live_day_analysis_cr_controller():
                     if weekly_total > 0:
                         for day in day_mapping.values():
                             if sales[day]["sales_with_gst"] != "-":
-                                percentage = round((sales[day]["sales_with_gst"] / weekly_total) * 100, 2)
-                                sales[day] = f"{sales[day]['sales_with_gst']} ({percentage}%)"
+                                percentage = round(
+                                    (sales[day]["sales_with_gst"] / weekly_total) * 100,
+                                    2,
+                                )
+                                sales[day] = (
+                                    f"{sales[day]['sales_with_gst']} ({percentage}%)"
+                                )
                                 # sales[day]["percentage"] = percentage
                             else:
                                 sales[day] = f"{0.00} ({0.00}%)"
@@ -627,22 +784,22 @@ def get_sales_all_in_one_live_day_analysis_cr_controller():
 def get_sales_all_in_one_live_product_dimension_cr_controller():
     try:
 
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
+        period_from = request.args.get("period_from")
+        period_to = request.args.get("period_to")
 
         print("------------>", period_from, period_to)
 
-        sales_data = (
-            db.session.query(
-                SalesAllInOneLive.product_group,
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-            )
+        sales_data = db.session.query(
+            SalesAllInOneLive.product_group,
+            extract("year", SalesAllInOneLive.invoice_date).label("year"),
+            extract("month", SalesAllInOneLive.invoice_date).label("month"),
+            func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
         )
 
         if period_from and period_from != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+            sales_data = sales_data.filter(
+                SalesAllInOneLive.invoice_date >= period_from
+            )
         if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
@@ -680,7 +837,7 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
                 fiscal_year = year + 1
 
             financial_month = month_names[month]
-            
+
             if fiscal_year not in years_list:
                 years_list.append(fiscal_year)
 
@@ -702,7 +859,7 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
             # result_dict[product_group][fiscal_year][financial_month] = sales_with_gst
 
             yearly_totals[product_group][fiscal_year] += sales_with_gst
-            
+
             result_dict[product_group][fiscal_year][financial_month] = {
                 "sales_with_gst": sales_with_gst,
             }
@@ -713,14 +870,20 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
                 # if yearly_total > 0:
                 for month, data in months_data.items():
                     if data["sales_with_gst"] == 0:
-                        result_dict[product_group][fiscal_year][month] = f"{data['sales_with_gst']} ({0.00}%)"
+                        result_dict[product_group][fiscal_year][
+                            month
+                        ] = f"{data['sales_with_gst']} ({0.00}%)"
                     else:
-                        percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
-                    # result_dict[product_group][fiscal_year][month]["percentage"] = percentage
-                        result_dict[product_group][fiscal_year][month] = f"{data['sales_with_gst']} ({percentage}%)"
+                        percentage = round(
+                            (data["sales_with_gst"] / yearly_total) * 100, 2
+                        )
+                        # result_dict[product_group][fiscal_year][month]["percentage"] = percentage
+                        result_dict[product_group][fiscal_year][
+                            month
+                        ] = f"{data['sales_with_gst']} ({percentage}%)"
 
         years_list.reverse()
-        return jsonify({"years": years_list,"values": result_dict}), 200
+        return jsonify({"years": years_list, "values": result_dict}), 200
 
     except Exception as e:
         db.session.rollback()
@@ -736,33 +899,31 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
 def get_sales_all_in_one_live_brand_dimension_cr_controller():
     try:
 
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
+        period_from = request.args.get("period_from")
+        period_to = request.args.get("period_to")
 
         print("------------>", period_from, period_to)
 
-        sales_data = (
-            db.session.query(
-                SalesAllInOneLive.brand_name,
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-            )
-            
+        sales_data = db.session.query(
+            SalesAllInOneLive.brand_name,
+            extract("year", SalesAllInOneLive.invoice_date).label("year"),
+            extract("month", SalesAllInOneLive.invoice_date).label("month"),
+            func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
         )
 
         if period_from and period_from != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+            sales_data = sales_data.filter(
+                SalesAllInOneLive.invoice_date >= period_from
+            )
         if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
-
         sales_data = sales_data.group_by(
-                SalesAllInOneLive.brand_name,
-                extract("year", SalesAllInOneLive.invoice_date),
-                extract("month", SalesAllInOneLive.invoice_date),
-            ).all()
-        
+            SalesAllInOneLive.brand_name,
+            extract("year", SalesAllInOneLive.invoice_date),
+            extract("month", SalesAllInOneLive.invoice_date),
+        ).all()
+
         result_dict = {}
 
         month_names = {
@@ -793,8 +954,7 @@ def get_sales_all_in_one_live_brand_dimension_cr_controller():
             financial_month = month_names[month]
 
             if fiscal_year not in years_list:
-               years_list.append(fiscal_year)
-
+                years_list.append(fiscal_year)
 
             total_sales = float(total_sales)
             sales_with_gst = round(total_sales / 10000000, 2)
@@ -814,25 +974,31 @@ def get_sales_all_in_one_live_brand_dimension_cr_controller():
             # result_dict[brand_name][fiscal_year][financial_month] = sales_with_gst
 
             yearly_totals[brand_name][fiscal_year] += sales_with_gst
-            
+
             result_dict[brand_name][fiscal_year][financial_month] = {
                 "sales_with_gst": sales_with_gst,
             }
-        
+
         for brand_name, fiscal_year_data in result_dict.items():
             for fiscal_year, months_data in fiscal_year_data.items():
                 yearly_total = yearly_totals[brand_name][fiscal_year]
                 # if yearly_total > 0:
                 for month, data in months_data.items():
                     if data["sales_with_gst"] == 0:
-                        result_dict[brand_name][fiscal_year][month] = f"{data['sales_with_gst']} ({0.00}%)"
+                        result_dict[brand_name][fiscal_year][
+                            month
+                        ] = f"{data['sales_with_gst']} ({0.00}%)"
                     else:
-                        percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
-                    # result_dict[brand_name][fiscal_year][month]["percentage"] = percentage
-                        result_dict[brand_name][fiscal_year][month] = f"{data['sales_with_gst']} ({percentage}%)"
+                        percentage = round(
+                            (data["sales_with_gst"] / yearly_total) * 100, 2
+                        )
+                        # result_dict[brand_name][fiscal_year][month]["percentage"] = percentage
+                        result_dict[brand_name][fiscal_year][
+                            month
+                        ] = f"{data['sales_with_gst']} ({percentage}%)"
 
         years_list.reverse()
-        return jsonify({"years": years_list,"values": result_dict}), 200
+        return jsonify({"years": years_list, "values": result_dict}), 200
 
     except Exception as e:
         db.session.rollback()
@@ -848,34 +1014,34 @@ def get_sales_all_in_one_live_brand_dimension_cr_controller():
 def get_sales_all_in_one_live_item_dimension_cr_controller():
     try:
 
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
+        period_from = request.args.get("period_from")
+        period_to = request.args.get("period_to")
 
         print("------------>", period_from, period_to)
 
         # if period_from is None or period_to is None:
         #     return jsonify({"error": "Both period_from and period_to are required", "success": 0})
 
-        sales_data = (
-            db.session.query(
-                SalesAllInOneLive.actual_item,
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-            )
+        sales_data = db.session.query(
+            SalesAllInOneLive.actual_item,
+            extract("year", SalesAllInOneLive.invoice_date).label("year"),
+            extract("month", SalesAllInOneLive.invoice_date).label("month"),
+            func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
         )
 
         if period_from and period_from != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+            sales_data = sales_data.filter(
+                SalesAllInOneLive.invoice_date >= period_from
+            )
         if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
         sales_data = sales_data.group_by(
-                SalesAllInOneLive.actual_item,
-                extract("year", SalesAllInOneLive.invoice_date),
-                extract("month", SalesAllInOneLive.invoice_date),
-            ).all()
-        
+            SalesAllInOneLive.actual_item,
+            extract("year", SalesAllInOneLive.invoice_date),
+            extract("month", SalesAllInOneLive.invoice_date),
+        ).all()
+
         result_dict = {}
 
         month_names = {
@@ -926,7 +1092,7 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
             # result_dict[actual_item][fiscal_year][financial_month] = sales_with_gst
 
             yearly_totals[actual_item][fiscal_year] += sales_with_gst
-            
+
             result_dict[actual_item][fiscal_year][financial_month] = {
                 "sales_with_gst": sales_with_gst,
             }
@@ -937,14 +1103,20 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
                 # if yearly_total > 0:
                 for month, data in months_data.items():
                     if data["sales_with_gst"] == 0:
-                        result_dict[actual_item][fiscal_year][month] = f"{data['sales_with_gst']} ({0.00}%)"
+                        result_dict[actual_item][fiscal_year][
+                            month
+                        ] = f"{data['sales_with_gst']} ({0.00}%)"
                     else:
-                        percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
-                    # result_dict[actual_item][fiscal_year][month]["percentage"] = percentage
-                        result_dict[actual_item][fiscal_year][month] = f"{data['sales_with_gst']} ({percentage}%)"
+                        percentage = round(
+                            (data["sales_with_gst"] / yearly_total) * 100, 2
+                        )
+                        # result_dict[actual_item][fiscal_year][month]["percentage"] = percentage
+                        result_dict[actual_item][fiscal_year][
+                            month
+                        ] = f"{data['sales_with_gst']} ({percentage}%)"
 
         years_list.reverse()
-        return jsonify({"years": years_list,"values": result_dict}), 200
+        return jsonify({"years": years_list, "values": result_dict}), 200
 
     except Exception as e:
         db.session.rollback()
@@ -959,26 +1131,28 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
 
 def get_sales_all_in_one_live_price_breakup_one_cr_controller():
     try:
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
+        period_from = request.args.get("period_from")
+        period_to = request.args.get("period_to")
 
         print("------------>", period_from, period_to)
 
-        sales_data = (
-            db.session.query(
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
-            )
+        sales_data = db.session.query(
+            extract("year", SalesAllInOneLive.invoice_date).label("year"),
+            extract("month", SalesAllInOneLive.invoice_date).label("month"),
+            func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+            func.sum(SalesAllInOneLive.sales_qty).label("total_qty"),
         )
 
         if period_from and period_from != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+            sales_data = sales_data.filter(
+                SalesAllInOneLive.invoice_date >= period_from
+            )
         if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
-        sales_data = sales_data.group_by(extract("year", SalesAllInOneLive.invoice_date)).all()
+        sales_data = sales_data.group_by(
+            extract("year", SalesAllInOneLive.invoice_date)
+        ).all()
 
         result_dict = {}
 
@@ -1048,7 +1222,11 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller():
             for year in years_list:
                 sales_value = sales_data.get(year, 0)
                 total_sales = total_sales_by_year[year]
-                percentage = round((sales_value / total_sales) * 100, 2) if total_sales > 0 else 0
+                percentage = (
+                    round((sales_value / total_sales) * 100, 2)
+                    if total_sales > 0
+                    else 0
+                )
                 # sales_data[year] = {
                 #     "sales_with_gst": sales_value,
                 #     "percentage": percentage
@@ -1071,26 +1249,28 @@ def get_sales_all_in_one_live_price_breakup_one_cr_controller():
 
 def get_sales_all_in_one_live_price_breakup_two_cr_controller():
     try:
-        period_from = request.args.get('period_from')
-        period_to = request.args.get('period_to')
+        period_from = request.args.get("period_from")
+        period_to = request.args.get("period_to")
 
         print("------------>", period_from, period_to)
 
-        sales_data = (
-            db.session.query(
-                extract("year", SalesAllInOneLive.invoice_date).label("year"),
-                extract("month", SalesAllInOneLive.invoice_date).label("month"),
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-                func.sum(SalesAllInOneLive.sales_qty).label("total_qty")
-            )
+        sales_data = db.session.query(
+            extract("year", SalesAllInOneLive.invoice_date).label("year"),
+            extract("month", SalesAllInOneLive.invoice_date).label("month"),
+            func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+            func.sum(SalesAllInOneLive.sales_qty).label("total_qty"),
         )
 
         if period_from and period_from != "":
-            sales_data = sales_data.filter(SalesAllInOneLive.invoice_date >= period_from)
+            sales_data = sales_data.filter(
+                SalesAllInOneLive.invoice_date >= period_from
+            )
         if period_to and period_to != "":
             sales_data = sales_data.filter(SalesAllInOneLive.invoice_date <= period_to)
 
-        sales_data = sales_data.group_by(extract("year", SalesAllInOneLive.invoice_date)).all()
+        sales_data = sales_data.group_by(
+            extract("year", SalesAllInOneLive.invoice_date)
+        ).all()
 
         result_dict = {}
 
@@ -1172,7 +1352,11 @@ def get_sales_all_in_one_live_price_breakup_two_cr_controller():
             for year in years_list:
                 sales_value = sales_data.get(year, 0)
                 total_sales = total_sales_by_year[year]
-                percentage = round((sales_value / total_sales) * 100, 2) if total_sales > 0 else 0
+                percentage = (
+                    round((sales_value / total_sales) * 100, 2)
+                    if total_sales > 0
+                    else 0
+                )
                 # sales_data[year] = {
                 #     "sales_with_gst": sales_value,
                 #     "percentage": percentage
@@ -1253,9 +1437,6 @@ def get_sales_all_in_one_live_price_breakup_two_cr_controller():
 # ----------------------------------------------------------------------------------------------------------
 # -------------------------------------------- GP Lk (END) -------------------------------------------------
 # ----------------------------------------------------------------------------------------------------------
-
-
-
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -1593,4 +1774,3 @@ def get_sales_all_in_one_live_month_gp_lk_controller():
 
 
 # ----------------------------------------------------------------------------------------------------------
-

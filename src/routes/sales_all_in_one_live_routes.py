@@ -66,6 +66,29 @@ def get_sales_all_in_one_live_price_breakup_two(factor):
 def get_sales_all_in_one_live():
     return get_sales_all_in_one_live_controller()
 
+# -----------------------------------------------------
+# Search Utils 
+# -----------------------------------------------------
+
+@sales_all_in_one_live_bp.route("/unique_srn_flags", methods=["GET"])
+def get_unique_srn_flags():
+    return get_unique_srn_flags_controller()
+
+@sales_all_in_one_live_bp.route("/unique_invoice_dates", methods=["GET"])
+def get_unique_invoice_dates():
+    return get_unique_invoice_dates_controller()
+
+@sales_all_in_one_live_bp.route("/unique_sale_types", methods=["GET"])
+def get_unique_sale_types():
+    return get_unique_sale_types_controller()
+
+@sales_all_in_one_live_bp.route("/itemsdesc_brand_model_and_section", methods=["GET"])
+def get_itemsdesc_brand_model_and_section():
+    return get_itemsdesc_brand_model_and_section_controller()
+
+
+
+# -----------------------------------------------------
 
 # -----------------------------------------------------
 # ytd
