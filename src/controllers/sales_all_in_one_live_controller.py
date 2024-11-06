@@ -1061,7 +1061,8 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
         yearly_totals = {}
 
         for actual_item, year, month, total_sales in sales_data:
-
+            if actual_item is None or actual_item == "":
+                actual_item="Emp"  # Skip this iteration if any value is None
             if month in [1, 2, 3]:
                 fiscal_year = year
             else:
@@ -1120,6 +1121,7 @@ def get_sales_all_in_one_live_item_dimension_cr_controller():
                         ] = f"{data['sales_with_gst']} ({percentage}%)"
 
         years_list.reverse()
+        print({"years": years_list, "values": result_dict, "max": max_sales_with_gst})
         return jsonify({"years": years_list, "values": result_dict, "max": max_sales_with_gst}), 200
 
     except Exception as e:

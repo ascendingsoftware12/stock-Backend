@@ -23,23 +23,37 @@ def create_app():
     # Handling CORS
     CORS(app)
     app.config['CORS_HEADERS'] = 'Content-Type'
+    print(os.getenv("DB_USER"))
     # Config section
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         # "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}".format(
         #     DB_USER="appadmin",
         #     DB_PASSWORD="wGatap1926",
-        #     DB_HOST="182.16.16.28",
+        #     DB_HOST="192.168.0.222", #pytcm
         #     DB_NAME="apx_stock_apps",
         #     DB_PORT="3306",            
         # )
-        "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}".format(
-            DB_USER=os.getenv("DB_USER"),
-            DB_PASSWORD=os.getenv("DB_PASSWORD"),
-            DB_HOST=os.getenv("DB_HOST"),
-            DB_NAME=os.getenv("DB_NAME"),
+         "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sql_mode=STRICT_TRANS_TABLES".format(
+            # DB_USER=os.getenv("DB_USER"),
+            # DB_PASSWORD=os.getenv("DB_PASSWORD"),
+            # DB_HOST=os.getenv("DB_HOST"),
+            # DB_NAME=os.getenv("DB_NAME"),
+            DB_USER="root",
+            DB_HOST="localhost",
+            DB_PASSWORD="root",
+            DB_PORT='3360',
+            DB_NAME="stock_opt",
             pool_pre_ping=True, 
             pool_recycle=300
          )
+        # "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}".format(
+        #     DB_USER="appadmin", 
+        #     DB_PASSWORD="wGatap1926",
+        #     DB_HOST="182.16.16.28", #pykore
+        #     DB_NAME="apx_stock_apps",
+        #     DB_PORT="3306",            
+        # )
+       
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
