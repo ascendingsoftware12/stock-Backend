@@ -9,15 +9,14 @@ sales_all_in_one_live_bp = Blueprint(
 # main routes
 # -----------------------------------------------------
 
+@sales_all_in_one_live_bp.route("/ytd/<string:factor>", methods=["GET"])
+def get_sales_all_in_one_live_ytd(factor):
+    return get_sales_all_in_one_live_ytd_controller(factor)
+
 
 @sales_all_in_one_live_bp.route("/monthly/<string:factor>", methods=["GET"])
 def get_sales_all_in_one_live_monthly(factor):
     return get_sales_all_in_one_live_monthly_controller(factor)
-
-
-@sales_all_in_one_live_bp.route("/ytd/<string:factor>", methods=["GET"])
-def get_sales_all_in_one_live_ytd(factor):
-    return get_sales_all_in_one_live_ytd_controller(factor)
 
 
 @sales_all_in_one_live_bp.route("/weekly_analysis/<string:factor>", methods=["GET"])
@@ -98,48 +97,6 @@ def get_itemsdesc_brand_model_and_section():
 @sales_all_in_one_live_bp.route("/ytd_cr", methods=["GET"])
 def get_sales_all_in_one_live_ytd_cr():
     return get_sales_all_in_one_live_ytd_cr_controller()
-
-
-# -----------------------------------------------------
-# month
-# -----------------------------------------------------
-
-# -----------------------------------------------------
-
-
-@sales_all_in_one_live_bp.route("/month_cr", methods=["GET"])
-def get_sales_all_in_one_live_month_cr():
-    return get_sales_all_in_one_live_month_cr_controller()
-
-
-@sales_all_in_one_live_bp.route("/month_cr_without_gst", methods=["GET"])
-def get_sales_all_in_one_live_month_cr_without_gst():
-    return get_sales_all_in_one_live_month_cr_without_gst_controller()
-
-
-@sales_all_in_one_live_bp.route("/month_lk", methods=["GET"])
-def get_sales_all_in_one_live_month_lk():
-    return get_sales_all_in_one_live_month_lk_controller()
-
-
-@sales_all_in_one_live_bp.route("/month_lk_without_gst", methods=["GET"])
-def get_sales_all_in_one_live_month_lk_without_gst():
-    return get_sales_all_in_one_live_month_lk_without_gst_controller()
-
-
-@sales_all_in_one_live_bp.route("/month_sales_qty", methods=["GET"])
-def get_sales_all_in_one_live_month_sales_qty():
-    return get_sales_all_in_one_live_month_sales_qty_controller()
-
-
-@sales_all_in_one_live_bp.route("/month_total_sales", methods=["GET"])
-def get_sales_all_in_one_live_month_total_sales():
-    return get_sales_all_in_one_live_month_total_sales_controller()
-
-
-@sales_all_in_one_live_bp.route("/month_gp_lk", methods=["GET"])
-def get_sales_all_in_one_live_month_gp_lk():
-    return get_sales_all_in_one_live_month_gp_lk_controller()
 
 
 # -----------------------------------------------------

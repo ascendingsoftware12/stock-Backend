@@ -1,5 +1,5 @@
 from src import create_app
-from waitress import serve
+# from waitress import serve
 # Start the app
 app = create_app()
 
