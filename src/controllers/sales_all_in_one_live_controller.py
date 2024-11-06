@@ -12,6 +12,7 @@ import traceback
 
 
 def get_sales_all_in_one_live_ytd_controller(factor):
+    return get_sales_all_in_one_live_ytd__controller(factor)
     if factor == "cr":
         return get_sales_all_in_one_live_ytd_cr_controller()
     elif factor == "cr_without_gst":
@@ -812,37 +813,286 @@ def get_sales_all_in_one_live_item_dimension_controller(factor):
 
 
 def get_sales_all_in_one_live_price_breakup_one_controller(factor):
-    if factor == "cr":
-        return get_sales_all_in_one_live_price_breakup_one_cr_controller()
-    elif factor == "cr_without_gst":
-        pass
-    elif factor == "lk":
-        pass
-    elif factor == "lk_without_gst":
-        pass
-    elif factor == "sales_qty":
-        pass
-    elif factor == "total_sales":
-        pass
-    elif factor == "gp_lk":
-        pass
+
+    try:
+
+        conditions = []
+        conditions = search_sales_all_in_one_controller()
+
+        sales_data = db.session.query(
+            extract("year", SalesAllInOneLive.invoice_date).label("year"),
+            extract("month", SalesAllInOneLive.invoice_date).label("month"),
+            func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+            func.sum(SalesAllInOneLive.sales_qty).label("total_qty"),
+            func.sum(SalesAllInOneLive.tax_amt).label("tax_amt"),
+            func.sum(SalesAllInOneLive.sales_qty).label("sales_qty"),
+            func.sum(SalesAllInOneLive.gros_profit).label("gros_profit"),
+        ).filter(*conditions)
+
+        sales_data = sales_data.group_by(
+            extract("year", SalesAllInOneLive.invoice_date)
+        ).all()
+
+        result_dict = {}
+
+        month_names = {
+            4: "Apr",
+            5: "May",
+            6: "Jun",
+            7: "Jul",
+            8: "Aug",
+            9: "Sep",
+            10: "Oct",
+            11: "Nov",
+            12: "Dec",
+            1: "Jan",
+            2: "Feb",
+            3: "Mar",
+        }
+
+        price_ranges = {
+            "0 - 5000": {},
+            "5001 - 10000": {},
+            "10001 - 15000": {},
+            "15001 - 20000": {},
+            "20001 - 25000": {},
+            ">25000": {},
+        }
+
+        total_sales_by_year = defaultdict(float)
+        years_set = set()
+
+        for year, month, total_sales, total_qty, tax_amt, sales_qty, gros_profit in sales_data:
+
+            if factor == 'cr':
+                value = 10000000 
+                sales_details = round((total_sales) / value, 2)
+            elif factor == 'cr_without_gst':
+                value = 10000000 
+                sales_details = round((total_sales - tax_amt) / value, 2)
+            elif factor == 'lk':
+                value = 100000 
+                sales_details = round((total_sales) / value, 2)
+            elif factor == 'lk_without_gst':
+                value = 100000 
+                sales_details = round((total_sales - tax_amt) / value, 2)
+            elif factor == 'sales_qty':
+                sales_details = sales_qty
+            elif factor == 'total_sales':
+                sales_details = total_sales
+            elif factor == 'gp':
+                value = 100000 
+                sales_details = round(gros_profit / value, 2)
+
+
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            financial_month = month_names[month]
+            years_set.add(fiscal_year)
+
+            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
+            # sales_with_gst = round(total_sales / 10000000, 2)
+
+            total_sales_by_year[fiscal_year] += float(sales_details)
+
+            price_breakup = "Null"
+            if piecewise_sales > 0 and piecewise_sales <= 5000:
+                price_breakup = "0 - 5000"
+            elif piecewise_sales > 5000 and piecewise_sales <= 10000:
+                price_breakup = "5001 - 10000"
+            elif piecewise_sales > 10000 and piecewise_sales <= 15000:
+                price_breakup = "10001 - 15000"
+            elif piecewise_sales > 15000 and piecewise_sales <= 20000:
+                price_breakup = "15001 - 20000"
+            elif piecewise_sales > 20000 and piecewise_sales <= 25000:
+                price_breakup = "20001 - 25000"
+            elif piecewise_sales > 25000:
+                price_breakup = ">25000"
+
+            if price_breakup != "Null":
+                if fiscal_year not in price_ranges[price_breakup]:
+                    price_ranges[price_breakup][fiscal_year] = 0
+                price_ranges[price_breakup][fiscal_year] += sales_details
+
+        years_list = sorted(years_set, reverse=True)
+
+        for price_range, sales_data in price_ranges.items():
+            for year in years_list:
+                sales_value = sales_data.get(year, 0)
+                total_sales = total_sales_by_year[year]
+                percentage = (
+                    round((float(sales_value) / total_sales) * 100, 2)
+                    if total_sales > 0
+                    else 0
+                )
+                # sales_data[year] = {
+                #     "sales_details": sales_value,
+                #     "percentage": percentage
+                # }
+
+                sales_data[year] = f"{sales_value} ({percentage}%)"
+
+        return jsonify({"years": years_list, "values": price_ranges}), 200
+
+    except Exception as e:
+        traceback.print_exc()
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_price_breakup_one_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
 
 
 def get_sales_all_in_one_live_price_breakup_two_controller(factor):
-    if factor == "cr":
-        return get_sales_all_in_one_live_price_breakup_two_cr_controller()
-    elif factor == "cr_without_gst":
-        pass
-    elif factor == "lk":
-        pass
-    elif factor == "lk_without_gst":
-        pass
-    elif factor == "sales_qty":
-        pass
-    elif factor == "total_sales":
-        pass
-    elif factor == "gp_lk":
-        pass
+
+    try:
+        
+        conditions = []
+        conditions = search_sales_all_in_one_controller()
+
+        sales_data = db.session.query(
+            extract("year", SalesAllInOneLive.invoice_date).label("year"),
+            extract("month", SalesAllInOneLive.invoice_date).label("month"),
+            func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+            func.sum(SalesAllInOneLive.sales_qty).label("total_qty"),
+            func.sum(SalesAllInOneLive.tax_amt).label("tax_amt"),
+            func.sum(SalesAllInOneLive.sales_qty).label("sales_qty"),
+            func.sum(SalesAllInOneLive.gros_profit).label("gros_profit"),
+        ).filter(*conditions)
+
+        sales_data = sales_data.group_by(
+            extract("year", SalesAllInOneLive.invoice_date)
+        ).all()
+
+        result_dict = {}
+
+        price_ranges = {
+            "0 - 1000": {},
+            "1001 - 2000": {},
+            "2001 - 3000": {},
+            "3001 - 4000": {},
+            "4001 - 5000": {},
+            "5001 - 6000": {},
+            "6001 - 7000": {},
+            "7001 - 8000": {},
+            "8001 - 9000": {},
+            "9001 - 10000": {},
+            "10001 - 20000": {},
+            "20001 - 30000": {},
+            "30001 - 40000": {},
+            "40001 - 50000": {},
+            ">50000": {},
+        }
+
+        years_set = set()
+
+        total_sales_by_year = defaultdict(float)
+
+        for year, month, total_sales, total_qty, tax_amt, sales_qty, gros_profit in sales_data:
+            
+            if factor == 'cr':
+                value = 10000000 
+                sales_details = round((total_sales) / value, 2)
+            elif factor == 'cr_without_gst':
+                value = 10000000 
+                sales_details = round((total_sales - tax_amt) / value, 2)
+            elif factor == 'lk':
+                value = 100000 
+                sales_details = round((total_sales) / value, 2)
+            elif factor == 'lk_without_gst':
+                value = 100000 
+                sales_details = round((total_sales - tax_amt) / value, 2)
+            elif factor == 'sales_qty':
+                sales_details = sales_qty
+            elif factor == 'total_sales':
+                sales_details = total_sales
+            elif factor == 'gp':
+                value = 100000 
+                sales_details = round(gros_profit / value, 2)
+
+
+            piecewise_sales = total_sales / total_qty if total_qty > 0 else 0
+            # sales_with_gst = round(total_sales / 10000000, 2)
+
+            if month in [1, 2, 3]:
+                fiscal_year = year
+            else:
+                fiscal_year = year + 1
+
+            years_set.add(fiscal_year)
+
+            total_sales_by_year[fiscal_year] += float(sales_details)
+
+            price_breakup = "Null"
+            if piecewise_sales > 0 and piecewise_sales <= 1000:
+                price_breakup = "0 - 1000"
+            elif piecewise_sales > 1000 and piecewise_sales <= 2000:
+                price_breakup = "1001 - 2000"
+            elif piecewise_sales > 2000 and piecewise_sales <= 3000:
+                price_breakup = "2001 - 3000"
+            elif piecewise_sales > 3000 and piecewise_sales <= 4000:
+                price_breakup = "3001 - 4000"
+            elif piecewise_sales > 4000 and piecewise_sales <= 5000:
+                price_breakup = "4001 - 5000"
+            elif piecewise_sales > 5000 and piecewise_sales <= 6000:
+                price_breakup = "5001 - 6000"
+            elif piecewise_sales > 6000 and piecewise_sales <= 7000:
+                price_breakup = "6001 - 7000"
+            elif piecewise_sales > 7000 and piecewise_sales <= 8000:
+                price_breakup = "7001 - 8000"
+            elif piecewise_sales > 8000 and piecewise_sales <= 9000:
+                price_breakup = "8001 - 9000"
+            elif piecewise_sales > 9000 and piecewise_sales <= 10000:
+                price_breakup = "9001 - 10000"
+            elif piecewise_sales > 10000 and piecewise_sales <= 20000:
+                price_breakup = "10001 - 20000"
+            elif piecewise_sales > 20000 and piecewise_sales <= 30000:
+                price_breakup = "20001 - 30000"
+            elif piecewise_sales > 30000 and piecewise_sales <= 40000:
+                price_breakup = "30001 - 40000"
+            elif piecewise_sales > 40000 and piecewise_sales <= 50000:
+                price_breakup = "40001 - 50000"
+            elif piecewise_sales > 50000:
+                price_breakup = ">50000"
+
+            if price_breakup != "Null":
+                if fiscal_year not in price_ranges[price_breakup]:
+                    price_ranges[price_breakup][fiscal_year] = 0
+                price_ranges[price_breakup][fiscal_year] += sales_details
+
+        years_list = sorted(years_set, reverse=True)
+
+        for price_range, sales_data in price_ranges.items():
+            for year in years_list:
+                sales_value = sales_data.get(year, 0)
+                total_sales = total_sales_by_year[year]
+                percentage = (
+                    round((float(sales_value) / total_sales) * 100, 2)
+                    if total_sales > 0
+                    else 0
+                )
+                # sales_data[year] = {
+                #     "sales_details": sales_value,
+                #     "percentage": percentage
+                # }
+
+                sales_data[year] = f"{sales_value} ({percentage}%)"
+
+        return jsonify({"years": years_list, "values": price_ranges}), 200
+
+    except Exception as e:
+        traceback.print_exc()
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_price_breakup_two_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+
 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -1083,9 +1333,105 @@ def get_sales_all_in_one_live_controller():
 
 
 
+def get_sales_all_in_one_live_ytd__controller(factor):
+    try:
 
+        latest_invoice_date = db.session.query(
+            func.max(SalesAllInOneLive.invoice_date)
+        ).scalar()
 
+        if not latest_invoice_date:
+            return jsonify({"success": 0, "error": "No sales data found."}), 404
 
+        latest_year = latest_invoice_date.year
+        latest_month = latest_invoice_date.month
+        latest_day = latest_invoice_date.day
+
+        start_month = 4  # Fiscal year starts in April
+        fiscal_years = [latest_year, latest_year - 1, latest_year - 2, latest_year - 3]
+        result = {}
+
+        conditions = []
+        previous_sales = None  # Track previous year's sales to calculate YoY percentage
+
+        for year in fiscal_years:
+            start_date = datetime(year, start_month, 1)
+            end_date = datetime(year, latest_month, latest_day)
+
+            conditions = search_sales_all_in_one_controller()
+
+            # Query to calculate total sales for the YTD period
+            sales_data = (
+                db.session.query(
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+                func.sum(SalesAllInOneLive.tax_amt).label("tax_amt"),
+                func.sum(SalesAllInOneLive.sales_qty).label("sales_qty"),
+                func.sum(SalesAllInOneLive.gros_profit).label("gros_profit"),
+                ).filter(
+                    SalesAllInOneLive.invoice_date >= start_date,
+                    SalesAllInOneLive.invoice_date <= end_date,
+                )
+                .filter(*conditions)
+                .scalar()
+                or 0
+            )
+
+            total_sales, tax_amt, sales_qty, gros_profit = sales_data
+
+            if factor == 'cr':
+                value = 10000000 
+                sales_details = round((total_sales) / value, 2)
+            elif factor == 'cr_without_gst':
+                value = 10000000 
+                sales_details = round((total_sales - tax_amt) / value, 2)
+            elif factor == 'lk':
+                value = 100000 
+                sales_details = round((total_sales) / value, 2)
+            elif factor == 'lk_without_gst':
+                value = 100000 
+                sales_details = round((total_sales - tax_amt) / value, 2)
+            elif factor == 'sales_qty':
+                sales_details = sales_qty
+            elif factor == 'total_sales':
+                sales_details = total_sales
+            elif factor == 'gp':
+                value = 100000 
+                sales_details = round(gros_profit / value, 2)
+
+            # sales_with_gst = round(total_sales / 10000000, 2)
+
+            # Calculate YoY percentage change if previous year's sales data is available
+            if previous_sales is not None:
+                if previous_sales != 0:
+                    percentage_change = round(
+                        ((sales_details - previous_sales) / previous_sales) * 100, 2
+                    )
+                    sales_with_gst_display = f"{sales_details} ({'+' if percentage_change >= 0 else ''}{percentage_change}%)"
+                else:
+                    # Handle division by zero case for previous_sales
+                    sales_with_gst_display = f"{sales_details} (0.00%)"
+            else:
+                sales_with_gst_display = (
+                    f"{sales_details} (0.00%)"  # No previous year to compare
+                )
+
+            # Store result with YoY change
+            result[year + 1] = sales_with_gst_display
+
+            # Update previous_sales for next iteration
+            previous_sales = sales_details
+
+        sorted_result = dict(sorted(result.items(), reverse=True))
+
+        return jsonify(sorted_result), 200
+
+    except Exception as e:
+        traceback.print_exc()
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_ytd__controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
 
 
 
