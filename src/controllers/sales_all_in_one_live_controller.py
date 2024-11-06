@@ -280,6 +280,10 @@ def get_sales_all_in_one_live_weekly_analysis_controller(factor):
                         result_dict[week_label][
                             fiscal_year
                         ] = f"{data['sales_details']} ({percentage}%)"
+                else:
+                    result_dict[week_label][
+                            fiscal_year
+                        ] = f"{data['sales_details']} ({0.00}%)"
 
         years_list.sort(reverse=True)
 
@@ -394,8 +398,8 @@ def get_sales_all_in_one_live_day_analysis_controller(factor):
             for month, weeks in months.items():
                 for week, sales in weeks.items():
                     weekly_total = weekly_totals[fiscal_year][week]
-                    if weekly_total > 0:
-                        for day in day_mapping.values():
+                    for day in day_mapping.values():
+                        if weekly_total > 0:
                             if sales[day]["sales_details"] != "-":
                                 percentage = round(
                                     (float(sales[day]["sales_details"]) / weekly_total) * 100,
@@ -407,6 +411,8 @@ def get_sales_all_in_one_live_day_analysis_controller(factor):
                                 # sales[day]["percentage"] = percentage
                             else:
                                 sales[day] = f"{0.00} ({0.00}%)"
+                        else:
+                            sales[day] = f"{0.00} ({0.00}%)"
 
                     sales["year"] = str(fiscal_year)
                     sales["month"] = month
