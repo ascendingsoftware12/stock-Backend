@@ -12,7 +12,124 @@ import traceback
 
 
 def get_sales_all_in_one_live_ytd_controller(factor):
-    return get_sales_all_in_one_live_ytd__controller(factor)
+
+    try:
+
+        latest_invoice_date = db.session.query(
+            func.max(SalesAllInOneLive.invoice_date)
+        ).scalar()
+
+        if not latest_invoice_date:
+            return jsonify({"success": 0, "error": "No sales data found."}), 404
+
+        latest_year = latest_invoice_date.year
+        latest_month = latest_invoice_date.month
+        latest_day = latest_invoice_date.day
+
+        start_month = 4  # Fiscal year starts in April
+        fiscal_years = [latest_year, latest_year - 1, latest_year - 2, latest_year - 3]
+        result = {}
+
+        conditions = []
+        previous_sales = None  
+
+        for year in fiscal_years:
+            start_date = datetime(year, start_month, 1)
+            end_date = datetime(year, latest_month, latest_day)
+
+            conditions = search_sales_all_in_one_controller()
+
+            sales_data = db.session.query(
+                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+                func.sum(SalesAllInOneLive.tax_amt).label("tax_amt"),
+                func.sum(SalesAllInOneLive.sales_qty).label("sales_qty"),
+                func.sum(SalesAllInOneLive.gros_profit).label("gros_profit"),
+            ).filter(
+                SalesAllInOneLive.invoice_date >= start_date,
+                SalesAllInOneLive.invoice_date <= end_date,
+            ).filter(*conditions).all()
+
+            if sales_data and sales_data[0] is not None:
+                total_sales, tax_amt, sales_qty, gros_profit = sales_data[0]
+
+                if factor == 'cr':
+                    value = 10000000 
+                    if total_sales != None:
+                        sales_details = round((total_sales) / value, 2)
+                    else:
+                        sales_details = 0.00
+                
+                elif factor == 'cr_without_gst':
+                    value = 10000000 
+                    if total_sales != None and tax_amt != None:
+                        sales_details = round((total_sales - tax_amt) / value, 2)
+                    else:
+                        sales_details = 0.00
+                
+                elif factor == 'lk':
+                    value = 100000 
+                    if total_sales != None:
+                        sales_details = round((total_sales) / value, 2)
+                    else:
+                        sales_details = 0.00
+                
+                elif factor == 'lk_without_gst':
+                    value = 100000 
+                    if total_sales != None and tax_amt != None:
+                        sales_details = round((total_sales - tax_amt) / value, 2)
+                    else:
+                        sales_details = 0.00
+                
+                elif factor == 'sales_qty':
+                    if sales_qty != None:
+                        sales_details = sales_qty
+                    else:
+                        sales_details = 0.00
+                
+                elif factor == 'total_sales':
+                    if total_sales != None:
+                        sales_details = total_sales
+                    else:
+                        sales_details = 0.00
+                
+                elif factor == 'gp':
+                    value = 100000 
+                    if gros_profit != None:
+                        sales_details = round(gros_profit / value, 2)
+                    else:
+                        sales_details = 0.00
+
+                if previous_sales is not None:
+                    if previous_sales != 0:
+                        percentage_change = round(
+                            ((float(sales_details) - float(previous_sales)) / float(previous_sales)) * 100, 2
+                        )
+                        sales_with_gst_display = f"{sales_details} ({'+' if percentage_change >= 0 else ''}{percentage_change}%)"
+                    else:
+                        sales_with_gst_display = f"{sales_details} (0.00%)"
+                
+                else:
+                    sales_with_gst_display = (
+                        f"{sales_details} (0.00%)"  
+                    )
+
+                result[year + 1] = sales_with_gst_display
+                previous_sales = sales_details
+
+        return jsonify(result), 200
+
+
+    except Exception as e:
+        traceback.print_exc()
+        db.session.rollback()
+        if "MySQL server has gone away" in str(e):
+            return get_sales_all_in_one_live_ytd_controller()
+        else:
+            return jsonify({"success": 0, "error": str(e)})
+
+
+
+
     if factor == "cr":
         return get_sales_all_in_one_live_ytd_cr_controller()
     elif factor == "cr_without_gst":
@@ -1339,105 +1456,10 @@ def get_sales_all_in_one_live_controller():
 
 
 
-def get_sales_all_in_one_live_ytd__controller(factor):
-    try:
 
-        latest_invoice_date = db.session.query(
-            func.max(SalesAllInOneLive.invoice_date)
-        ).scalar()
 
-        if not latest_invoice_date:
-            return jsonify({"success": 0, "error": "No sales data found."}), 404
 
-        latest_year = latest_invoice_date.year
-        latest_month = latest_invoice_date.month
-        latest_day = latest_invoice_date.day
 
-        start_month = 4  # Fiscal year starts in April
-        fiscal_years = [latest_year, latest_year - 1, latest_year - 2, latest_year - 3]
-        result = {}
-
-        conditions = []
-        previous_sales = None  # Track previous year's sales to calculate YoY percentage
-
-        for year in fiscal_years:
-            start_date = datetime(year, start_month, 1)
-            end_date = datetime(year, latest_month, latest_day)
-
-            conditions = search_sales_all_in_one_controller()
-
-            # Query to calculate total sales for the YTD period
-            sales_data = (
-                db.session.query(
-                func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-                func.sum(SalesAllInOneLive.tax_amt).label("tax_amt"),
-                func.sum(SalesAllInOneLive.sales_qty).label("sales_qty"),
-                func.sum(SalesAllInOneLive.gros_profit).label("gros_profit"),
-                ).filter(
-                    SalesAllInOneLive.invoice_date >= start_date,
-                    SalesAllInOneLive.invoice_date <= end_date,
-                )
-                .filter(*conditions)
-                .scalar()
-                or 0
-            )
-
-            total_sales, tax_amt, sales_qty, gros_profit = sales_data
-
-            if factor == 'cr':
-                value = 10000000 
-                sales_details = round((total_sales) / value, 2)
-            elif factor == 'cr_without_gst':
-                value = 10000000 
-                sales_details = round((total_sales - tax_amt) / value, 2)
-            elif factor == 'lk':
-                value = 100000 
-                sales_details = round((total_sales) / value, 2)
-            elif factor == 'lk_without_gst':
-                value = 100000 
-                sales_details = round((total_sales - tax_amt) / value, 2)
-            elif factor == 'sales_qty':
-                sales_details = sales_qty
-            elif factor == 'total_sales':
-                sales_details = total_sales
-            elif factor == 'gp':
-                value = 100000 
-                sales_details = round(gros_profit / value, 2)
-
-            # sales_with_gst = round(total_sales / 10000000, 2)
-
-            # Calculate YoY percentage change if previous year's sales data is available
-            if previous_sales is not None:
-                if previous_sales != 0:
-                    percentage_change = round(
-                        ((sales_details - previous_sales) / previous_sales) * 100, 2
-                    )
-                    sales_with_gst_display = f"{sales_details} ({'+' if percentage_change >= 0 else ''}{percentage_change}%)"
-                else:
-                    # Handle division by zero case for previous_sales
-                    sales_with_gst_display = f"{sales_details} (0.00%)"
-            else:
-                sales_with_gst_display = (
-                    f"{sales_details} (0.00%)"  # No previous year to compare
-                )
-
-            # Store result with YoY change
-            result[year + 1] = sales_with_gst_display
-
-            # Update previous_sales for next iteration
-            previous_sales = sales_details
-
-        sorted_result = dict(sorted(result.items(), reverse=True))
-
-        return jsonify(sorted_result), 200
-
-    except Exception as e:
-        traceback.print_exc()
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_ytd__controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
 
 
 

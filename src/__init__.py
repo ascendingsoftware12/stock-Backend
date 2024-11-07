@@ -23,7 +23,7 @@ def create_app():
     # Handling CORS
     CORS(app)
     app.config['CORS_HEADERS'] = 'Content-Type'
-    print(os.getenv("DB_USER"))
+    # print(os.getenv("DB_USER"))
     # Config section
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}".format(
