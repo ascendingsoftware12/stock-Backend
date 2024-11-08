@@ -910,7 +910,7 @@ def get_sales_all_in_one_live_item_dimension_controller(factor):
                     if data_sales_with_gst > max_sales_with_gst:
                         max_sales_with_gst = data_sales_with_gst
 
-                    if data["sales_details"] == 0:
+                    if data["sales_details"] <= 0:
                         result_dict[actual_item][fiscal_year][
                             month
                         ] = f"{data['sales_details']} ({0.00}%)"
