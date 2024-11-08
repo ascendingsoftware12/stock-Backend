@@ -922,6 +922,10 @@ def get_sales_all_in_one_live_item_dimension_controller(factor):
                             result_dict[actual_item][fiscal_year][
                                 month
                             ] = f"{data['sales_details']} ({percentage}%)"
+                        else:
+                            result_dict[actual_item][fiscal_year][
+                                month
+                            ] = f"{data['sales_details']} ({0.00}%)"
 
         years_list.reverse()
         return jsonify({"years": years_list, "values": result_dict, "max": max_sales_with_gst}), 200
