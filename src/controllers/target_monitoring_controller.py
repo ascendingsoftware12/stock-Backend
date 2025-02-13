@@ -58,8 +58,6 @@ def get_store_section_data(store_code, section):
         else:
             return (jsonify({"success": 0, "error": str(e)}), 500)
 
-
-
 def get_store_month_year_based_target_monitoring_controller(store_code):
     try:
         
@@ -369,7 +367,6 @@ def get_head_office_cm_vs_3mnth_avg_growth_controller():
         else:
             return (jsonify({"success": 0, "error": str(e)}), 500)
     
-
 def get_head_office_cm_vs_lm_growth_controller():
     try:
         try:
@@ -452,8 +449,7 @@ def get_head_office_cm_vs_lm_growth_controller():
             return get_head_office_cm_vs_lm_growth_controller()
         else:
             return (jsonify({"success": 0, "error": str(e)}), 500)
-    
-
+   
 def get_head_office_dendrogram_controller():
     try:
         try:

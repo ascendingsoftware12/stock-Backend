@@ -1,6 +1,6 @@
 from src import db
 
-class SalesAllInOneLive(db.Model):
+class PeriodComparison(db.Model):
     __tablename__ = 'sales_all_in_one_live'
     
     id = db.Column(db.Integer,primary_key=True)
@@ -38,7 +38,6 @@ class SalesAllInOneLive(db.Model):
     demo_flag = db.Column(db.String(1), default='N', nullable=True)
     data_refresh_time = db.Column('Data_Refresh_Time', db.DateTime, nullable=True)
     item_category = db.Column(db.String(255), nullable=True)
-    
 
 
 

@@ -27,33 +27,14 @@ def create_app():
     # Config section
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}".format(
-        # "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}".format(
-        #     DB_USER="appadmin",
-        #     DB_PASSWORD="wGatap1926",
-        #     DB_HOST="192.168.0.222", #pytcm
-        #     DB_NAME="apx_stock_apps",
-        #     DB_PORT="3306",            
-        # )
-        #  "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?sql_mode=STRICT_TRANS_TABLES".format(
-            DB_USER=os.getenv("DB_USER"),
-            DB_PASSWORD=os.getenv("DB_PASSWORD"),
-            DB_HOST=os.getenv("DB_HOST"),
-            DB_NAME=os.getenv("DB_NAME"),
-            # DB_USER="root",
-            # DB_HOST="localhost",
-            # DB_PASSWORD="root",
-            # DB_PORT='3360',
-            # DB_NAME="stock_opt",
+
+            DB_USER="root",
+            DB_PASSWORD="8520",
+            DB_HOST="localhost",
+            DB_NAME="apx_stock_apps",
             pool_pre_ping=True, 
             pool_recycle=300
          )
-        # "mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}".format(
-        #     DB_USER="appadmin", 
-        #     DB_PASSWORD="wGatap1926",
-        #     DB_HOST="182.16.16.28", #pykore
-        #     DB_NAME="apx_stock_apps",
-        #     DB_PORT="3306",            
-        # )
        
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -82,9 +63,22 @@ def create_app():
     # section
     from src.routes.category_routes import category_bp
     from src.routes.auth_route import auth_bp
+    from src.routes.period_comparison_routes import period_comparison_live_bp
+    from src.routes.sales_analysis_routes import sales_analysis_live_bp
+    from src.routes.target_achievement_routes import target_achievement_analysis_live_bp
+    from src.routes.brand_achievement_analysis_routes import brand_achievement_analysis_live_bp
+    from src.routes.stock_all_in_one_summary_routes import stock_analysis_live_bp
 
+    
+
+# Register the Blueprint
+    app.register_blueprint(period_comparison_live_bp)
+    app.register_blueprint(sales_analysis_live_bp)
+    app.register_blueprint(target_achievement_analysis_live_bp)
+    app.register_blueprint(brand_achievement_analysis_live_bp)
+    app.register_blueprint(stock_analysis_live_bp)
     from src.routes.sales_all_in_one_live_routes import sales_all_in_one_live_bp
-
+    
     from src.routes.test_routes import test_bp
     
     app.register_blueprint(approve_transfer_bp)

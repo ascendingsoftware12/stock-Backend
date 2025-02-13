@@ -117,6 +117,14 @@ def get_sales_all_in_one_live_weekly_analysis_cr():
 def get_sales_all_in_one_live_day_analysis_cr():
     return get_sales_all_in_one_live_day_analysis_cr_controller()
 
+# -----------------------------------------------------
+# weekly analysis
+# -----------------------------------------------------
+
+
+@sales_all_in_one_live_bp.route("/month_cr", methods=["GET"])
+def get_sales_all_in_one_live_month_cr():
+    return get_sales_all_in_one_live_month_cr_controller()
 
 # -----------------------------------------------------
 # product dimension
@@ -126,6 +134,11 @@ def get_sales_all_in_one_live_day_analysis_cr():
 @sales_all_in_one_live_bp.route("/product_dimension_cr", methods=["GET"])
 def get_sales_all_in_one_live_product_dimension_cr():
     return get_sales_all_in_one_live_product_dimension_cr_controller()
+
+
+@sales_all_in_one_live_bp.route("/section_dimension_cr", methods=["GET"])
+def get_sales_all_in_one_live_section_dimension_cr():
+    return get_sales_all_in_one_live_section_dimension_cr_controller()
 
 
 # -----------------------------------------------------
@@ -166,3 +179,38 @@ def get_sales_all_in_one_live_price_breakup_one_cr():
 @sales_all_in_one_live_bp.route("/price_breakup_two_cr", methods=["GET"])
 def get_sales_all_in_one_live_price_breakup_two_cr():
     return get_sales_all_in_one_live_price_breakup_two_cr_controller()
+
+
+# -----------------------------------------------------
+# Get all
+# -----------------------------------------------------
+
+
+@sales_all_in_one_live_bp.route("/column", methods=["GET"])
+def get_sales_all_in_column_live():
+    return get_sales_all_in_column_live_controller()
+
+@sales_all_in_one_live_bp.route("/date", methods=["GET"])
+def get_sales_all_in_date():
+    return get_sales_all_in_date_controller()
+
+
+@sales_all_in_one_live_bp.route("/itemcategory", methods=["GET"])
+def get_sales_all_in_one_live_itemcategory_cr():
+    return get_sales_all_in_one_live_itemcategory_dimension_cr_controller()
+
+
+@sales_all_in_one_live_bp.route("/branch_dimension_cr", methods=["GET"])
+def get_sales_all_in_one_live_branchdimension_cr():
+    return get_sales_all_in_one_live_branch_dimension_cr_controller()
+
+
+
+@sales_all_in_one_live_bp.route("/city_dimension_cr", methods=["GET"])
+def get_sales_all_in_one_live_citydimension_cr():
+    return get_sales_all_in_one_live_city_dimension_cr_controller()
+
+
+@sales_all_in_one_live_bp.route("/table_modificatio", methods=["GET"])
+def get_sales_all_in_one_live_table_modification():
+    return get_sales_all_in_one_live_table_modification_date_and_time_controller()

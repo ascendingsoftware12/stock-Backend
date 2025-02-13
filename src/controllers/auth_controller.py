@@ -3,7 +3,7 @@ import bcrypt
 import os
 import jwt
 import pandas as pd
-
+print(bcrypt.__version__)
 from src import db
 from src.models.user_model import User
 from src.utils.jwt_token_utils import generate_token
@@ -14,15 +14,18 @@ def register_user_controller():
         data = request.get_json()
         username = data.get("username")
         password = data.get("password")
+        print(data)
+        print(username)
+        print(username)
         role = data.get("role", "user")
-
+        
         if not username or not password:
             return (
                 jsonify({"message": "Username and password required", "status": 0}),
                 400,
             )
-
         if User.query.filter_by(username=username).first():
+            
             return jsonify({"message": "User already exists", "status": 2}), 400
 
         hashed_password = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
@@ -49,6 +52,7 @@ def register_user_controller():
 def login_user_controller():
     try:
         data = request.get_json()
+        print(data)
         username = data.get("username")
         password = data.get("password")
 
@@ -59,7 +63,7 @@ def login_user_controller():
             )
 
         user = User.query.filter_by(username=username).first()
-
+        
         if not user or not bcrypt.checkpw(
             password.encode("utf-8"), user.password.encode("utf-8")
         ):
@@ -73,6 +77,8 @@ def login_user_controller():
                     "token": token,
                     "username": user.username,
                     "role": user.role,
+                    "asm": user.asmrole,
+                    "store": user.storerole,
                     "status": 1,
                 }
             ),
