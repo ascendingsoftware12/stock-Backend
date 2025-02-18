@@ -29,8 +29,10 @@ def search_StockAnalysis_common_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -197,8 +199,10 @@ def get_StockAnlaysis_all_in_column_live_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -285,11 +289,32 @@ def get_StockAnlaysis_all_in_column_live_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
 
         # Define the columns to fetch with aggregation
         query = db.session.query(
@@ -373,8 +398,10 @@ def search_StockAnalysis_quantity_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -461,11 +488,32 @@ def search_StockAnalysis_quantity_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
 
             
         qty_query = db.session.query(
@@ -520,8 +568,10 @@ def search_StockAnalysis_Selling_Price_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -608,11 +658,32 @@ def search_StockAnalysis_Selling_Price_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
        
         selling_price_query = db.session.query(
             func.sum(StockAllInOneSummary.selling_price).label('Selling_Price')
@@ -668,8 +739,10 @@ def search_StockAnalysis_No_Of_Brands_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -756,11 +829,32 @@ def search_StockAnalysis_No_Of_Brands_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         no_of_brands_query = db.session.query(
             func.count(func.distinct(StockAllInOneSummary.brand)).label('No_Of_Brands')
@@ -814,8 +908,10 @@ def search_StockAnalysis_No_Of_Items_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -902,11 +998,32 @@ def search_StockAnalysis_No_Of_Items_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         no_of_items_query = db.session.query(
             func.count(func.distinct(StockAllInOneSummary.item_code)).label('No_Of_Items')
@@ -962,8 +1079,10 @@ def search_StockAnalysis_Ageing_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -1050,11 +1169,32 @@ def search_StockAnalysis_Ageing_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         overall_age_query = db.session.query(
             func.avg(StockAllInOneSummary.overall_age).label('overall_age')
@@ -1115,8 +1255,10 @@ def search_StockAnalysis_Holding_Cost_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -1203,11 +1345,32 @@ def search_StockAnalysis_Holding_Cost_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
 
         # Start building the holding value query
         holding_value_query = db.session.query(
@@ -1270,8 +1433,10 @@ def search_StockAnalysis_Branch_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -1358,34 +1523,66 @@ def search_StockAnalysis_Branch_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
+        total_selling_price_subquery = (
+            db.session.query(func.sum(StockAllInOneSummary.selling_price))
+            .filter(*conditions)
+            .scalar_subquery()
+        )
+
         branch_name_query = db.session.query(
             StockAllInOneSummary.branch_name.label('branch_name'),
             func.sum(StockAllInOneSummary.selling_price).label('value'),
             func.sum(StockAllInOneSummary.qty).label('qty'),
+                func.round(
+                    (func.sum(StockAllInOneSummary.selling_price) / total_selling_price_subquery) * 100, 2
+                ).label('Percentage')  
             
-        ).filter(*conditions).group_by(StockAllInOneSummary.branch_name)
+        ).filter(*conditions).group_by(StockAllInOneSummary.branch_name).order_by(
+            func.sum(StockAllInOneSummary.selling_price).desc()  # Order by value in descending order
+        )
+
+        # item_category_query = db.session.query(item_category_query).limit(limit).offset(offset)
+
+        # item_category_result = item_category_query.all()
 
         branch_name_result = branch_name_query.limit(limit).offset(offset).all()
 
-        value_sum = sum(row.value for row in branch_name_result)
         branch_name_result_data = []
 
         for row in branch_name_result:
-            
-            value_sum_percentage = (row.value / value_sum) * 100 if value_sum else 0
-            value_sum_percentage_str = f"{value_sum_percentage:.2f}%"
 
             branch_name_result_data.append({
                 "branch_name": row.branch_name,
                 "value": int(row.value),
                 "qty": int(row.qty),                
-                "value_sum_percentage":value_sum_percentage_str
+                "value_sum_percentage":f"{row.Percentage:.2f}%"
             })
 
         return jsonify({
@@ -1426,8 +1623,10 @@ def search_StockAnalysis_City_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -1514,35 +1713,64 @@ def search_StockAnalysis_City_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
+        total_selling_price_subquery = (
+            db.session.query(func.sum(StockAllInOneSummary.selling_price))
+            .filter(*conditions)
+            .scalar_subquery()
+        )
+
         city_query = db.session.query(
             StockAllInOneSummary.city.label('city'),
             func.sum(StockAllInOneSummary.selling_price).label('value'),
             func.sum(StockAllInOneSummary.qty).label('qty'),
-            
-        ).filter(*conditions).group_by(StockAllInOneSummary.city).limit(limit).offset(offset)
+                func.round(
+                    (func.sum(StockAllInOneSummary.selling_price) / total_selling_price_subquery) * 100, 2
+                ).label('Percentage')            
+        ).filter(*conditions).group_by(StockAllInOneSummary.city).order_by(
+            func.sum(StockAllInOneSummary.selling_price).desc()  # Order by value in descending order
+        )
 
-        city_result = city_query.all()
+        # item_category_query = db.session.query(item_category_query).limit(limit).offset(offset)
 
-        value_sum = sum(row.value for row in city_result)
+        # item_category_result = item_category_query.all()
+
+        city_result = city_query.limit(limit).offset(offset).all()
         city_result_data = []
 
         for row in city_result:
-            
-            value_sum_percentage = (row.value / value_sum) * 100 if value_sum else 0
-            value_sum_percentage_str = f"{value_sum_percentage:.2f}%"
 
             city_result_data.append({
                 "city": row.city,
                 "value": int(row.value),
-                "qty": int(row.qty),
-                
-                "value_sum_percentage":value_sum_percentage_str
+                "qty": int(row.qty),                
+                "value_sum_percentage":f"{row.Percentage:.2f}%"
             })
 
         return jsonify({
@@ -1583,8 +1811,10 @@ def search_StockAnalysis_section_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -1671,36 +1901,61 @@ def search_StockAnalysis_section_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
+        total_selling_price_subquery = (
+            db.session.query(func.sum(StockAllInOneSummary.selling_price))
+            .filter(*conditions)
+            .scalar_subquery()
+        )
+
         section_query = db.session.query(
             StockAllInOneSummary.section.label('section'),
             func.sum(StockAllInOneSummary.selling_price).label('value'),
             func.sum(StockAllInOneSummary.qty).label('qty'),
-            
-        ).filter(*conditions).group_by(StockAllInOneSummary.section).limit(limit).offset(offset)
+                func.round(
+                    (func.sum(StockAllInOneSummary.selling_price) / total_selling_price_subquery) * 100, 2
+                ).label('Percentage')            
+        ).filter(*conditions).group_by(StockAllInOneSummary.section).order_by(
+            func.sum(StockAllInOneSummary.selling_price).desc()  # Order by value in descending order
+        )
 
         
-        section_result = section_query.all()
-
-        value_sum = sum(row.value for row in section_result)
+        section_result  = section_query.limit(limit).offset(offset).all()
         section_result_data = []
 
         for row in section_result:
-            
-            value_sum_percentage = (row.value / value_sum) * 100 if value_sum else 0
-            value_sum_percentage_str = f"{value_sum_percentage:.2f}%"
 
             section_result_data.append({
                 "section": row.section,
                 "value": int(row.value),
-                "qty": int(row.qty),
-                
-                "value_sum_percentage":value_sum_percentage_str
+                "qty": int(row.qty),                
+                "value_sum_percentage":f"{row.Percentage:.2f}%"
             })
 
         return jsonify({
@@ -1741,8 +1996,10 @@ def search_StockAnalysis_Item_Category_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -1829,44 +2086,66 @@ def search_StockAnalysis_Item_Category_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+
+        total_selling_price_subquery = (
+            db.session.query(func.sum(StockAllInOneSummary.selling_price))
+            .filter(*conditions)
+            .scalar_subquery()
+        )
+
 
         item_category_query = db.session.query(
             StockAllInOneSummary.item_category.label('item_category'),
             func.sum(StockAllInOneSummary.selling_price).label('value'),
             func.sum(StockAllInOneSummary.qty).label('qty'),
-            
-        ).filter(*conditions).group_by(StockAllInOneSummary.item_category).limit(limit).offset(offset)
+                func.round(
+                    (func.sum(StockAllInOneSummary.selling_price) / total_selling_price_subquery) * 100, 2
+                ).label('Percentage')            
+        ).filter(*conditions).group_by(StockAllInOneSummary.item_category).order_by(
+            func.sum(StockAllInOneSummary.selling_price).desc()  # Order by value in descending order
+        )
 
-        item_category_query1 = db.session.query(
-            StockAllInOneSummary.item_category.label('item_category'),
-            func.sum(StockAllInOneSummary.selling_price).label('value'),
-            func.sum(StockAllInOneSummary.qty).label('qty'),
-            
-        ).filter(*conditions).group_by(StockAllInOneSummary.item_category)
+        # item_category_query = db.session.query(item_category_query).limit(limit).offset(offset)
 
-        item_category_result = item_category_query.all()
+        # item_category_result = item_category_query.all()
 
-        item_category_result1 = item_category_query1.all()
+        item_category_paginated = item_category_query.limit(limit).offset(offset).all()
 
-        value_sum = sum(row.value for row in item_category_result1)
         item_category_result_data = []
 
-        for row in item_category_result:
-            
-            value_sum_percentage = (row.value / value_sum) * 100 if value_sum else 0
-            value_sum_percentage_str = f"{value_sum_percentage:.2f}%"
+        for row in item_category_paginated:
 
             item_category_result_data.append({
                 "item_category": row.item_category,
                 "value": int(row.value),
-                "qty": int(row.qty),
-                
-                "value_sum_percentage":value_sum_percentage_str
+                "qty": int(row.qty),                
+                "value_sum_percentage":f"{row.Percentage:.2f}%"
             })
 
         return jsonify({
@@ -1907,8 +2186,10 @@ def search_StockAnalysis_Product_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -1995,35 +2276,65 @@ def search_StockAnalysis_Product_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
+        total_selling_price_subquery = (
+            db.session.query(func.sum(StockAllInOneSummary.selling_price))
+            .filter(*conditions)
+            .scalar_subquery()
+        )
+
         product_query = db.session.query(
             StockAllInOneSummary.product.label('product'),
             func.sum(StockAllInOneSummary.selling_price).label('value'),
             func.sum(StockAllInOneSummary.qty).label('qty'),
-            
-        ).filter(*conditions).group_by(StockAllInOneSummary.product).limit(limit).offset(offset)
+                func.round(
+                    (func.sum(StockAllInOneSummary.selling_price) / total_selling_price_subquery) * 100, 2
+                ).label('Percentage')             
+        ).filter(*conditions).group_by(StockAllInOneSummary.product).order_by(
+            func.sum(StockAllInOneSummary.selling_price).desc()  # Order by value in descending order
+        )
 
-        product_result = product_query.all()
+        # item_category_query = db.session.query(item_category_query).limit(limit).offset(offset)
 
-        value_sum = sum(row.value for row in product_result)
+        # item_category_result = item_category_query.all()
+
+        product_result = product_query.limit(limit).offset(offset).all()
+
         product_result_data = []
 
         for row in product_result:
             
-            value_sum_percentage = (row.value / value_sum) * 100 if value_sum else 0
-            value_sum_percentage_str = f"{value_sum_percentage:.2f}%"
-
             product_result_data.append({
                 "product": row.product,
                 "value": int(row.value),
-                "qty": int(row.qty),
-                
-                "value_sum_percentage":value_sum_percentage_str
+                "qty": int(row.qty),                
+                "value_sum_percentage":f"{row.Percentage:.2f}%"
             })
 
         return jsonify({
@@ -2064,8 +2375,10 @@ def search_StockAnalysis_brand_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -2152,35 +2465,65 @@ def search_StockAnalysis_brand_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
+        total_selling_price_subquery = (
+            db.session.query(func.sum(StockAllInOneSummary.selling_price))
+            .filter(*conditions)
+            .scalar_subquery()
+        )
+
         brand_query = db.session.query(
             StockAllInOneSummary.brand.label('brand'),
             func.sum(StockAllInOneSummary.selling_price).label('value'),
             func.sum(StockAllInOneSummary.qty).label('qty'),
-            
-        ).filter(*conditions).group_by(StockAllInOneSummary.brand).limit(limit).offset(offset)
+                func.round(
+                    (func.sum(StockAllInOneSummary.selling_price) / total_selling_price_subquery) * 100, 2
+                ).label('Percentage')            
+        ).filter(*conditions).group_by(StockAllInOneSummary.brand).order_by(
+            func.sum(StockAllInOneSummary.selling_price).desc()  # Order by value in descending order
+        )
 
-        brand_result = brand_query.all()
+        # item_category_query = db.session.query(item_category_query).limit(limit).offset(offset)
 
-        value_sum = sum(row.value for row in brand_result)
+        # item_category_result = item_category_query.all()
+
+        brand_result = brand_query.limit(limit).offset(offset).all()
+
         brand_result_data = []
 
         for row in brand_result:
-            
-            value_sum_percentage = (row.value / value_sum) * 100 if value_sum else 0
-            value_sum_percentage_str = f"{value_sum_percentage:.2f}%"
 
             brand_result_data.append({
                 "brand": row.brand,
                 "value": int(row.value),
-                "qty": int(row.qty),
-                
-                "value_sum_percentage":value_sum_percentage_str
+                "qty": int(row.qty),                
+                "value_sum_percentage":f"{row.Percentage:.2f}%"
             })
 
         return jsonify({
@@ -2221,8 +2564,10 @@ def search_StockAnalysis_ModelNo_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -2309,35 +2654,65 @@ def search_StockAnalysis_ModelNo_controller():
                 "366+": (366, None)
             }
             age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
+        total_selling_price_subquery = (
+            db.session.query(func.sum(StockAllInOneSummary.selling_price))
+            .filter(*conditions)
+            .scalar_subquery()
+        )
+
         modelno_query = db.session.query(
             StockAllInOneSummary.modelno.label('modelno'),
             func.sum(StockAllInOneSummary.selling_price).label('value'),
             func.sum(StockAllInOneSummary.qty).label('qty'),
-            
-        ).filter(*conditions).group_by(StockAllInOneSummary.modelno).limit(limit).offset(offset)
+                func.round(
+                    (func.sum(StockAllInOneSummary.selling_price) / total_selling_price_subquery) * 100, 2
+                ).label('Percentage')            
+        ).filter(*conditions).group_by(StockAllInOneSummary.modelno).order_by(
+            func.sum(StockAllInOneSummary.selling_price).desc()  # Order by value in descending order
+        )
 
-        modelno_result = modelno_query.all()
+        # item_category_query = db.session.query(item_category_query).limit(limit).offset(offset)
 
-        value_sum = sum(row.value for row in modelno_result)
+        # item_category_result = item_category_query.all()
+
+        modelno_result = modelno_query.limit(limit).offset(offset).all()
+
         modelno_result_data = []
 
         for row in modelno_result:
             
-            value_sum_percentage = (row.value / value_sum) * 100 if value_sum else 0
-            value_sum_percentage_str = f"{value_sum_percentage:.2f}%"
-
             modelno_result_data.append({
                 "modelno": row.modelno,
                 "value": int(row.value),
-                "qty": int(row.qty),
-                
-                "value_sum_percentage":value_sum_percentage_str
+                "qty": int(row.qty),                
+                "value_sum_percentage":f"{row.Percentage:.2f}%"
             })
 
         return jsonify({
@@ -2379,8 +2754,10 @@ def search_StockAnalysis_Item_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -2452,50 +2829,65 @@ def search_StockAnalysis_Item_controller():
             # Combine all the sub-conditions using OR logic
         if price_conditions:
          conditions.append(or_(*price_conditions))
-
-        if overall_age is not None:
-            age_map = {
-                "BLANK": None,
-                "0-7": (0, 7),
-                "8-14": (8, 14),
-                "15-21": (15, 21),
-                "22-28": (22, 28),
-                "29-90": (29, 90),
-                "91-180": (91, 180),
-                "181-270": (181, 270),
-                "271-365": (271, 365),
-                "366+": (366, None)
-            }
-            age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+
+        total_selling_price_subquery = (
+            db.session.query(func.sum(StockAllInOneSummary.selling_price))
+            .filter(*conditions)
+            .scalar_subquery()
+        )
 
         item_name_query = db.session.query(
             StockAllInOneSummary.item_name.label('item_name'),
             func.sum(StockAllInOneSummary.selling_price).label('value'),
             func.sum(StockAllInOneSummary.qty).label('qty'),
-            
-        ).filter(*conditions).group_by(StockAllInOneSummary.item_name).limit(limit).offset(offset)
+                func.round(
+                    (func.sum(StockAllInOneSummary.selling_price) / total_selling_price_subquery) * 100, 2
+                ).label('Percentage')            
+        ).filter(*conditions).group_by(StockAllInOneSummary.item_name).order_by(
+            func.sum(StockAllInOneSummary.selling_price).desc()  # Order by value in descending order
+        )
 
-        item_name_result = item_name_query.all()
+        # item_category_query = db.session.query(item_category_query).limit(limit).offset(offset)
 
-        value_sum = sum(row.value for row in item_name_result)
+        # item_category_result = item_category_query.all()
+
+        item_name_result = item_name_query.limit(limit).offset(offset).all()
+
         item_name_result_data = []
 
         for row in item_name_result:
             
-            value_sum_percentage = (row.value / value_sum) * 100 if value_sum else 0
-            value_sum_percentage_str = f"{value_sum_percentage:.2f}%"
-
             item_name_result_data.append({
                 "item_name": row.item_name,
                 "value": int(row.value),
-                "qty": int(row.qty),
-                
-                "value_sum_percentage":value_sum_percentage_str
+                "qty": int(row.qty),                
+                "value_sum_percentage":f"{row.Percentage:.2f}%"
             })
 
         return jsonify({
@@ -2615,8 +3007,10 @@ def search_StockAnalysis_Overall_Bucket_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -2688,26 +3082,36 @@ def search_StockAnalysis_Overall_Bucket_controller():
             # Combine all the sub-conditions using OR logic
         if price_conditions:
          conditions.append(or_(*price_conditions))
-
-        if overall_age is not None:
-            age_map = {
-                "BLANK": None,
-                "0-7": (0, 7),
-                "8-14": (8, 14),
-                "15-21": (15, 21),
-                "22-28": (22, 28),
-                "29-90": (29, 90),
-                "91-180": (91, 180),
-                "181-270": (181, 270),
-                "271-365": (271, 365),
-                "366+": (366, None)
-            }
-            age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+
+        total_selling_price_subquery = (
+            db.session.query(func.sum(StockAllInOneSummary.selling_price))
+            .filter(*conditions)
+            .scalar_subquery()
+        )
 
         query = db.session.query(
             case(
@@ -2725,11 +3129,9 @@ def search_StockAnalysis_Overall_Bucket_controller():
             ).label('Overall_Age_Bucket'),
             func.sum(StockAllInOneSummary.selling_price).label('Total_Selling_Price'),
             func.sum(StockAllInOneSummary.qty).label('Total_qty'),
-            (func.sum(StockAllInOneSummary.selling_price) / 
-             func.coalesce(
-                 db.session.query(func.sum(StockAllInOneSummary.selling_price)).scalar_subquery(), 
-                 1
-             ) * 100).label('Percentage')
+                func.round(
+                    (func.sum(StockAllInOneSummary.selling_price) / total_selling_price_subquery) * 100, 2
+                ).label('Percentage')
         ).filter(*conditions).group_by('Overall_Age_Bucket').offset(offset).limit(limit)
         
         result = query.all()
@@ -2758,9 +3160,6 @@ def search_StockAnalysis_Overall_Bucket_controller():
 
 def search_StockAnalysis_Price_Bucket_controller():
     try:
-        page = request.args.get("page", 1, type=int)
-        limit = request.args.get("limit", 10, type=int)
-        offset = (page - 1) * limit
         
         section = request.args.get('section')
         # sales_type = request.args.get('sales_type')
@@ -2782,8 +3181,10 @@ def search_StockAnalysis_Price_Bucket_controller():
         price_conditions = []
 
         if IMEI_STATUS and IMEI_STATUS != '':
-            imei_status_list = IMEI_STATUS.split(',') if isinstance(IMEI_STATUS, str) else IMEI_STATUS
-            conditions.append(StockAllInOneSummary.imei_status.in_(imei_status_list))
+            if IMEI_STATUS == 'NON IMEI':
+                conditions.append(StockAllInOneSummary.imei_status == 'NON IMEI')
+            elif IMEI_STATUS == 'IMEI':
+                conditions.append(StockAllInOneSummary.imei_status != 'NON IMEI')
 
         if section and section != '':
             section_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
@@ -2856,48 +3257,89 @@ def search_StockAnalysis_Price_Bucket_controller():
         if price_conditions:
          conditions.append(or_(*price_conditions))
 
-        if overall_age is not None:
-            age_map = {
-                "BLANK": None,
-                "0-7": (0, 7),
-                "8-14": (8, 14),
-                "15-21": (15, 21),
-                "22-28": (22, 28),
-                "29-90": (29, 90),
-                "91-180": (91, 180),
-                "181-270": (181, 270),
-                "271-365": (271, 365),
-                "366+": (366, None)
-            }
-            age_range = age_map.get(overall_age)
-            if age_range:
-                if age_range[1] is None:
-                    conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+        if overall_age and overall_age != '':
+            if overall_age is not None:
+                age_map = {
+                    "BLANK": None,
+                    "0-7": (0, 7),
+                    "8-14": (8, 14),
+                    "15-21": (15, 21),
+                    "22-28": (22, 28),
+                    "29-90": (29, 90),
+                    "91-180": (91, 180),
+                    "181-270": (181, 270),
+                    "271-365": (271, 365),
+                    "366+": (366, None)
+                }
+                age_range = age_map.get(overall_age)
+                print("y")
+                print(age_range)
+                if age_range is None:
+                    conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
-                    conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
+                    if age_range[1] is None:
+                        print(age_range[0])
+                        conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
+                    else:
+                        print(age_range)
+                        conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
 
-        query = db.session.query(
-            case(
-                (StockAllInOneSummary.selling_price <= 3000, '0-3000'),
-                (StockAllInOneSummary.selling_price.between(3001, 5000), '3001-5000'),
-                (StockAllInOneSummary.selling_price.between(5001, 8000), '5001-8000'),
-                (StockAllInOneSummary.selling_price.between(8001, 10000), '8001-10000'),
-                (StockAllInOneSummary.selling_price.between(10001, 15000), '10001-15000'),
-                (StockAllInOneSummary.selling_price.between(15001, 20000), '15001-20000'),
-                (StockAllInOneSummary.selling_price.between(20001, 30000), '20001-30000'),
-                (StockAllInOneSummary.selling_price.between(30001, 40000), '30001-40000'),
-                (StockAllInOneSummary.selling_price.between(40001, 70000), '40001-70000'),
-                (StockAllInOneSummary.selling_price.between(70001, 100000), '70001-100000'),
-                (StockAllInOneSummary.selling_price > 100000, '>100000'),
-            ).label('Price_Bucket'),
-            func.sum(StockAllInOneSummary.selling_price).label('Total_Selling_Price'),
-            func.count(StockAllInOneSummary.qty).label('Total_Quantity'),
-            (func.sum(StockAllInOneSummary.selling_price) / 
-             func.coalesce(
-                 db.session.query(func.sum(StockAllInOneSummary.selling_price)).scalar_subquery(), 
-                 1
-             ) * 100).label('Percentage')
-        ).filter(*conditions).group_by('Price_Bucket').offset(offset).limit(limit)
+        # query = db.session.query(
+        #     case(
+        #         (StockAllInOneSummary.selling_price <= 3000, '0-3000'),
+        #         (StockAllInOneSummary.selling_price.between(3001, 5000), '3001-5000'),
+        #         (StockAllInOneSummary.selling_price.between(5001, 8000), '5001-8000'),
+        #         (StockAllInOneSummary.selling_price.between(8001, 10000), '8001-10000'),
+        #         (StockAllInOneSummary.selling_price.between(10001, 15000), '10001-15000'),
+        #         (StockAllInOneSummary.selling_price.between(15001, 20000), '15001-20000'),
+        #         (StockAllInOneSummary.selling_price.between(20001, 30000), '20001-30000'),
+        #         (StockAllInOneSummary.selling_price.between(30001, 40000), '30001-40000'),
+        #         (StockAllInOneSummary.selling_price.between(40001, 70000), '40001-70000'),
+        #         (StockAllInOneSummary.selling_price.between(70001, 100000), '70001-100000'),
+        #         (StockAllInOneSummary.selling_price > 100000, '>100000'),
+        #     ).label('Price_Bucket'),
+        #     func.sum(StockAllInOneSummary.selling_price).label('Total_Selling_Price'),
+        #     func.sum(StockAllInOneSummary.qty).label('Total_Quantity'),
+        #     (func.sum(StockAllInOneSummary.selling_price) / 
+        #      func.coalesce(
+        #          db.session.query(func.sum(StockAllInOneSummary.selling_price)).scalar_subquery(), 
+        #          1
+        #      ) * 100).label('Percentage')
+        # ).filter(*conditions).group_by('Price_Bucket')
+
+
+        total_selling_price_subquery = (
+            db.session.query(func.sum(StockAllInOneSummary.selling_price))
+            .filter(*conditions)
+            .scalar_subquery()
+        )
+
+        # Main query with SQLAlchemy
+        query = (
+            db.session.query(
+                case(
+                    (StockAllInOneSummary.selling_price <= 3000, '0-3000'),
+                    (StockAllInOneSummary.selling_price.between(3001, 5000), '3001-5000'),
+                    (StockAllInOneSummary.selling_price.between(5001, 8000), '5001-8000'),
+                    (StockAllInOneSummary.selling_price.between(8001, 10000), '8001-10000'),
+                    (StockAllInOneSummary.selling_price.between(10001, 15000), '10001-15000'),
+                    (StockAllInOneSummary.selling_price.between(15001, 20000), '15001-20000'),
+                    (StockAllInOneSummary.selling_price.between(20001, 30000), '20001-30000'),
+                    (StockAllInOneSummary.selling_price.between(30001, 40000), '30001-40000'),
+                    (StockAllInOneSummary.selling_price.between(40001, 70000), '40001-70000'),
+                    (StockAllInOneSummary.selling_price.between(70001, 100000), '70001-100000'),
+                    (StockAllInOneSummary.selling_price > 100000, '>100000'),
+                    else_=None
+                ).label('Price_Bucket'),
+                func.sum(StockAllInOneSummary.selling_price).label('Total_Selling_Price'),
+                func.sum(StockAllInOneSummary.qty).label('Total_Quantity'),
+                func.round(
+                    (func.sum(StockAllInOneSummary.selling_price) / total_selling_price_subquery) * 100, 2
+                ).label('Percentage')
+            )
+            .filter(*conditions)
+            .group_by('Price_Bucket')
+        )
 
         result = query.all()
 
