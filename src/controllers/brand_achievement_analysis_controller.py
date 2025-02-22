@@ -71,22 +71,23 @@ def get_brandAchievement_all_in_column_live_controller():
             conditions.append(BrandAchievementBrandRanking.store_name.in_(store_name_list))
             # conditions.append(BrandAchievementBrandRanking.store_name == store_name.strip())
 
-        elif brand and brand.strip():
+        if brand and brand.strip():
             brand_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', brand) if isinstance(brand, str) else brand
             conditions.append(BrandAchievementBrandRanking.brand.in_(brand_list))
             # conditions.append(BrandAchievementBrandRanking.brand == brand.strip())
         
-        elif tgt_timeline and tgt_timeline.strip():
+        if tgt_timeline and tgt_timeline.strip():
             tgt_timeline_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', tgt_timeline) if isinstance(tgt_timeline, str) else tgt_timeline
             conditions.append(BrandAchievementBrandRanking.tgt_timeline.in_(tgt_timeline_list))
             # conditions.append(BrandAchievementBrandRanking.tgt_timeline == tgt_timeline.strip())
         
-        elif store_code and store_code.strip():
+        if store_code and store_code.strip():
             store_code_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', store_code) if isinstance(store_code, str) else store_code
             conditions.append(BrandAchievementBrandRanking.store_code.in_(store_code_list))
             # conditions.append(BrandAchievementBrandRanking.store_code == store_code.strip())
         
-        elif asm and asm.strip():
+        if asm and asm.strip():
+            # print(asm)
             conditions.append(BrandAchievementBrandRanking.asm == asm.strip())
 
         # Define the query with selected columns
@@ -169,8 +170,8 @@ def search_brandAchievement_summary_controller():
 
         if store_name and store_name.strip():
             store_name_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', store_name) if isinstance(store_name, str) else store_name
-            print(store_name)
-            print(store_name_list)
+            # print(store_name)
+            # print(store_name_list)
             conditions.append(BrandAchievementEmpRanking.store_name.in_(store_name_list))
 
         if brand and brand.strip():
@@ -263,8 +264,8 @@ def search_brandAchievement_branch_Wise_details_controller():
 
         if store_name and store_name.strip():
             store_name_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', store_name) if isinstance(store_name, str) else store_name
-            print(store_name)
-            print(store_name_list)
+            # print(store_name)
+            # print(store_name_list)
             conditions.append(BrandAchievementBrandRanking.store_name.in_(store_name_list))
 
         if brand and brand.strip():

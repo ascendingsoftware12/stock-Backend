@@ -304,16 +304,16 @@ def get_StockAnlaysis_all_in_column_live_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
 
         # Define the columns to fetch with aggregation
@@ -503,16 +503,16 @@ def search_StockAnalysis_quantity_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
 
             
@@ -673,16 +673,16 @@ def search_StockAnalysis_Selling_Price_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
        
         selling_price_query = db.session.query(
@@ -844,16 +844,16 @@ def search_StockAnalysis_No_Of_Brands_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         no_of_brands_query = db.session.query(
@@ -1013,16 +1013,16 @@ def search_StockAnalysis_No_Of_Items_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         no_of_items_query = db.session.query(
@@ -1184,16 +1184,16 @@ def search_StockAnalysis_Ageing_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         overall_age_query = db.session.query(
@@ -1360,16 +1360,16 @@ def search_StockAnalysis_Holding_Cost_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
 
         # Start building the holding value query
@@ -1538,16 +1538,16 @@ def search_StockAnalysis_Branch_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         total_selling_price_subquery = (
@@ -1728,16 +1728,16 @@ def search_StockAnalysis_City_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         total_selling_price_subquery = (
@@ -1916,16 +1916,16 @@ def search_StockAnalysis_section_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         total_selling_price_subquery = (
@@ -2101,16 +2101,16 @@ def search_StockAnalysis_Item_Category_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
 
         total_selling_price_subquery = (
@@ -2291,16 +2291,16 @@ def search_StockAnalysis_Product_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         total_selling_price_subquery = (
@@ -2480,16 +2480,16 @@ def search_StockAnalysis_brand_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         total_selling_price_subquery = (
@@ -2669,16 +2669,16 @@ def search_StockAnalysis_ModelNo_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
             
         total_selling_price_subquery = (
@@ -2844,16 +2844,16 @@ def search_StockAnalysis_Item_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
 
         total_selling_price_subquery = (
@@ -3101,10 +3101,10 @@ def search_StockAnalysis_Overall_Bucket_controller():
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
 
         total_selling_price_subquery = (
@@ -3272,16 +3272,16 @@ def search_StockAnalysis_Price_Bucket_controller():
                     "366+": (366, None)
                 }
                 age_range = age_map.get(overall_age)
-                print("y")
-                print(age_range)
+                # print("y")
+                # print(age_range)
                 if age_range is None:
                     conditions.append(StockAllInOneSummary.overall_age.is_(None))
                 else:
                     if age_range[1] is None:
-                        print(age_range[0])
+                        # print(age_range[0])
                         conditions.append(StockAllInOneSummary.overall_age >= age_range[0])
                     else:
-                        print(age_range)
+                        # print(age_range)
                         conditions.append(StockAllInOneSummary.overall_age.between(*age_range))
 
         # query = db.session.query(

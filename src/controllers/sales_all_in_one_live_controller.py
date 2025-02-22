@@ -771,14 +771,14 @@ def get_sales_all_in_one_live_day_analysis_controller(factor):
             fiscal_year = year if month in [1, 2, 3] else year + 1
             day_key = day_mapping[day_of_week]
             week_key = f"Week{week}"
-            print(fiscal_year)
+            # print(fiscal_year)
 
             # sales_with_gst = round(total_sales / 10000000, 2)
             grouped_sales[fiscal_year][month][week_key][day_key][
                 "sales_details"
             ] = sales_details
 
-            print(sales_details)
+            # print(sales_details)
             weekly_totals[fiscal_year][week_key] += float(sales_details)
 
         for fiscal_year, months in grouped_sales.items():
@@ -807,8 +807,8 @@ def get_sales_all_in_one_live_day_analysis_controller(factor):
 
                     formatted_data.append(sales)
 
-        for entry in formatted_data:
-            print(entry)
+        # for entry in formatted_data:
+        #     # print(entry)
         return jsonify(formatted_data), 200
 
     except Exception as e:
@@ -1715,7 +1715,6 @@ def search_sales_all_in_one_controller():
             elif price_breakup2 == '1001-2000':
                 conditions.append(SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty.between(1000,2000))
             elif price_breakup2 == '2001-3000':
-                print(SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 2000 & SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 3000)
                 conditions.append(SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 2000 & SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 3000)
             elif price_breakup2 == '3001-4000':
                 conditions.append(SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 3000 & SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty <= 4000)
@@ -1743,7 +1742,7 @@ def search_sales_all_in_one_controller():
                 conditions.append(SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty > 50000)
         else:
                 conditions.append((SalesAllInOneLive.total_sales).label("total_sales"))
-                print(conditions)
+                # print(conditions)
 
         return conditions
     
@@ -2532,231 +2531,235 @@ def get_sales_all_in_one_live_month_cr_controller():
 #             return get_sales_all_in_one_live_weekly_analysis_cr_controller()
 #         else:
 #             return jsonify({"success": 0, "error": str(e)})
-def get_sales_all_in_one_live_weekly_analydddsis_cr_controller():
-    try:
+# def get_sales_all_in_one_live_weekly_analysis_cr_controller():
+#     try:
 
-        # Determine the factor from request arguments
-        factor = request.args.get('gstfilter', 'cr')  # Default to 'cr'
+#         # Determine the factor from request arguments
+#         factor = request.args.get('gstfilter', 'cr')  # Default to 'cr'
 
-        # Pagination
-        page = request.args.get("page", 1, type=int)
-        limit = request.args.get("limit", 10, type=int)
-        offset = (page - 1) * limit
+#         # Pagination
+#         page = request.args.get("page", 1, type=int)
+#         limit = request.args.get("limit", 10, type=int)
+#         offset = (page - 1) * limit
 
-        period_from = request.args.get("period_from")
-        period_to = request.args.get("period_to")
-        invoice_date = request.args.get('invoice_date')
-        srn_flag = request.args.get('srn_flag')
-        sales_type = request.args.get('sales_type')
-        section = request.args.get('section')
-        product_group = request.args.get('product_group')
-        item_category = request.args.get('item_category')
-        brand_name = request.args.get('brand_name')
-        model_no = request.args.get('model_no')
-        item_description = request.args.get('item_description')
-        store_name = request.args.get('store_name')
-        city = request.args.get('city')
-        demo_flag = request.args.get('demo_flag')
-        price_breakup2 = request.args.get('PriceBreakup2')
-        asm = request.args.get('asm')
-        store_code = request.args.get('storecode')
+#         period_from = request.args.get("period_from")
+#         period_to = request.args.get("period_to")
+#         invoice_date = request.args.get('invoice_date')
+#         srn_flag = request.args.get('srn_flag')
+#         sales_type = request.args.get('sales_type')
+#         section = request.args.get('section')
+#         product_group = request.args.get('product_group')
+#         item_category = request.args.get('item_category')
+#         brand_name = request.args.get('brand_name')
+#         model_no = request.args.get('model_no')
+#         item_description = request.args.get('item_description')
+#         store_name = request.args.get('store_name')
+#         city = request.args.get('city')
+#         demo_flag = request.args.get('demo_flag')
+#         price_breakup2 = request.args.get('PriceBreakup2')
+#         asm = request.args.get('asm')
+#         store_code = request.args.get('storecode')
 
-        # Initialize conditions
-        conditions = []
-        price_conditions = []
+#         # Initialize conditions
+#         conditions = []
+#         price_conditions = []
 
-        # Apply dynamic conditions
-        if asm:
-            conditions.append(SalesAllInOneLive.asm == asm)
-        if store_code:
-            store_code_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', store_code) if isinstance(store_code, str) else store_code
-            conditions.append(SalesAllInOneLive.store_code.in_(store_code_list))
-        if period_from:
-            conditions.append(SalesAllInOneLive.invoice_date >= period_from)
-        if period_to:
-            conditions.append(SalesAllInOneLive.invoice_date <= period_to)
-        if invoice_date:
-            invoice_date_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', invoice_date) if isinstance(invoice_date, str) else invoice_date
-            conditions.append(SalesAllInOneLive.invoice_date.in_(invoice_date_list))
-        if srn_flag:
-            srn_flag_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', srn_flag) if isinstance(srn_flag, str) else srn_flag
-            conditions.append(SalesAllInOneLive.srn_flag.in_(srn_flag_list))
-        if sales_type:
-            sale_types_list = re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', sales_type) if isinstance(sales_type, str) else sales_type
-            conditions.append(SalesAllInOneLive.sale_type.in_(sale_types_list))
-        if section:
-            section_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', section) if isinstance(section, str) else section
-            conditions.append(SalesAllInOneLive.section.in_(section_list))
-        if product_group:
-            product_group_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', product_group) if isinstance(product_group, str) else product_group
-            conditions.append(SalesAllInOneLive.product_group.in_(product_group_list))
-        if item_category:
-            item_category_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', item_category) if isinstance(item_category, str) else item_category
-            conditions.append(SalesAllInOneLive.item_category.in_(item_category_list))
-        if brand_name:
-            brand_name_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', brand_name) if isinstance(brand_name, str) else brand_name
-            conditions.append(SalesAllInOneLive.brand_name.in_(brand_name_list))
-        if model_no:
-            model_no_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', model_no) if isinstance(model_no, str) else model_no
-            conditions.append(SalesAllInOneLive.model_no.in_(model_no_list))
-        if item_description:
-            item_description_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', item_description) if isinstance(item_description, str) else item_description
-            conditions.append(SalesAllInOneLive.item_description.in_(item_description_list))
-        if store_name:
-            store_name_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', store_name) if isinstance(store_name, str) else store_name
-            conditions.append(SalesAllInOneLive.store_name.in_(store_name_list))
-        if city:
-            city_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', city) if isinstance(city, str) else city
-            conditions.append(SalesAllInOneLive.city.in_(city_list))
-        if demo_flag:
-            demo_flag_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', demo_flag) if isinstance(demo_flag, str) else demo_flag
-            conditions.append(SalesAllInOneLive.demo_flag.in_(demo_flag_list))
+#         # Apply dynamic conditions
+#         if asm:
+#             conditions.append(SalesAllInOneLive.asm == asm)
+#         if store_code:
+#             store_code_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', store_code) if isinstance(store_code, str) else store_code
+#             conditions.append(SalesAllInOneLive.store_code.in_(store_code_list))
+#         if period_from:
+#             conditions.append(SalesAllInOneLive.invoice_date >= period_from)
+#         if period_to:
+#             conditions.append(SalesAllInOneLive.invoice_date <= period_to)
+#         if invoice_date:
+#             invoice_date_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', invoice_date) if isinstance(invoice_date, str) else invoice_date
+#             conditions.append(SalesAllInOneLive.invoice_date.in_(invoice_date_list))
+#         if srn_flag:
+#             srn_flag_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', srn_flag) if isinstance(srn_flag, str) else srn_flag
+#             conditions.append(SalesAllInOneLive.srn_flag.in_(srn_flag_list))
+#         if sales_type:
+#             sale_types_list = re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', sales_type) if isinstance(sales_type, str) else sales_type
+#             conditions.append(SalesAllInOneLive.sale_type.in_(sale_types_list))
+#         if section:
+#             section_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', section) if isinstance(section, str) else section
+#             conditions.append(SalesAllInOneLive.section.in_(section_list))
+#         if product_group:
+#             product_group_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', product_group) if isinstance(product_group, str) else product_group
+#             conditions.append(SalesAllInOneLive.product_group.in_(product_group_list))
+#         if item_category:
+#             item_category_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', item_category) if isinstance(item_category, str) else item_category
+#             conditions.append(SalesAllInOneLive.item_category.in_(item_category_list))
+#         if brand_name:
+#             brand_name_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', brand_name) if isinstance(brand_name, str) else brand_name
+#             conditions.append(SalesAllInOneLive.brand_name.in_(brand_name_list))
+#         if model_no:
+#             model_no_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', model_no) if isinstance(model_no, str) else model_no
+#             conditions.append(SalesAllInOneLive.model_no.in_(model_no_list))
+#         if item_description:
+#             item_description_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', item_description) if isinstance(item_description, str) else item_description
+#             conditions.append(SalesAllInOneLive.item_description.in_(item_description_list))
+#         if store_name:
+#             store_name_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', store_name) if isinstance(store_name, str) else store_name
+#             conditions.append(SalesAllInOneLive.store_name.in_(store_name_list))
+#         if city:
+#             city_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', city) if isinstance(city, str) else city
+#             conditions.append(SalesAllInOneLive.city.in_(city_list))
+#         if demo_flag:
+#             demo_flag_list =  re.split(r',(?=(?:[^()]\([^\)]\))?[^()]*$)', demo_flag) if isinstance(demo_flag, str) else demo_flag
+#             conditions.append(SalesAllInOneLive.demo_flag.in_(demo_flag_list))
 
-        if price_breakup2:
-            sales_per_unit = SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
-            price_breakup2_list = price_breakup2.split(',') if isinstance(price_breakup2, str) else price_breakup2
+#         if price_breakup2:
+#             sales_per_unit = SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+#             price_breakup2_list = price_breakup2.split(',') if isinstance(price_breakup2, str) else price_breakup2
             
-            # Create a list to hold the sub-conditions for price ranges            
-            for price_range in price_breakup2_list:
-                if price_range == '0-1000':
-                    price_conditions.append(sales_per_unit <= 1000)
-                elif price_range == '1001-2000':
-                    price_conditions.append(sales_per_unit.between(1000, 2000))
-                elif price_range == '2001-3000':
-                    price_conditions.append((sales_per_unit > 2000) & (sales_per_unit <= 3000))
-                elif price_range == '3001-4000':
-                    price_conditions.append((sales_per_unit > 3000) & (sales_per_unit <= 4000))
-                elif price_range == '4001-5000':
-                    price_conditions.append((sales_per_unit > 4000) & (sales_per_unit <= 5000))
-                elif price_range == '5001-6000':
-                    price_conditions.append((sales_per_unit > 5000) & (sales_per_unit <= 6000))
-                elif price_range == '6001-7000':
-                    price_conditions.append((sales_per_unit > 6000) & (sales_per_unit <= 7000))
-                elif price_range == '7001-8000':
-                    price_conditions.append((sales_per_unit > 7000) & (sales_per_unit <= 8000))
-                elif price_range == '8001-9000':
-                    price_conditions.append((sales_per_unit > 8000) & (sales_per_unit <= 9000))
-                elif price_range == '9001-10000':
-                    price_conditions.append((sales_per_unit > 9000) & (sales_per_unit <= 10000))
-                elif price_range == '10001-20000':
-                    price_conditions.append((sales_per_unit > 10000) & (sales_per_unit <= 20000))
-                elif price_range == '20001-30000':
-                    price_conditions.append((sales_per_unit > 20000) & (sales_per_unit <= 30000))
-                elif price_range == '30001-40000':
-                    price_conditions.append((sales_per_unit > 30000) & (sales_per_unit <= 40000))
-                elif price_range == '40001-50000':
-                    price_conditions.append((sales_per_unit > 40000) & (sales_per_unit <= 50000))
-                elif price_range == '>50000':
-                    price_conditions.append(sales_per_unit > 50000)
-            # Combine all the sub-conditions using OR logic
-        if price_conditions:
-         conditions.append(or_(*price_conditions))
+#             # Create a list to hold the sub-conditions for price ranges            
+#             for price_range in price_breakup2_list:
+#                 if price_range == '0-1000':
+#                     price_conditions.append(sales_per_unit <= 1000)
+#                 elif price_range == '1001-2000':
+#                     price_conditions.append(sales_per_unit.between(1000, 2000))
+#                 elif price_range == '2001-3000':
+#                     price_conditions.append((sales_per_unit > 2000) & (sales_per_unit <= 3000))
+#                 elif price_range == '3001-4000':
+#                     price_conditions.append((sales_per_unit > 3000) & (sales_per_unit <= 4000))
+#                 elif price_range == '4001-5000':
+#                     price_conditions.append((sales_per_unit > 4000) & (sales_per_unit <= 5000))
+#                 elif price_range == '5001-6000':
+#                     price_conditions.append((sales_per_unit > 5000) & (sales_per_unit <= 6000))
+#                 elif price_range == '6001-7000':
+#                     price_conditions.append((sales_per_unit > 6000) & (sales_per_unit <= 7000))
+#                 elif price_range == '7001-8000':
+#                     price_conditions.append((sales_per_unit > 7000) & (sales_per_unit <= 8000))
+#                 elif price_range == '8001-9000':
+#                     price_conditions.append((sales_per_unit > 8000) & (sales_per_unit <= 9000))
+#                 elif price_range == '9001-10000':
+#                     price_conditions.append((sales_per_unit > 9000) & (sales_per_unit <= 10000))
+#                 elif price_range == '10001-20000':
+#                     price_conditions.append((sales_per_unit > 10000) & (sales_per_unit <= 20000))
+#                 elif price_range == '20001-30000':
+#                     price_conditions.append((sales_per_unit > 20000) & (sales_per_unit <= 30000))
+#                 elif price_range == '30001-40000':
+#                     price_conditions.append((sales_per_unit > 30000) & (sales_per_unit <= 40000))
+#                 elif price_range == '40001-50000':
+#                     price_conditions.append((sales_per_unit > 40000) & (sales_per_unit <= 50000))
+#                 elif price_range == '>50000':
+#                     price_conditions.append(sales_per_unit > 50000)
+#             # Combine all the sub-conditions using OR logic
+#         if price_conditions:
+#          conditions.append(or_(*price_conditions))
 
-        final_conditions = " AND ".join(
-        str(cond.compile(compile_kwargs={"literal_binds": True})).replace('"', '').replace("sales_all_in_one_live.", "")
-        for cond in conditions
-    ) if conditions else ""
+#         final_conditions = " AND ".join(
+#         str(cond.compile(compile_kwargs={"literal_binds": True})).replace('"', '').replace("sales_all_in_one_live.", "")
+#         for cond in conditions
+#     ) if conditions else ""
          
-        weekly_sales_query = text(f'''
-                SELECT 
-    WEEKOFYEAR(invoice_date) AS week_number,
-    MONTH(invoice_date) AS month,
-    CASE
-        WHEN MONTH(invoice_date) >= 4 THEN YEAR(invoice_date)
-        ELSE YEAR(invoice_date) - 1
-    END AS fiscal_year,
-    SUM(total_sales) AS total_sales,
-                                  
-                SUM(sales_qty) AS sales_qty,
-                SUM(tax_amt) AS tax_amt,
-                SUM(gros_profit) AS gros_profit
-FROM 
-    apx_stock_apps.sales_all_in_one_live
-        WHERE asm = 'ASM - ANSAR' 
-      AND invoice_date BETWEEN '2021-04-01' AND '2025-01-27'
-GROUP BY 
-    week_number,
-    month,
-    fiscal_year
-ORDER BY 
-    fiscal_year, 
-    week_number;
-        ''')
+#         weekly_sales_query = text(f'''
+#                 SELECT 
+#     WEEKOFYEAR(invoice_date) AS week_number,
+#     MONTH(invoice_date) AS month,
+#     CASE
+#         WHEN MONTH(invoice_date) >= 4 THEN YEAR(invoice_date)
+#         ELSE YEAR(invoice_date) - 1
+#     END AS fiscal_year,
+#     CONCAT(
+#         CASE 
+#             WHEN MONTH(invoice_date) >= 4 THEN YEAR(invoice_date)
+#             ELSE YEAR(invoice_date) - 1 
+#         END,
+#         '-',
+#         LPAD(WEEKOFYEAR(invoice_date), 2, '0')
+#     ) AS fiscal_yweek,
+#     SUM(total_sales) AS total_sales,
+#     SUM(sales_qty) AS sales_qty,
+#     SUM(tax_amt) AS tax_amt,
+#     SUM(gros_profit) AS gros_profit
+# FROM 
+#     apx_stock_apps.sales_all_in_one_live
+#                 WHERE 1 = 1
+#             {f"AND {final_conditions}" if final_conditions else ""}
+# GROUP BY 
+#     fiscal_yweek, fiscal_year, week_number, month
+# ORDER BY 
+#     fiscal_year, month, week_number;
+#         ''')
  
-        # Execute the query with conditions, offset, and limit
-        weekly_sales = db.session.execute(weekly_sales_query).fetchall()
+#         # Execute the query
+#         weekly_sales = db.session.execute(weekly_sales_query).fetchall()
 
+#         # Month mapping
+#         month_names = {
+#             4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep",
+#             10: "Oct", 11: "Nov", 12: "Dec", 1: "Jan", 2: "Feb", 3: "Mar"
+#         }
 
-            # Month names and result formatting
-        month_names = {
-                4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep",
-                10: "Oct", 11: "Nov", 12: "Dec", 1: "Jan", 2: "Feb", 3: "Mar"
-            }
+#         result_dict = {}
+#         years_list = []
+#         yearly_totals = {}
 
-        result_dict = {}
-        years_list = []
-        yearly_totals = {}
+#         for week_number, month, fiscal_year, fiscal_yweek, total_sales, sales_qty, tax_amt, gros_profit in weekly_sales:
+#             if month >= 3:
+#              fiscal_years = fiscal_year 
+#             else:
+#              fiscal_years = fiscal_year + 1
 
-        for week_number, month, fiscal_year, total_sales, sales_qty, tax_amt, gros_profit in weekly_sales:
-                fiscal_years = fiscal_year
-                if month >= 3:
-                 fiscal_years = fiscal_year
-                else:
-                    fiscal_years =fiscal_years+1
-                # Calculate sales_details based on the factor
-                if factor == 'cr':
-                    value = 10000000
-                    sales_details = round(total_sales / value, 2)
-                elif factor == 'cr_without_gst':
-                    value = 10000000
-                    sales_details = round((total_sales - tax_amt) / value, 2)
-                elif factor == 'lk':
-                    value = 100000
-                    sales_details = round(total_sales / value, 2)
-                elif factor == 'lk_without_gst':
-                    value = 100000
-                    sales_details = round((total_sales - tax_amt) / value, 2)
-                elif factor == 'sales_qty':
-                    sales_details = sales_qty
-                elif factor == 'total_sales':
-                    sales_details = total_sales
-                elif factor == 'gp':
-                    value = 100000
-                    sales_details = round(gros_profit / value, 2)
-                else:
-                    sales_details = total_sales
+#             # Determine sales details based on factor
+#             if factor == 'cr':
+#                 value = 10_000_000
+#                 sales_details = round(total_sales / value, 2)
+#             elif factor == 'cr_without_gst':
+#                 value = 10_000_000
+#                 sales_details = round((total_sales - tax_amt) / value, 2)
+#             elif factor == 'lk':
+#                 value = 100_000
+#                 sales_details = round(total_sales / value, 2)
+#             elif factor == 'lk_without_gst':
+#                 value = 100_000
+#                 sales_details = round((total_sales - tax_amt) / value, 2)
+#             elif factor == 'sales_qty':
+#                 sales_details = sales_qty
+#             elif factor == 'total_sales':
+#                 sales_details = total_sales
+#             elif factor == 'gp':
+#                 value = 100_000
+#                 sales_details = round(gros_profit / value, 2)
+#             else:
+#                 sales_details = total_sales
 
-                if fiscal_years not in years_list:
-                    years_list.append(fiscal_years)
+#             if fiscal_years not in years_list:
+#                 years_list.append(fiscal_years)
 
-                week_label = f"Week {int(week_number):02}"
+#             week_label = f"Week {int(week_number):02}"
 
-                if week_label not in result_dict:
-                    result_dict[week_label] = {}
+#             if week_label not in result_dict:
+#                 result_dict[week_label] = {}
 
-                result_dict[week_label][fiscal_years] = {"sales_details": sales_details}
+#             result_dict[week_label][fiscal_years] = {"sales_details": sales_details}
 
-                if fiscal_years not in yearly_totals:
-                    yearly_totals[fiscal_years] = 0
-                yearly_totals[fiscal_years] += sales_details
+#             if fiscal_years not in yearly_totals:
+#                 yearly_totals[fiscal_years] = 0
+#             yearly_totals[fiscal_years] += sales_details
 
-        for week_label, year_data in result_dict.items():
-                for fiscal_years, data in year_data.items():
-                    yearly_total = yearly_totals.get(fiscal_years, 0)
-                    if yearly_total > 0:
-                        percentage = round((data["sales_details"] / yearly_total) * 100, 2)
-                        result_dict[week_label][fiscal_years] = f"{data['sales_details']} ({percentage}%)"
+#         # Add percentage values
+#         for week_label, year_data in result_dict.items():
+#             for fiscal_years, data in year_data.items():
+#                 yearly_total = yearly_totals.get(fiscal_years, 0)
+#                 if yearly_total > 0:
+#                     percentage = round((data["sales_details"] / yearly_total) * 100, 2)
+#                     result_dict[week_label][fiscal_years] = f"{data['sales_details']} ({percentage}%)"
 
-        years_list.sort(reverse=True)
+#         years_list.sort(reverse=True)
 
-        return jsonify({"values": result_dict, "years": years_list}), 200
+#         return jsonify({"values": result_dict, "years": years_list}), 200
 
-    except Exception as e:
-        db.session.rollback()
-        if "MySQL server has gone away" in str(e):
-            return get_sales_all_in_one_live_weekly_analysis_cr_controller()
-        else:
-            return jsonify({"success": 0, "error": str(e)})
+#     except Exception as e:
+#         db.session.rollback()
+#         if "MySQL server has gone away" in str(e):
+#             return get_sales_all_in_one_live_weekly_analysis_cr_controller()
+#         else:
+#             return jsonify({"success": 0, "error": str(e)})
 
 
 def get_sales_all_in_one_live_weekly_analysis_cr_controller():
@@ -2885,48 +2888,53 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
     ) if conditions else ""
          
         weekly_sales_query = text(f'''
-    WITH fiscal_start_date AS (
-                SELECT 
-                    DATE_FORMAT(
-                        DATE_ADD(invoice_date, INTERVAL -CASE 
-                            WHEN MONTH(invoice_date) < 4 THEN 1 ELSE 0 END YEAR), 
-                        '%Y-04-01'
-                    ) AS fiscal_start_date,
-                    invoice_date,
-                    total_sales,SALES_QTY,tax_amt,gros_profit
-                FROM apx_stock_apps.sales_all_in_one_live
-                WHERE 1 = 1
-            {f"AND {final_conditions}" if final_conditions else ""}
-            ),
-            week_calculations AS (
-                SELECT 
-                    FLOOR(DATEDIFF(invoice_date, fiscal_start_date) / 7) + 1 AS week_number,
-                    MONTH(invoice_date) AS month,
-                    YEAR(fiscal_start_date) AS fiscal_year,
-                    total_sales,SALES_QTY,tax_amt,gros_profit
-                FROM fiscal_start_date
-            )
-            SELECT 
-                week_number,
-                month,
-                fiscal_year,
-                SUM(total_sales) AS total_sales,
-                SUM(sales_qty) AS sales_qty,
-                SUM(tax_amt) AS tax_amt,
-                SUM(gros_profit) AS gros_profit
-            FROM week_calculations
-            
-            GROUP BY 
-                week_number, 
-                fiscal_year, 
-                month
-            ORDER BY 
-                week_number
-            LIMIT :limit OFFSET :offset;
+WITH fiscal_start_date AS (  
+    SELECT  
+        invoice_date,  
+        total_sales,  
+        SALES_QTY,  
+        tax_amt,  
+        gros_profit,  
+        -- Adjust fiscal year (April to March)
+        CASE  
+            WHEN MONTH(invoice_date) >= 4 THEN YEAR(invoice_date) + 1  
+            ELSE YEAR(invoice_date)  
+        END AS fiscal_year  
+    FROM apx_stock_apps.sales_all_in_one_live  
+       WHERE 1 = 1
+            {f"AND {final_conditions}" if final_conditions else ""}   
+),  
+week_calculations AS (  
+    SELECT  
+        fiscal_year,  
+        -- Get the week number starting from April as Week 1
+        DENSE_RANK() OVER (PARTITION BY fiscal_year ORDER BY MIN(invoice_date)) AS fiscal_week_number,  
+        MIN(invoice_date) AS week_start,  
+        MAX(invoice_date) AS week_end,  
+        MONTH(MIN(invoice_date)) AS month,  
+        SUM(total_sales) AS totalsales,  
+        SUM(SALES_QTY) AS salesqty,  
+        SUM(tax_amt) AS taxamt,  
+        SUM(gros_profit) AS grosprofit  
+    FROM fiscal_start_date  
+    GROUP BY fiscal_year, YEARWEEK(invoice_date, 7)  -- Group by Saturday-Sunday weeks  
+)  
+SELECT  
+    fiscal_week_number AS week_number,  
+    week_start,  
+    week_end,  
+    month,  
+    fiscal_year,  
+    totalsales,  
+    salesqty,  
+    taxamt,  
+    grosprofit  
+FROM week_calculations  
+ORDER BY fiscal_year, fiscal_week_number;
         ''')
 
         # Execute the query with conditions, offset, and limit
-        weekly_sales = db.session.execute(weekly_sales_query, {"limit": limit, "offset": offset,"ASM": asm}).fetchall()
+        weekly_sales = db.session.execute(weekly_sales_query).fetchall()
 
 
             # Month names and result formatting
@@ -2938,12 +2946,12 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
         result_dict = {}
         years_list = []
         yearly_totals = {}
+        fiscal_years=0000
 
-        for week_number, month, fiscal_year, total_sales, sales_qty, tax_amt, gros_profit in weekly_sales:
-                if week_number > 52:
-                    continue
+        for week_number,week_start, month,week_end, fiscal_year, total_sales, sales_qty, tax_amt, gros_profit in weekly_sales:
 
-                fiscal_year = fiscal_year if month in [1, 2, 3] else fiscal_year + 1
+                fiscal_years=fiscal_year
+
                 # Calculate sales_details based on the factor
                 if factor == 'cr':
                     value = 10000000
@@ -2967,30 +2975,53 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
                 else:
                     sales_details = total_sales
 
-                if fiscal_year not in years_list:
-                    years_list.append(fiscal_year)
+                if fiscal_years not in years_list:
+                    years_list.append(fiscal_years)
 
                 week_label = f"Week {int(week_number):02}"
 
                 if week_label not in result_dict:
                     result_dict[week_label] = {}
 
-                result_dict[week_label][fiscal_year] = {"sales_details": sales_details}
+                result_dict[week_label][fiscal_years] = {"sales_details": sales_details}
 
-                if fiscal_year not in yearly_totals:
-                    yearly_totals[fiscal_year] = 0
-                yearly_totals[fiscal_year] += sales_details
+                if fiscal_years not in yearly_totals:
+                    yearly_totals[fiscal_years] = 0
+                yearly_totals[fiscal_years] += sales_details
 
         for week_label, year_data in result_dict.items():
-                for fiscal_year, data in year_data.items():
-                    yearly_total = yearly_totals.get(fiscal_year, 0)
+                for fiscal_years, data in year_data.items():
+                    yearly_total = yearly_totals.get(fiscal_years, 0)
                     if yearly_total > 0:
                         percentage = round((data["sales_details"] / yearly_total) * 100, 2)
-                        result_dict[week_label][fiscal_year] = f"{data['sales_details']} ({percentage}%)"
+                        result_dict[week_label][fiscal_years] = f"{data['sales_details']} ({percentage}%)"
+        
+        # Convert keys to a list for pagination
+        week_labels = list(result_dict.keys())
+        paginated_week_labels = week_labels[offset:offset + limit]
+
+        # Construct a new paginated dictionary
+        paginated_dict = {week_label: result_dict[week_label] for week_label in paginated_week_labels}
+
+        # Process data safely
+        for week_label, year_data in paginated_dict.items():
+            if not isinstance(year_data, dict):  # Ensure it's a dictionary
+                continue
+
+            for fiscal_years, data in year_data.items():
+                if not isinstance(data, dict):  # Ensure data is a dictionary
+                    continue
+                
+                yearly_total = yearly_totals.get(fiscal_years, 0)
+                if yearly_total > 0 and "sales_details" in data:
+                    percentage = round((data["sales_details"] / yearly_total) * 100, 2)
+                    paginated_dict[week_label][fiscal_years] = f"{data['sales_details']} ({percentage}%)"
+
+
 
         years_list.sort(reverse=True)
 
-        return jsonify({"values": result_dict, "years": years_list}), 200
+        return jsonify({"values": paginated_dict, "years": years_list}), 200
 
     except Exception as e:
         db.session.rollback()
@@ -2998,6 +3029,7 @@ def get_sales_all_in_one_live_weekly_analysis_cr_controller():
             return get_sales_all_in_one_live_weekly_analysis_cr_controller()
         else:
             return jsonify({"success": 0, "error": str(e)})
+
 # ----------------------------------------- Day Analysis -------------------------------------
 
 def get_sales_all_in_one_live_day_analysis_cr_controller():
@@ -3327,12 +3359,372 @@ def month_index(month_name):
 # Get the current month and rearrange the month order
     current_month = datetime.now().strftime("%B")
     current_month_index = month_order.index(current_month)
-    print(current_month_index+1)
-    print(current_month)
+    # print(current_month_index+1)
+    # print(current_month)
     reordered_months = month_order[current_month_index:] + month_order[:current_month_index]
     return reordered_months.index(month_name) if month_name in reordered_months else -1
 # --------------------------------------- Product Dimension ----------------------------------
 
+# def get_sales_all_in_one_live_product_dimension_cr_controller():
+#     try:
+
+          
+#         period_from = request.args.get("period_from")
+#         period_to = request.args.get("period_to")
+#         invoice_date = request.args.get('invoice_date')
+#         srn_flag = request.args.get('srn_flag')
+#         sales_type = request.args.get('sales_type')
+#         section = request.args.get('section')
+#         product_group = request.args.get('product_group')
+#         item_category = request.args.get('item_category')
+#         brand_name = request.args.get('brand_name')
+#         model_no = request.args.get('model_no')
+#         item_description = request.args.get('item_description')
+#         store_name = request.args.get('store_name')
+#         city = request.args.get('city')
+#         demo_flag = request.args.get('demo_flag')
+#         price_breakup2 = request.args.get('PriceBreakup2')
+#         asm = request.args.get('asm')
+#         store_code = request.args.get('storecode')
+
+#         # Initialize conditions
+#         conditions = []
+#         price_conditions = []
+
+#         # Apply dynamic conditions
+#         if asm:
+#             conditions.append(SalesAllInOneLive.asm == asm)
+#         if store_code:
+#             store_code_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', store_code) if isinstance(store_code, str) else store_code
+#             conditions.append(SalesAllInOneLive.store_code.in_(store_code_list))
+#         if period_from:
+#             conditions.append(SalesAllInOneLive.invoice_date >= period_from)
+#         if period_to:
+#             conditions.append(SalesAllInOneLive.invoice_date <= period_to)
+#         if invoice_date:
+#             invoice_date_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', invoice_date) if isinstance(invoice_date, str) else invoice_date
+#             conditions.append(SalesAllInOneLive.invoice_date.in_(invoice_date_list))
+#         if srn_flag:
+#             srn_flag_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', srn_flag) if isinstance(srn_flag, str) else srn_flag
+#             conditions.append(SalesAllInOneLive.srn_flag.in_(srn_flag_list))
+#         if sales_type:
+#             sale_types_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', sales_type) if isinstance(sales_type, str) else sales_type
+#             conditions.append(SalesAllInOneLive.sale_type.in_(sale_types_list))
+#         if section:
+#             section_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
+#             conditions.append(SalesAllInOneLive.section.in_(section_list))
+#         if product_group:
+#             product_group_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', product_group) if isinstance(product_group, str) else product_group
+#             conditions.append(SalesAllInOneLive.product_group.in_(product_group_list))
+#         if item_category:
+#             item_category_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', item_category) if isinstance(item_category, str) else item_category
+#             conditions.append(SalesAllInOneLive.item_category.in_(item_category_list))
+#         if brand_name:
+#             brand_name_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', brand_name) if isinstance(brand_name, str) else brand_name
+#             conditions.append(SalesAllInOneLive.brand_name.in_(brand_name_list))
+#         if model_no:
+#             model_no_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', model_no) if isinstance(model_no, str) else model_no
+#             conditions.append(SalesAllInOneLive.model_no.in_(model_no_list))
+#         if item_description:
+#             item_description_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', item_description) if isinstance(item_description, str) else item_description
+#             conditions.append(SalesAllInOneLive.item_description.in_(item_description_list))
+#         if store_name:
+#             store_name_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', store_name) if isinstance(store_name, str) else store_name
+#             conditions.append(SalesAllInOneLive.store_name.in_(store_name_list))
+#         if city:
+#             city_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', city) if isinstance(city, str) else city
+#             conditions.append(SalesAllInOneLive.city.in_(city_list))
+#         if demo_flag:
+#             demo_flag_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', demo_flag) if isinstance(demo_flag, str) else demo_flag
+#             conditions.append(SalesAllInOneLive.demo_flag.in_(demo_flag_list))
+
+
+#         if price_breakup2:
+#             sales_per_unit = SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
+#             price_breakup2_list = price_breakup2.split(',') if isinstance(price_breakup2, str) else price_breakup2
+            
+#             # Create a list to hold the sub-conditions for price ranges            
+#             for price_range in price_breakup2_list:
+#                 if price_range == '0-1000':
+#                     price_conditions.append(sales_per_unit <= 1000)
+#                 elif price_range == '1001-2000':
+#                     price_conditions.append(sales_per_unit.between(1000, 2000))
+#                 elif price_range == '2001-3000':
+#                     price_conditions.append((sales_per_unit > 2000) & (sales_per_unit <= 3000))
+#                 elif price_range == '3001-4000':
+#                     price_conditions.append((sales_per_unit > 3000) & (sales_per_unit <= 4000))
+#                 elif price_range == '4001-5000':
+#                     price_conditions.append((sales_per_unit > 4000) & (sales_per_unit <= 5000))
+#                 elif price_range == '5001-6000':
+#                     price_conditions.append((sales_per_unit > 5000) & (sales_per_unit <= 6000))
+#                 elif price_range == '6001-7000':
+#                     price_conditions.append((sales_per_unit > 6000) & (sales_per_unit <= 7000))
+#                 elif price_range == '7001-8000':
+#                     price_conditions.append((sales_per_unit > 7000) & (sales_per_unit <= 8000))
+#                 elif price_range == '8001-9000':
+#                     price_conditions.append((sales_per_unit > 8000) & (sales_per_unit <= 9000))
+#                 elif price_range == '9001-10000':
+#                     price_conditions.append((sales_per_unit > 9000) & (sales_per_unit <= 10000))
+#                 elif price_range == '10001-20000':
+#                     price_conditions.append((sales_per_unit > 10000) & (sales_per_unit <= 20000))
+#                 elif price_range == '20001-30000':
+#                     price_conditions.append((sales_per_unit > 20000) & (sales_per_unit <= 30000))
+#                 elif price_range == '30001-40000':
+#                     price_conditions.append((sales_per_unit > 30000) & (sales_per_unit <= 40000))
+#                 elif price_range == '40001-50000':
+#                     price_conditions.append((sales_per_unit > 40000) & (sales_per_unit <= 50000))
+#                 elif price_range == '>50000':
+#                     price_conditions.append(sales_per_unit > 50000)
+#             # Combine all the sub-conditions using OR logic
+#             if price_conditions:
+#              conditions.append(or_(*price_conditions))
+#         # Get request parameters
+#         factor = request.args.get('gstfilter', 'cr')  # Default to 'cr'
+#         page = request.args.get("page", 1, type=int)
+#         limit = request.args.get("limit", 10, type=int)
+#         offset = (page - 1) * limit
+        
+#         # Set factor value
+#         if factor == 'cr':
+#             value = 10000000
+#         elif factor == 'cr_without_gst':
+#             value = 10000000
+#         elif factor == 'lk':
+#             value = 100000
+#         elif factor == 'lk_without_gst':
+#             value = 100000
+#         elif factor == 'sales_qty':
+#             value = None  # Handle separately
+#         elif factor == 'total_sales':
+#             value = None  # Handle separately
+#         elif factor == 'gp':
+#             value = 100000
+#         else:
+#             return jsonify({"success": 0, "error": f"Invalid factor: {factor}"}), 400
+
+#         # Query sales data with pagination
+#         sales_data = db.session.query(
+#             SalesAllInOneLive.product_group,
+#             extract("year", SalesAllInOneLive.invoice_date).label("year"),
+#             extract("month", SalesAllInOneLive.invoice_date).label("month"),
+#             case(
+#                 (func.month(SalesAllInOneLive.invoice_date) >= 4, func.year(SalesAllInOneLive.invoice_date) + 1),
+#                 else_=func.year(SalesAllInOneLive.invoice_date)
+#             ).label("fiscal_year"),
+#             func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+#             func.sum(SalesAllInOneLive.sales_qty).label("sales_qty"),
+#             func.sum(SalesAllInOneLive.tax_amt).label("tax_amt"),
+#             func.sum(SalesAllInOneLive.gros_profit).label("gros_profit")
+#         ).filter(*conditions)
+
+#         # Apply grouping and ordering
+#         sales_data = sales_data.group_by(
+#             SalesAllInOneLive.product_group,
+#             "fiscal_year",
+#             extract("month", SalesAllInOneLive.invoice_date)
+#         ).order_by(SalesAllInOneLive.product_group).limit(limit).offset(offset).all()
+
+
+#         sales_datas1 = db.session.query(
+#             SalesAllInOneLive.product_group,
+#             extract("year", SalesAllInOneLive.invoice_date).label("year"),
+#             extract("month", SalesAllInOneLive.invoice_date).label("month"),
+#             case(
+#                 (func.month(SalesAllInOneLive.invoice_date) >= 4, func.year(SalesAllInOneLive.invoice_date) + 1),
+#                 else_=func.year(SalesAllInOneLive.invoice_date)
+#             ).label("fiscal_year"),
+#             func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
+#             func.sum(SalesAllInOneLive.sales_qty).label("sales_qty"),
+#             func.sum(SalesAllInOneLive.tax_amt).label("tax_amt"),
+#             func.sum(SalesAllInOneLive.gros_profit).label("gros_profit")
+#         ).filter(*conditions)
+
+#         # Apply grouping and ordering
+#         sales_datas1 = sales_datas1.group_by(
+#             SalesAllInOneLive.product_group,
+#             "fiscal_year",
+#             extract("month", SalesAllInOneLive.invoice_date)
+#         ).order_by(SalesAllInOneLive.product_group)
+#         sales_data1 = sales_datas1.all()
+#         # Process sales data and calculate yearly totals and percentages
+#         result_dict = {}
+#         month_names = {
+#             4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep",
+#             10: "Oct", 11: "Nov", 12: "Dec", 1: "Jan", 2: "Feb", 3: "Mar",
+#         }
+#         month_names1 = {
+#             "Apr":4, "May":5, "Jun":6, "Jul":7, "Aug":8, "Sep":9,
+#             "Oct":10, "Nov":11, "Dec":12, "Jan":1, "Feb":2, "Mar":3,
+#         }
+
+#         years_list = []
+#         yearly_totals = {}
+
+#         for product_group, year, month, fiscal_year, total_sales, sales_qty, tax_amt, gros_profit in sales_data:
+#             financial_month = month_names[month]
+
+#             if fiscal_year not in years_list:
+#                 years_list.append(fiscal_year)
+
+#             # Set default values
+#             if total_sales is None:
+#                 total_sales = 0
+#                 sales_qty = 0
+#                 tax_amt = 0
+#                 gros_profit = 0
+
+#             if gros_profit is None:
+#                 gros_profit = 0
+#             if total_sales is None:
+#                 total_sales = 0
+#             if tax_amt is None:
+#                 tax_amt = 0
+
+#             # Calculate sales details based on the selected factor
+#             if value is None or value == 0:
+#                if factor == 'sales_qty':
+#                    sales_details = sales_qty
+#                elif factor == 'total_sales':
+#                    sales_details = total_sales
+#             elif factor == 'sales_qty':
+#                 sales_details = sales_qty
+#             elif factor == 'total_sales':
+#                 sales_details = total_sales
+#             elif factor == 'gp':
+#                 sales_details = round(gros_profit / value, 2)
+#             else:
+#                 if factor in ['cr', 'cr_without_gst']:
+#                     if factor == 'cr_without_gst':
+#                         sales_details = round((total_sales - tax_amt) / value, 2)
+#                     else:
+#                         sales_details = round(total_sales / value, 2)
+#                 elif factor in ['lk', 'lk_without_gst']:
+#                     if factor == 'lk_without_gst':
+#                         sales_details = round((total_sales - tax_amt) / value, 2)
+#                     else:
+#                         sales_details = round(total_sales / value, 2)
+            
+#             sales_with_gst = sales_details
+         
+#             if product_group not in result_dict:
+#                 result_dict[product_group] = {}
+
+#             if fiscal_year not in result_dict[product_group]:
+#                 result_dict[product_group][fiscal_year] = {}
+
+#             if product_group not in yearly_totals:
+#                 yearly_totals[product_group] = {}
+
+#             if fiscal_year not in yearly_totals[product_group]:
+#                 yearly_totals[product_group][fiscal_year] = 0
+            
+#             yearly_totals[product_group][fiscal_year] = Decimal(yearly_totals[product_group][fiscal_year])
+#             yearly_totals[product_group][fiscal_year] += Decimal(sales_with_gst)
+#             result_dict[product_group][fiscal_year][financial_month] = {"sales_with_gst": sales_with_gst}
+        
+#         monthly_totals = {}
+#         for product_group, year, month, fiscal_year, total_sales, sales_qty, tax_amt, gros_profit in sales_data1:
+
+#             if total_sales is None:
+#                 total_sales = 0
+#             if sales_qty is None:
+#                 sales_qty = 0
+#             if tax_amt is None:
+#                 tax_amt = 0
+#             if gros_profit is None:
+#                 gros_profit = 0
+
+#             # Determine value based on gstfilter
+#             if factor == 'cr':
+#                 value = 10000000
+#             elif factor == 'cr_without_gst':
+#                 value = 10000000
+#             elif factor == 'lk':
+#                 value = 100000
+#             elif factor == 'lk_without_gst':
+#                 value = 100000
+#             elif factor == 'sales_qty':
+#                 value = None  # Handle separately, as sales_qty doesn't need a factor
+#             elif factor == 'total_sales':
+#                 value = None  # Handle separately
+#             elif factor == 'gp':
+#                 value = 100000
+#             else:
+#                 return jsonify({"success": 0, "error": f"Invalid factor: {factor}"}), 400
+
+#             # Calculate sales details based on the selected factor
+#             if factor == 'sales_qty':
+#                     sales_details = sales_qty
+#             elif factor == 'total_sales':
+#                     sales_details = total_sales
+#             elif factor == 'gp':
+#                     sales_details = gros_profit / value
+#             else:
+#                     if factor in ['cr', 'cr_without_gst']:
+#                         if factor == 'cr_without_gst':
+#                             sales_details = (total_sales - tax_amt) / value
+#                         else:
+#                             sales_details = total_sales / value
+#                     elif factor in ['lk', 'lk_without_gst']:
+#                         if factor == 'lk_without_gst':
+#                             sales_details = (total_sales - tax_amt) / value
+#                         else:
+#                             sales_details = total_sales / value
+
+#             sales_with_gst = Decimal(sales_details)
+
+#             if fiscal_year not in monthly_totals:
+#                     monthly_totals[fiscal_year] = {}
+#             if month not in monthly_totals[fiscal_year]:
+#                     monthly_totals[fiscal_year][month] = Decimal(0)
+
+#                 # Add up sales for each month with full precision
+#             monthly_totals[fiscal_year][month] += sales_with_gst
+
+#             # Retrieve the specific monthly total
+#         # monthly_total1 = round(monthly_totals.get(2025, {}).get(4, Decimal(0)),2)
+#         # print(monthly_total1)
+
+#         # monthly_totals = {}
+#         # for product_group, fiscal_year_data in result_dict.items():
+#         #     for fiscal_year, months_data in fiscal_year_data.items():
+#         #         for month, data in months_data.items():
+                    
+#         #             if fiscal_year not in monthly_totals:
+#         #                 monthly_totals[fiscal_year] = {}
+                    
+#         #             if month not in monthly_totals[fiscal_year]:
+#         #                 monthly_totals[fiscal_year][month] = 0
+
+#         #             # Add up sales for each month
+#         #             monthly_totals[fiscal_year][month] = Decimal(monthly_totals[fiscal_year][month])
+#         #             monthly_totals[fiscal_year][month] += Decimal(data["sales_with_gst"])
+
+#         # Now, update the result_dict to calculate the percentage based on the monthly total for each fiscal year and month
+#         for product_group, fiscal_year_data in result_dict.items():
+#             for fiscal_year, months_data in fiscal_year_data.items():
+#                 for month, data in months_data.items():
+#                     financial_month = month_names1[month]
+#                     monthly_total = round(Decimal(monthly_totals[fiscal_year].get(financial_month, 0)),2)
+
+#                     sales_with_gst = round(Decimal(data['sales_with_gst']),2)
+#                     if monthly_total == 0:
+#                         result_dict[product_group][fiscal_year][month] = f"{sales_with_gst} ({0.00}%)"
+#                     else:
+#                         percentage = round((sales_with_gst / monthly_total) * 100, 2)
+#                         result_dict[product_group][fiscal_year][month] = f"{sales_with_gst} ({percentage}%)"
+
+#         years_list.reverse()
+        
+#         return jsonify({"years": years_list, "values": result_dict,
+#             "yearly_totals": yearly_totals}), 200
+
+#     except Exception as e:
+#         db.session.rollback()
+#         if "MySQL server has gone away" in str(e):
+#             return get_sales_all_in_one_live_product_dimension_cr_controller()
+#         else:
+#             return jsonify({"success": 0, "error": str(e)})
 def get_sales_all_in_one_live_product_dimension_cr_controller():
     try:
 
@@ -3357,95 +3749,87 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
 
         # Initialize conditions
         conditions = []
-        price_conditions = []
 
         # Apply dynamic conditions
         if asm:
             conditions.append(SalesAllInOneLive.asm == asm)
         if store_code:
-            store_code_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', store_code) if isinstance(store_code, str) else store_code
+            store_code_list = store_code.split(',') if isinstance(store_code, str) else store_code
             conditions.append(SalesAllInOneLive.store_code.in_(store_code_list))
         if period_from:
             conditions.append(SalesAllInOneLive.invoice_date >= period_from)
         if period_to:
             conditions.append(SalesAllInOneLive.invoice_date <= period_to)
         if invoice_date:
-            invoice_date_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', invoice_date) if isinstance(invoice_date, str) else invoice_date
+            invoice_date_list = invoice_date.split(',') if isinstance(invoice_date, str) else invoice_date
             conditions.append(SalesAllInOneLive.invoice_date.in_(invoice_date_list))
         if srn_flag:
-            srn_flag_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', srn_flag) if isinstance(srn_flag, str) else srn_flag
+            srn_flag_list = srn_flag.split(',') if isinstance(srn_flag, str) else srn_flag
             conditions.append(SalesAllInOneLive.srn_flag.in_(srn_flag_list))
         if sales_type:
-            sale_types_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', sales_type) if isinstance(sales_type, str) else sales_type
+            sale_types_list = sales_type.split(',') if isinstance(sales_type, str) else sales_type
             conditions.append(SalesAllInOneLive.sale_type.in_(sale_types_list))
         if section:
-            section_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', section) if isinstance(section, str) else section
+            section_list = section.split(',') if isinstance(section, str) else section
             conditions.append(SalesAllInOneLive.section.in_(section_list))
         if product_group:
-            product_group_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', product_group) if isinstance(product_group, str) else product_group
+            product_group_list = product_group.split(',') if isinstance(product_group, str) else product_group
             conditions.append(SalesAllInOneLive.product_group.in_(product_group_list))
         if item_category:
-            item_category_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', item_category) if isinstance(item_category, str) else item_category
+            item_category_list = item_category.split(',') if isinstance(item_category, str) else item_category
             conditions.append(SalesAllInOneLive.item_category.in_(item_category_list))
         if brand_name:
-            brand_name_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', brand_name) if isinstance(brand_name, str) else brand_name
+            brand_name_list = brand_name.split(',') if isinstance(brand_name, str) else brand_name
             conditions.append(SalesAllInOneLive.brand_name.in_(brand_name_list))
         if model_no:
-            model_no_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', model_no) if isinstance(model_no, str) else model_no
+            model_no_list = model_no.split(',') if isinstance(model_no, str) else model_no
             conditions.append(SalesAllInOneLive.model_no.in_(model_no_list))
         if item_description:
-            item_description_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', item_description) if isinstance(item_description, str) else item_description
+            item_description_list = item_description.split(',') if isinstance(item_description, str) else item_description
             conditions.append(SalesAllInOneLive.item_description.in_(item_description_list))
         if store_name:
-            store_name_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', store_name) if isinstance(store_name, str) else store_name
+            store_name_list = store_name.split(',') if isinstance(store_name, str) else store_name
             conditions.append(SalesAllInOneLive.store_name.in_(store_name_list))
         if city:
-            city_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', city) if isinstance(city, str) else city
+            city_list = city.split(',') if isinstance(city, str) else city
             conditions.append(SalesAllInOneLive.city.in_(city_list))
         if demo_flag:
-            demo_flag_list =  re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', demo_flag) if isinstance(demo_flag, str) else demo_flag
+            demo_flag_list = demo_flag.split(',') if isinstance(demo_flag, str) else demo_flag
             conditions.append(SalesAllInOneLive.demo_flag.in_(demo_flag_list))
-
 
         if price_breakup2:
             sales_per_unit = SalesAllInOneLive.total_sales / SalesAllInOneLive.sales_qty
-            price_breakup2_list = price_breakup2.split(',') if isinstance(price_breakup2, str) else price_breakup2
-            
-            # Create a list to hold the sub-conditions for price ranges            
-            for price_range in price_breakup2_list:
-                if price_range == '0-1000':
-                    price_conditions.append(sales_per_unit <= 1000)
-                elif price_range == '1001-2000':
-                    price_conditions.append(sales_per_unit.between(1000, 2000))
-                elif price_range == '2001-3000':
-                    price_conditions.append((sales_per_unit > 2000) & (sales_per_unit <= 3000))
-                elif price_range == '3001-4000':
-                    price_conditions.append((sales_per_unit > 3000) & (sales_per_unit <= 4000))
-                elif price_range == '4001-5000':
-                    price_conditions.append((sales_per_unit > 4000) & (sales_per_unit <= 5000))
-                elif price_range == '5001-6000':
-                    price_conditions.append((sales_per_unit > 5000) & (sales_per_unit <= 6000))
-                elif price_range == '6001-7000':
-                    price_conditions.append((sales_per_unit > 6000) & (sales_per_unit <= 7000))
-                elif price_range == '7001-8000':
-                    price_conditions.append((sales_per_unit > 7000) & (sales_per_unit <= 8000))
-                elif price_range == '8001-9000':
-                    price_conditions.append((sales_per_unit > 8000) & (sales_per_unit <= 9000))
-                elif price_range == '9001-10000':
-                    price_conditions.append((sales_per_unit > 9000) & (sales_per_unit <= 10000))
-                elif price_range == '10001-20000':
-                    price_conditions.append((sales_per_unit > 10000) & (sales_per_unit <= 20000))
-                elif price_range == '20001-30000':
-                    price_conditions.append((sales_per_unit > 20000) & (sales_per_unit <= 30000))
-                elif price_range == '30001-40000':
-                    price_conditions.append((sales_per_unit > 30000) & (sales_per_unit <= 40000))
-                elif price_range == '40001-50000':
-                    price_conditions.append((sales_per_unit > 40000) & (sales_per_unit <= 50000))
-                elif price_range == '>50000':
-                    price_conditions.append(sales_per_unit > 50000)
-            # Combine all the sub-conditions using OR logic
-            if price_conditions:
-             conditions.append(or_(*price_conditions))
+            if price_breakup2 == '0-1000':
+                conditions.append(sales_per_unit <= 1000)
+            elif price_breakup2 == '1001-2000':
+                conditions.append(sales_per_unit.between(1000, 2000))
+            elif price_breakup2 == '2001-3000':
+                conditions.append((sales_per_unit > 2000) & (sales_per_unit <= 3000))
+            elif price_breakup2 == '3001-4000':
+                conditions.append((sales_per_unit > 3000) & (sales_per_unit <= 4000))
+            elif price_breakup2 == '4001-5000':
+                conditions.append((sales_per_unit > 4000) & (sales_per_unit <= 5000))
+            elif price_breakup2 == '5001-6000':
+                conditions.append((sales_per_unit > 5000) & (sales_per_unit <= 6000))
+            elif price_breakup2 == '6001-7000':
+                conditions.append((sales_per_unit > 6000) & (sales_per_unit <= 7000))
+            elif price_breakup2 == '7001-8000':
+                conditions.append((sales_per_unit > 7000) & (sales_per_unit <= 8000))
+            elif price_breakup2 == '8001-9000':
+                conditions.append((sales_per_unit > 8000) & (sales_per_unit <= 9000))
+            elif price_breakup2 == '9001-10000':
+                conditions.append((sales_per_unit > 9000) & (sales_per_unit <= 10000))
+            elif price_breakup2 == '10001-20000':
+                conditions.append((sales_per_unit > 10000) & (sales_per_unit <= 20000))
+            elif price_breakup2 == '20001-30000':
+                conditions.append((sales_per_unit > 20000) & (sales_per_unit <= 30000))
+            elif price_breakup2 == '30001-40000':
+                conditions.append((sales_per_unit > 30000) & (sales_per_unit <= 40000))
+            elif price_breakup2 == '40001-50000':
+                conditions.append((sales_per_unit > 40000) & (sales_per_unit <= 50000))
+            elif price_breakup2 == '>50000':
+                conditions.append(sales_per_unit > 50000)
+
         # Get request parameters
         factor = request.args.get('gstfilter', 'cr')  # Default to 'cr'
         page = request.args.get("page", 1, type=int)
@@ -3475,60 +3859,33 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
             SalesAllInOneLive.product_group,
             extract("year", SalesAllInOneLive.invoice_date).label("year"),
             extract("month", SalesAllInOneLive.invoice_date).label("month"),
-            case(
-                (func.month(SalesAllInOneLive.invoice_date) >= 4, func.year(SalesAllInOneLive.invoice_date) + 1),
-                else_=func.year(SalesAllInOneLive.invoice_date)
-            ).label("fiscal_year"),
             func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
             func.sum(SalesAllInOneLive.sales_qty).label("sales_qty"),
             func.sum(SalesAllInOneLive.tax_amt).label("tax_amt"),
             func.sum(SalesAllInOneLive.gros_profit).label("gros_profit")
         ).filter(*conditions)
 
-        # Apply grouping and ordering
+        # Apply ordering and pagination
         sales_data = sales_data.group_by(
             SalesAllInOneLive.product_group,
-            "fiscal_year",
-            extract("month", SalesAllInOneLive.invoice_date)
-        ).order_by(SalesAllInOneLive.product_group).limit(limit).offset(offset).all()
+            extract("year", SalesAllInOneLive.invoice_date),
+            extract("month", SalesAllInOneLive.invoice_date),
+        ).order_by(SalesAllInOneLive.product_group).order_by(
+            func.sum(SalesAllInOneLive.total_sales).desc()  # Order by value in descending order
+        ).all()
 
-
-        sales_datas1 = db.session.query(
-            SalesAllInOneLive.product_group,
-            extract("year", SalesAllInOneLive.invoice_date).label("year"),
-            extract("month", SalesAllInOneLive.invoice_date).label("month"),
-            case(
-                (func.month(SalesAllInOneLive.invoice_date) >= 4, func.year(SalesAllInOneLive.invoice_date) + 1),
-                else_=func.year(SalesAllInOneLive.invoice_date)
-            ).label("fiscal_year"),
-            func.sum(SalesAllInOneLive.total_sales).label("total_sales"),
-            func.sum(SalesAllInOneLive.sales_qty).label("sales_qty"),
-            func.sum(SalesAllInOneLive.tax_amt).label("tax_amt"),
-            func.sum(SalesAllInOneLive.gros_profit).label("gros_profit")
-        ).filter(*conditions)
-
-        # Apply grouping and ordering
-        sales_datas1 = sales_datas1.group_by(
-            SalesAllInOneLive.product_group,
-            "fiscal_year",
-            extract("month", SalesAllInOneLive.invoice_date)
-        ).order_by(SalesAllInOneLive.product_group)
-        sales_data1 = sales_datas1.all()
         # Process sales data and calculate yearly totals and percentages
         result_dict = {}
         month_names = {
             4: "Apr", 5: "May", 6: "Jun", 7: "Jul", 8: "Aug", 9: "Sep",
             10: "Oct", 11: "Nov", 12: "Dec", 1: "Jan", 2: "Feb", 3: "Mar",
         }
-        month_names1 = {
-            "Apr":4, "May":5, "Jun":6, "Jul":7, "Aug":8, "Sep":9,
-            "Oct":10, "Nov":11, "Dec":12, "Jan":1, "Feb":2, "Mar":3,
-        }
 
         years_list = []
         yearly_totals = {}
 
-        for product_group, year, month, fiscal_year, total_sales, sales_qty, tax_amt, gros_profit in sales_data:
+        for product_group, year, month, total_sales, sales_qty, tax_amt, gros_profit in sales_data:
+            fiscal_year = year if month in [1, 2, 3] else year + 1
             financial_month = month_names[month]
 
             if fiscal_year not in years_list:
@@ -3541,20 +3898,8 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
                 tax_amt = 0
                 gros_profit = 0
 
-            if gros_profit is None:
-                gros_profit = 0
-            if total_sales is None:
-                total_sales = 0
-            if tax_amt is None:
-                tax_amt = 0
-
             # Calculate sales details based on the selected factor
-            if value is None or value == 0:
-               if factor == 'sales_qty':
-                   sales_details = sales_qty
-               elif factor == 'total_sales':
-                   sales_details = total_sales
-            elif factor == 'sales_qty':
+            if factor == 'sales_qty':
                 sales_details = sales_qty
             elif factor == 'total_sales':
                 sales_details = total_sales
@@ -3571,9 +3916,9 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
                         sales_details = round((total_sales - tax_amt) / value, 2)
                     else:
                         sales_details = round(total_sales / value, 2)
-            
+
             sales_with_gst = sales_details
-         
+
             if product_group not in result_dict:
                 result_dict[product_group] = {}
 
@@ -3585,107 +3930,23 @@ def get_sales_all_in_one_live_product_dimension_cr_controller():
 
             if fiscal_year not in yearly_totals[product_group]:
                 yearly_totals[product_group][fiscal_year] = 0
-            
-            yearly_totals[product_group][fiscal_year] = Decimal(yearly_totals[product_group][fiscal_year])
-            yearly_totals[product_group][fiscal_year] += Decimal(sales_with_gst)
+
+            yearly_totals[product_group][fiscal_year] += sales_with_gst
             result_dict[product_group][fiscal_year][financial_month] = {"sales_with_gst": sales_with_gst}
-        
-        monthly_totals = {}
-        for product_group, year, month, fiscal_year, total_sales, sales_qty, tax_amt, gros_profit in sales_data1:
 
-            if total_sales is None:
-                total_sales = 0
-            if sales_qty is None:
-                sales_qty = 0
-            if tax_amt is None:
-                tax_amt = 0
-            if gros_profit is None:
-                gros_profit = 0
-
-            # Determine value based on gstfilter
-            if factor == 'cr':
-                value = 10000000
-            elif factor == 'cr_without_gst':
-                value = 10000000
-            elif factor == 'lk':
-                value = 100000
-            elif factor == 'lk_without_gst':
-                value = 100000
-            elif factor == 'sales_qty':
-                value = None  # Handle separately, as sales_qty doesn't need a factor
-            elif factor == 'total_sales':
-                value = None  # Handle separately
-            elif factor == 'gp':
-                value = 100000
-            else:
-                return jsonify({"success": 0, "error": f"Invalid factor: {factor}"}), 400
-
-            # Calculate sales details based on the selected factor
-            if factor == 'sales_qty':
-                    sales_details = sales_qty
-            elif factor == 'total_sales':
-                    sales_details = total_sales
-            elif factor == 'gp':
-                    sales_details = gros_profit / value
-            else:
-                    if factor in ['cr', 'cr_without_gst']:
-                        if factor == 'cr_without_gst':
-                            sales_details = (total_sales - tax_amt) / value
-                        else:
-                            sales_details = total_sales / value
-                    elif factor in ['lk', 'lk_without_gst']:
-                        if factor == 'lk_without_gst':
-                            sales_details = (total_sales - tax_amt) / value
-                        else:
-                            sales_details = total_sales / value
-
-            sales_with_gst = Decimal(sales_details)
-
-            if fiscal_year not in monthly_totals:
-                    monthly_totals[fiscal_year] = {}
-            if month not in monthly_totals[fiscal_year]:
-                    monthly_totals[fiscal_year][month] = Decimal(0)
-
-                # Add up sales for each month with full precision
-            monthly_totals[fiscal_year][month] += sales_with_gst
-
-            # Retrieve the specific monthly total
-        # monthly_total1 = round(monthly_totals.get(2025, {}).get(4, Decimal(0)),2)
-        # print(monthly_total1)
-
-        # monthly_totals = {}
-        # for product_group, fiscal_year_data in result_dict.items():
-        #     for fiscal_year, months_data in fiscal_year_data.items():
-        #         for month, data in months_data.items():
-                    
-        #             if fiscal_year not in monthly_totals:
-        #                 monthly_totals[fiscal_year] = {}
-                    
-        #             if month not in monthly_totals[fiscal_year]:
-        #                 monthly_totals[fiscal_year][month] = 0
-
-        #             # Add up sales for each month
-        #             monthly_totals[fiscal_year][month] = Decimal(monthly_totals[fiscal_year][month])
-        #             monthly_totals[fiscal_year][month] += Decimal(data["sales_with_gst"])
-
-        # Now, update the result_dict to calculate the percentage based on the monthly total for each fiscal year and month
         for product_group, fiscal_year_data in result_dict.items():
             for fiscal_year, months_data in fiscal_year_data.items():
+                yearly_total = yearly_totals[product_group][fiscal_year]
                 for month, data in months_data.items():
-                    financial_month = month_names1[month]
-                    monthly_total = round(Decimal(monthly_totals[fiscal_year].get(financial_month, 0)),2)
-
-                    sales_with_gst = round(Decimal(data['sales_with_gst']),2)
-                    if monthly_total == 0:
-                        result_dict[product_group][fiscal_year][month] = f"{sales_with_gst} ({0.00}%)"
+                    if data["sales_with_gst"] == 0:
+                        result_dict[product_group][fiscal_year][month] = f"{data['sales_with_gst']} ({0.00}%)"
                     else:
-                        percentage = round((sales_with_gst / monthly_total) * 100, 2)
-                        result_dict[product_group][fiscal_year][month] = f"{sales_with_gst} ({percentage}%)"
+                        percentage = round((data["sales_with_gst"] / yearly_total) * 100, 2)
+                        result_dict[product_group][fiscal_year][month] = f"{data['sales_with_gst']} ({percentage}%)"
+
 
         years_list.reverse()
-        
-        return jsonify({"years": years_list, "values": result_dict,
-            "yearly_totals": yearly_totals}), 200
+        return jsonify({"years": years_list, "values": result_dict}), 200
 
     except Exception as e:
         db.session.rollback()
@@ -4042,8 +4303,8 @@ def get_sales_all_in_one_live_brand_dimension_cr_controller():
     except Exception as e:
         db.session.rollback()
         # Improved error handling to include traceback for debugging
-        print("Error:", str(e))
-        print(traceback.format_exc())
+        # print("Error:", str(e))
+        # print(traceback.format_exc())
         if "MySQL server has gone away" in str(e):
             return get_sales_all_in_one_live_item_dimension_cr_controller()
         else:
@@ -6113,7 +6374,7 @@ def get_sales_all_in_one_live_itemcategory_dimension_cr_controller():
         elif factor == 'sales_qty':
             value = None  # Handle separately
         elif factor == 'total_sales':
-            print("exclude_modal_number2")
+            # print("exclude_modal_number2")
             value = None  # Handle separately
         elif factor == 'gp':
             value = 100000

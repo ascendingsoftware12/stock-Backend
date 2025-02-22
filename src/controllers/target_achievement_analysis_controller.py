@@ -263,8 +263,8 @@ def search_targetAchievement_overall_details_controller():
 
         if store_name and store_name.strip():
             store_name_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', store_name) if isinstance(store_name, str) else store_name
-            print(store_name)
-            print(store_name_list)
+            # print(store_name)
+            # print(store_name_list)
             conditions.append(TargetAchievementAnalysisEmpRanking.store_name.in_(store_name_list))
 
         if section and section.strip():
@@ -490,8 +490,8 @@ def search_targetAchievement_branch_wise_growth_controller():
 
         if store_name and store_name.strip():
             store_name_list = re.split(r',(?=(?:[^()]*\([^\)]*\))?[^()]*$)', store_name) if isinstance(store_name, str) else store_name
-            print(store_name)
-            print(store_name_list)
+            # print(store_name)
+            # print(store_name_list)
             conditions.append(TargetAchievementAnalysisStoreRanking.store_name.in_(store_name_list))
 
         if section and section.strip():
